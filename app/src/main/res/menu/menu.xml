@@ -5,10 +5,7 @@
         android:id="@+id/action_profile"
         android:icon="@drawable/ic_proflle"
         android:title="@string/profile"
-        app:showAsAction="ifRoom"
-
-
-        />
+        app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/action_settings"
