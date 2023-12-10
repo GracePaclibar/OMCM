@@ -10,9 +10,9 @@
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
+    <color name="white">#FFFFFF</color>
     <color name="main">#9EB384</color>
     <color name="highlight">#435334</color>
     <color name="detail">#CEDEBD</color>
     <color name="background">#FAF1E4</color>
-
 </resources>
