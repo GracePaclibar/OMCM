@@ -23,6 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:background="@color/main"
+        android:elevation="4dp"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
 
@@ -34,10 +35,12 @@
         android:layout_marginTop="10dp"
         android:background="#00FFFFFF"
         android:onClick="goToProfile"
+        android:elevation="4dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_proflle"
-        tools:ignore="RtlSymmetry,SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+        tools:ignore="RtlSymmetry,SpeakableTextPresentCheck,TouchTargetSizeCheck"
+        android:contentDescription="@string/profile_buttonDesc" />
 
     <ImageButton
         android:id="@+id/settingsButton"
@@ -46,8 +49,11 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="16dp"
         android:background="#00FFFFFF"
+        android:contentDescription="@string/settings_buttonDesc"
+        android:elevation="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_setting" />
+        app:srcCompat="@drawable/ic_setting"
+        tools:ignore="TouchTargetSizeCheck" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
