@@ -10,4 +10,5 @@
     <string name="name_text">Name</string>
     <string name="bio_text">Bio</string>
     <string name="profile_pictureDesc">Profile Picture</string>
+    <string name="edit_button_desc">Edit Button</string>
 </resources>

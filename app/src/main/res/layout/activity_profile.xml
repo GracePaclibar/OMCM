@@ -17,6 +17,46 @@
         android:elevation="4dp"
         app:layout_constraintTop_toTopOf="parent"/>
 
+    <View
+        android:id="@+id/profilePicBackground"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginStart="104dp"
+        android:layout_marginTop="92dp"
+        android:background="@color/detail"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/edit_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:background="#00FFFFFF"
+        android:contentDescription="@string/edit_button_desc"
+        android:elevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/edit"
+        tools:ignore="ImageContrastCheck,RedundantDescriptionCheck" />
+
+    <ImageButton
+        android:id="@+id/back_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="10dp"
+        android:background="#00FFFFFF"
+        android:contentDescription="@string/back_buttonDesc"
+        android:elevation="4dp"
+        android:onClick="goToMain"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_back"
+        tools:ignore="TouchTargetSizeCheck,ImageContrastCheck,RedundantDescriptionCheck" />
+
+
     <TextView
         android:id="@+id/profile_label"
         android:layout_width="wrap_content"
@@ -32,30 +72,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
-        android:id="@+id/back_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="14dp"
-        android:layout_marginTop="10dp"
-        android:background="#00FFFFFF"
-        android:contentDescription="@string/back_buttonDesc"
-        android:elevation="4dp"
-        android:onClick="goToMain"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_back"
-        tools:ignore="TouchTargetSizeCheck" />
 
-    <View
-        android:id="@+id/profilePicBackground"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_marginStart="104dp"
-        android:layout_marginTop="92dp"
-        android:background="@color/detail"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <ImageView
+        android:id="@+id/profilePic"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:contentDescription="@string/profile_pictureDesc"
+        app:layout_constraintBottom_toBottomOf="@+id/profilePicBackground"
+        app:layout_constraintEnd_toEndOf="@+id/profilePicBackground"
+        app:layout_constraintStart_toStartOf="@+id/profilePicBackground"
+        app:layout_constraintTop_toTopOf="@+id/profilePicBackground"
+        app:srcCompat="@drawable/profile_empty"
+        android:elevation="4dp"/>
 
     <EditText
         android:id="@+id/name_text"
@@ -68,22 +96,12 @@
         android:inputType="text"
         android:hint="@string/name_text"
         android:textColor="@color/highlight"
+        android:enabled="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="LabelFor" />
-
-    <ImageView
-        android:id="@+id/profilePic"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:contentDescription="@string/profile_pictureDesc"
-        app:layout_constraintBottom_toBottomOf="@+id/profilePicBackground"
-        app:layout_constraintEnd_toEndOf="@+id/profilePicBackground"
-        app:layout_constraintStart_toStartOf="@+id/profilePicBackground"
-        app:layout_constraintTop_toTopOf="@+id/profilePicBackground"
-        app:srcCompat="@drawable/profile"
-        android:elevation="4dp"/>
+        tools:ignore="LabelFor"
+        />
 
     <EditText
         android:id="@+id/bio_text"
@@ -98,6 +116,7 @@
         android:hint="@string/bio_text"
         android:textColor="@color/highlight"
         android:maxLines="2"
+        android:enabled="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
