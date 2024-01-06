@@ -11,4 +11,7 @@
     <string name="bio_text">Bio</string>
     <string name="profile_pictureDesc">Profile Picture</string>
     <string name="edit_button_desc">Edit Button</string>
+    <string name="profile_edit_desc">Profile Edit</string>
+    <string name="save_btn_txt">Save</string>
+    <string name="save_button_desc">Save Button</string>
 </resources>

@@ -34,13 +34,13 @@
         android:layout_marginStart="14dp"
         android:layout_marginTop="10dp"
         android:background="#00FFFFFF"
-        android:onClick="goToProfile"
+        android:contentDescription="@string/profile_buttonDesc"
         android:elevation="4dp"
+        android:onClick="goToProfile"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_proflle"
-        tools:ignore="RtlSymmetry,SpeakableTextPresentCheck,TouchTargetSizeCheck"
-        android:contentDescription="@string/profile_buttonDesc" />
+        tools:ignore="RtlSymmetry,SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
     <ImageButton
         android:id="@+id/settingsButton"
