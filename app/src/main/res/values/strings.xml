@@ -14,4 +14,6 @@
     <string name="profile_edit_desc">Profile Edit</string>
     <string name="save_btn_txt">Save</string>
     <string name="save_button_desc">Save Button</string>
+    <string name="name_hint">Name</string>
+    <string name="bio_hint">Bio</string>
 </resources>
