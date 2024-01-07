@@ -16,4 +16,5 @@
     <string name="save_button_desc">Save Button</string>
     <string name="name_hint">Name</string>
     <string name="bio_hint">Bio</string>
+    <string name="upload_image_button_desc">Upload Image Button</string>
 </resources>

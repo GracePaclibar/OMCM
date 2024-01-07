@@ -34,9 +34,9 @@
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:contentDescription="@string/profile_pictureDesc"
-        android:elevation="4dp"
         app:layout_constraintBottom_toBottomOf="@+id/profilePicBackground"
         app:layout_constraintEnd_toEndOf="@+id/profilePicBackground"
+        app:layout_constraintHorizontal_bias="0.52"
         app:layout_constraintStart_toStartOf="@+id/profilePicBackground"
         app:layout_constraintTop_toTopOf="@+id/profilePicBackground"
         app:srcCompat="@drawable/profile_empty" />
@@ -142,5 +142,17 @@
         android:text="@string/bio_hint"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/uploadImageBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#00FFFFFF"
+        app:layout_constraintBottom_toBottomOf="@+id/profilePicBackground"
+        app:layout_constraintEnd_toEndOf="@+id/profilePicBackground"
+        app:layout_constraintStart_toStartOf="@+id/profilePicBackground"
+        app:layout_constraintTop_toTopOf="@+id/profilePicBackground"
+        app:srcCompat="@drawable/ic_camera"
+        android:contentDescription="@string/upload_image_button_desc" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
