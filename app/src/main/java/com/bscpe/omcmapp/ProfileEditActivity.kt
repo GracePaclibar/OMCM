@@ -33,7 +33,7 @@ class ProfileEditActivity : AppCompatActivity() {
     }
 
     fun goToProfile(view: View) {
-        val intent = Intent(this,ProfileActivity::class.java)
+        val intent = Intent(this, ProfileActivity::class.java)
         startActivity(intent)
 
         val options = ActivityOptions.makeCustomAnimation(this,
