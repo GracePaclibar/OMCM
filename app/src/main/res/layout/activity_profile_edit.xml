@@ -39,7 +39,7 @@
         app:layout_constraintHorizontal_bias="0.52"
         app:layout_constraintStart_toStartOf="@+id/profilePicBackground"
         app:layout_constraintTop_toTopOf="@+id/profilePicBackground"
-        app:srcCompat="@drawable/profile_empty" />
+        app:srcCompat="@drawable/pfp_1" />
 
     <TextView
         android:id="@+id/profile_label"

@@ -5,14 +5,20 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class ProfileEditActivity : AppCompatActivity() {
 
     private lateinit var sharedPreferences: SharedPreferences
+    lateinit var profilePicImageView: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +36,56 @@ class ProfileEditActivity : AppCompatActivity() {
         val editTextBio = findViewById<EditText>(R.id.bio_text)
         editTextBio.setText(savedUserBio)
 
+        profilePicImageView = findViewById(R.id.profilePic)
+
+        val uploadImageBtn: ImageButton = findViewById(R.id.uploadImageBtn)
+        uploadImageBtn.setOnClickListener {
+            showImageOptionsPopup()
+        }
+
+    }
+
+    private fun showImageOptionsPopup() {
+        val popupView = layoutInflater.inflate(R.layout.image_options_popup, null)
+        val popupWindow = PopupWindow(
+            popupView,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+
+        // ImageButtons inside the popup and their onClickListener
+        val pfp1Btn: ImageButton = popupView.findViewById(R.id.pfp1_btn)
+        val pfp2Btn: ImageButton = popupView.findViewById(R.id.pfp2_btn)
+        val pfp3Btn: ImageButton = popupView.findViewById(R.id.pfp3_btn)
+        val pfp4Btn: ImageButton = popupView.findViewById(R.id.pfp4_btn)
+
+        pfp1Btn.setOnClickListener {
+            // Update profilePic ImageView with the desired image for option 1
+            profilePicImageView.setImageResource(R.drawable.pfp_1)
+            popupWindow.dismiss()
+        }
+
+        pfp2Btn.setOnClickListener {
+            // Update profilePic ImageView with the desired image for option 2
+            profilePicImageView.setImageResource(R.drawable.pfp_2)
+            popupWindow.dismiss()
+        }
+
+        pfp3Btn.setOnClickListener {
+            // Update profilePic ImageView with the desired image for option 1
+            profilePicImageView.setImageResource(R.drawable.pfp_3)
+            popupWindow.dismiss()
+        }
+
+        pfp4Btn.setOnClickListener {
+            // Update profilePic ImageView with the desired image for option 2
+            profilePicImageView.setImageResource(R.drawable.pfp_4)
+            popupWindow.dismiss()
+        }
+
+        // Show the popup at the location of uploadImageBtn
+        val uploadImageBtn: ImageButton = findViewById(R.id.uploadImageBtn)
+        popupWindow.showAtLocation(uploadImageBtn, Gravity.CENTER, 0, 0)
     }
 
     fun goToProfile(view: View) {

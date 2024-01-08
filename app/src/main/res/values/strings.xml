@@ -17,4 +17,8 @@
     <string name="name_hint">Name</string>
     <string name="bio_hint">Bio</string>
     <string name="upload_image_button_desc">Upload Image Button</string>
+    <string name="profile_pic_1_desc">Profile Pic 1</string>
+    <string name="profile_pic_2_desc">Profile Pic 2</string>
+    <string name="profile_pic_3_desc">Profile Pic 3</string>
+    <string name="profile_pic_4_desc">Profile Pic 4</string>
 </resources>

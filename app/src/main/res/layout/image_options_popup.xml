@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#00FFFFFF">
+
+    <ImageButton
+        android:id="@+id/pfp4_btn"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="90dp"
+        android:layout_marginBottom="266dp"
+        android:adjustViewBounds="true"
+        android:background="@color/highlight"
+        android:contentDescription="@string/profile_pic_1_desc"
+        android:padding="4dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/pfp3_btn"
+        app:layout_constraintTop_toBottomOf="@+id/pfp2_btn"
+        app:srcCompat="@drawable/pfp_4" />
+
+    <ImageButton
+        android:id="@+id/pfp2_btn"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="225dp"
+        android:layout_marginEnd="90dp"
+        android:layout_marginBottom="1dp"
+        android:adjustViewBounds="true"
+        android:background="@color/highlight"
+        android:contentDescription="@string/profile_pic_2_desc"
+        android:padding="4dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toTopOf="@+id/pfp4_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/pfp1_btn"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/pfp_2" />
+
+    <ImageButton
+        android:id="@+id/pfp3_btn"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:layout_marginStart="81dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="266dp"
+        android:adjustViewBounds="true"
+        android:background="@color/highlight"
+        android:contentDescription="@string/profile_pic_3_desc"
+        android:padding="4dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/pfp4_btn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pfp1_btn"
+        app:srcCompat="@drawable/pfp_3" />
+
+    <ImageButton
+        android:id="@+id/pfp1_btn"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:layout_marginStart="81dp"
+        android:layout_marginTop="225dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="1dp"
+        android:adjustViewBounds="true"
+        android:background="@color/highlight"
+        android:contentDescription="@string/profile_pic_4_desc"
+        android:padding="4dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toTopOf="@+id/pfp3_btn"
+        app:layout_constraintEnd_toStartOf="@+id/pfp2_btn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/pfp_1" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
