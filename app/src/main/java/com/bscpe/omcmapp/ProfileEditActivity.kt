@@ -18,7 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 class ProfileEditActivity : AppCompatActivity() {
 
     private lateinit var sharedPreferences: SharedPreferences
-    lateinit var profilePicImageView: ImageView
+    private lateinit var profilePicImageView: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -51,6 +51,7 @@
         android:background="#00FFFFFF"
         android:contentDescription="@string/settings_buttonDesc"
         android:elevation="4dp"
+        android:onClick="goToSettings"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_setting"

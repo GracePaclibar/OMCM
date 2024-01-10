@@ -26,6 +26,17 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent, options.toBundle())
     }
 
+    fun goToSettings(view: View) {
+        val intent = Intent(this, SettingsActivity::class.java)
+
+        val options = ActivityOptions.makeCustomAnimation(this,
+            R.anim.slide_enter_right, //Enter animation
+            R.anim.slide_exit_left //Exit animation
+        )
+
+        startActivity(intent, options.toBundle())
+    }
+
 //   //Displays Menu Bar
 //    override fun onCreateOptionsMenu(menu: Menu): Boolean {
 //        val inflater: MenuInflater = menuInflater
