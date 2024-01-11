@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical"
+    android:theme="@style/ThemeOverlay.AppCompat.Light"
+    tools:layout_editor_absoluteX="0dp"
+    tools:layout_editor_absoluteY="60dp">
+
+    <View
+        android:id="@+id/top"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/main"
+        android:elevation="4dp"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/profilePicBackground"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginStart="104dp"
+        android:layout_marginTop="92dp"
+        android:background="@color/detail"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/profilePic"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:contentDescription="@string/profile_pictureDesc"
+        app:layout_constraintBottom_toBottomOf="@+id/profilePicBackground"
+        app:layout_constraintEnd_toEndOf="@+id/profilePicBackground"
+        app:layout_constraintHorizontal_bias="0.52"
+        app:layout_constraintStart_toStartOf="@+id/profilePicBackground"
+        app:layout_constraintTop_toTopOf="@+id/profilePicBackground"
+        app:srcCompat="@drawable/pfp_1" />
+
+    <TextView
+        android:id="@+id/profile_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:contentDescription="@string/profile_pageDesc"
+        android:elevation="4dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="@string/profile_edit_desc"
+        android:textColor="@color/highlight"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/back_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="10dp"
+        android:background="#00FFFFFF"
+        android:contentDescription="@string/back_buttonDesc"
+        android:elevation="4dp"
+        android:onClick="goToProfile"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_back"
+        tools:ignore="TouchTargetSizeCheck,ImageContrastCheck,RedundantDescriptionCheck" />
+
+    <ImageButton
+        android:id="@+id/save_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="14dp"
+        android:background="#00FFFFFF"
+        android:contentDescription="@string/save_button_desc"
+        android:elevation="4dp"
+        android:onClick="saveEdit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_save"
+        tools:ignore="ImageContrastCheck,RedundantDescriptionCheck,TouchTargetSizeCheck" />
+
+
+    <EditText
+        android:id="@+id/name_text"
+        android:layout_width="300dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="340dp"
+        android:ems="10"
+        android:enabled="true"
+        android:fontFamily="sans-serif"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:textColor="@color/highlight"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.513"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="LabelFor,SpeakableTextPresentCheck" />
+
+    <EditText
+        android:id="@+id/bio_text"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="428dp"
+        android:ems="10"
+        android:enabled="true"
+        android:fontFamily="sans-serif"
+        android:gravity="start|top"
+        android:importantForAutofill="no"
+        android:inputType="textMultiLine"
+        android:maxLines="2"
+        android:textColor="@color/highlight"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.513"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="LabelFor,TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+
+    <TextView
+        android:id="@+id/name_hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="320dp"
+        android:text="@string/name_hint"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/bio_hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="408dp"
+        android:text="@string/bio_hint"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/uploadImageBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#00FFFFFF"
+        app:layout_constraintBottom_toBottomOf="@+id/profilePicBackground"
+        app:layout_constraintEnd_toEndOf="@+id/profilePicBackground"
+        app:layout_constraintStart_toStartOf="@+id/profilePicBackground"
+        app:layout_constraintTop_toTopOf="@+id/profilePicBackground"
+        app:srcCompat="@drawable/ic_camera"
+        android:contentDescription="@string/upload_image_button_desc" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
