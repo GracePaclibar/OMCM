@@ -36,6 +36,20 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent, options.toBundle())
     }
 
+    fun goToConsumptions(view: View) {
+        val intent = Intent(this, wConsumptionsActivity::class.java)
+
+        val options = ActivityOptions.makeCustomAnimation(this,
+            R.anim.slide_enter_bottom,
+            R.anim.slide_exit_top
+        )
+
+        startActivity(intent, options.toBundle())
+    }
+    fun goToSensors(view: View) {
+
+    }
+
 //   //Displays Menu Bar
 //    override fun onCreateOptionsMenu(menu: Menu): Boolean {
 //        val inflater: MenuInflater = menuInflater
