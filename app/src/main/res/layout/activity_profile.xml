@@ -65,7 +65,7 @@
         android:layout_marginTop="15dp"
         android:contentDescription="@string/profile_pageDesc"
         android:elevation="4dp"
-        android:fontFamily="sans-serif-medium"
+        android:fontFamily="@font/inter_bold"
         android:text="@string/profile_label"
         android:textColor="@color/highlight"
         android:textSize="20sp"
