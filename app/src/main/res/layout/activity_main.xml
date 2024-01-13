@@ -122,6 +122,7 @@
         android:background="#00FFFFFF"
         android:contentDescription="@string/scan_tab_desc"
         android:elevation="4dp"
+        android:onClick="openCamera"
         android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/bot"
