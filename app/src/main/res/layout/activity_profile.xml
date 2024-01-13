@@ -132,5 +132,17 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="LabelFor,TouchTargetSizeCheck" />
 
+    <ImageView
+        android:id="@+id/camTest"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="36dp"
+        android:importantForAccessibility="no"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bio_text"
+        tools:srcCompat="@tools:sample/avatars" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

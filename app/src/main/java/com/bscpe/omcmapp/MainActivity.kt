@@ -1,24 +1,55 @@
 package com.bscpe.omcmapp
 
 import android.app.ActivityOptions
+import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.view.View
 import android.widget.ImageButton
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import java.io.File
+import java.io.FileOutputStream
 
 class MainActivity : AppCompatActivity() {
 
     private val takePictureLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
-                // The image capture was successful
-                // You can handle the captured image here
+                val imageBitmap = result.data?.extras?.get("data") as Bitmap?
+                if (imageBitmap != null) {
+                    // Save the image to external storage
+                    val imageUri = saveImageToExternalStorage(imageBitmap)
+
+                    // Save the image URI to SharedPreferences
+                    val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+                    val editor = sharedPreferences.edit()
+                    editor.putString("imageUri", imageUri.toString())
+                    editor.apply()
+
+                    // Pass the image URI to the second activity
+                    val intent = Intent(this, ProfileActivity::class.java)
+                    intent.putExtra("imageUri", imageUri.toString())
+                    startActivity(intent)
+                }
             }
         }
+
+    private fun saveImageToExternalStorage(image: Bitmap): Uri {
+        val imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+        val imageFile = File(imagesDir, "image_${System.currentTimeMillis()}.jpg")
+
+        FileOutputStream(imageFile).use { fos ->
+            image.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+        }
+
+        return Uri.fromFile(imageFile)
+    }
 
     // Connects activity_main.xml
     override fun onCreate(savedInstanceState: Bundle?) {
