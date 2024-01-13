@@ -33,7 +33,7 @@ class ProfileActivity : AppCompatActivity() {
         editTextBio.setText(savedUserBio)
 
         // Find image container
-        val imageView = findViewById<ImageView>(R.id.camTest)
+        val imageView = findViewById<ImageView>(R.id.image1)
 
         // Retrieve the image URI from SharedPreferences
         val imageUriString = sharedPreferences.getString("imageUri", null)
