@@ -11,9 +11,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         tools:targetApi="31">
-
         <activity
-            android:name=".MainActivity"
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,12 +20,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ProfileActivity"
-            android:label="Profile"/>
-        <activity android:name=".ProfileEditActivity"
-            android:label="ProfileEdit"/>
-        <activity android:name=".SettingsActivity"
-            android:label="Settings"/>
+        <activity
+            android:name=".SignUpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProfileActivity"
+            android:label="Profile" />
+        <activity
+            android:name=".ProfileEditActivity"
+            android:label="ProfileEdit" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="Settings" />
 
         <meta-data
             android:name="preloaded_fonts"
