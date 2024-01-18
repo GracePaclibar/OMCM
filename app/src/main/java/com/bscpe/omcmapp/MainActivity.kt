@@ -27,10 +27,7 @@ class MainActivity : AppCompatActivity() {
                     val imageUri = saveImageToExternalStorage(imageBitmap)
 
                     // Save the image URI to SharedPreferences
-                    val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-                    val editor = sharedPreferences.edit()
-                    editor.putString("imageUri", imageUri.toString())
-                    editor.apply()
+                    saveImageUriToSharedPreferences(imageUri)
 
                     // Pass the image URI to the second activity
                     val intent = Intent(this, ProfileActivity::class.java)
@@ -40,15 +37,40 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-    private fun saveImageToExternalStorage(image: Bitmap): Uri {
-        val imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-        val imageFile = File(imagesDir, "image_${System.currentTimeMillis()}.jpg")
+    private fun saveImageToExternalStorage(image: Bitmap): Uri? {
+        val imagesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        imagesDir?.let {
+            val imageFile = File(it, "image_${System.currentTimeMillis()}.jpg")
 
-        FileOutputStream(imageFile).use { fos ->
-            image.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+            FileOutputStream(imageFile).use { fos ->
+                image.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+            }
+
+            return Uri.fromFile(imageFile)
         }
+        return null
+    }
 
-        return Uri.fromFile(imageFile)
+    private fun saveImageUriToSharedPreferences(imageUri: Uri?) {
+        if (imageUri != null) {
+            val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+
+            // Retrieve the current count of saved images
+            val imageCount = sharedPreferences.getInt("imageCount", 0)
+
+            // Increment the count
+            val newImageCount = imageCount + 1
+
+            // Save the new count
+            val editor = sharedPreferences.edit()
+            editor.putInt("imageCount", newImageCount)
+
+            // Save the new image URI
+            editor.putString("imageUri_$newImageCount", imageUri.toString())
+
+            // Apply the changes
+            editor.apply()
+        }
     }
 
     // Connects activity_main.xml

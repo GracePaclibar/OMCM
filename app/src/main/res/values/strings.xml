@@ -46,4 +46,5 @@
     <string name="energy_page_desc">Energy consumption page</string>
     <string name="energy_consumption_text">Energy Consumption</string>
     <string name="water_btn_desc">Water consumptions button</string>
+    <string name="gallery_text">Gallery</string>
 </resources>
