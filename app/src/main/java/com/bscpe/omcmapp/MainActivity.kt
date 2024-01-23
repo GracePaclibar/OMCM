@@ -1,8 +1,10 @@
 package com.bscpe.omcmapp
 
+import android.Manifest
 import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
@@ -10,13 +12,18 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.view.View
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import java.io.File
 import java.io.FileOutputStream
 
 class MainActivity : AppCompatActivity() {
+
+    private val CAMERA_PERMISSION_REQUEST_CODE = 1001
 
     private val takePictureLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -122,13 +129,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openCamera() {
-        val captureImageIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-
-        if (captureImageIntent.resolveActivity(packageManager) != null) {
-            takePictureLauncher.launch(captureImageIntent)
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            // The CAMERA permission is already granted, proceed with opening the camera.
+            val captureImageIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            if (captureImageIntent.resolveActivity(packageManager) != null) {
+                takePictureLauncher.launch(captureImageIntent)
+            } else {
+                // Handle the case where no camera app is available
+                // You can display a message or take alternative actions
+                Toast.makeText(this, "it didnt work", Toast.LENGTH_SHORT).show()
+            }
         } else {
-            // Handle the case where no camera app is available
-            // You can display a message or take alternative actions
+            // Request CAMERA permission at runtime
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.CAMERA),
+                CAMERA_PERMISSION_REQUEST_CODE
+            )
         }
     }
 
