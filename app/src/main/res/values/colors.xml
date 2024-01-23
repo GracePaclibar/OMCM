@@ -15,4 +15,5 @@
     <color name="highlight">#435334</color>
     <color name="detail">#CEDEBD</color>
     <color name="background">#FAF1E4</color>
+    <color name="transparent">#00FFFFFF</color>
 </resources>
