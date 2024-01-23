@@ -12,31 +12,24 @@
     <View
         android:id="@+id/top"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="60dp"
         android:background="@color/main"
         android:elevation="4dp"
-        app:layout_constraintTop_toTopOf="parent"/>
-
-    <View
-        android:id="@+id/profilePicBackground"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_marginStart="104dp"
-        android:layout_marginTop="92dp"
-        android:background="@color/detail"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/edit_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="5dp"
         android:background="#00FFFFFF"
         android:contentDescription="@string/edit_button_desc"
         android:elevation="4dp"
         android:onClick="goToProfileEdit"
+        android:padding="5dp"
+        app:layout_constraintBottom_toBottomOf="@+id/top"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/edit"
@@ -46,14 +39,18 @@
         android:id="@+id/back_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="14dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         android:background="#00FFFFFF"
         android:contentDescription="@string/back_buttonDesc"
         android:elevation="4dp"
         android:onClick="goToMain"
+        android:padding="5dp"
+        app:layout_constraintBottom_toBottomOf="@+id/top"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5"
         app:srcCompat="@drawable/ic_back"
         tools:ignore="TouchTargetSizeCheck,ImageContrastCheck,RedundantDescriptionCheck" />
 
@@ -62,13 +59,15 @@
         android:id="@+id/profile_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         android:contentDescription="@string/profile_pageDesc"
         android:elevation="4dp"
-        android:fontFamily="sans-serif-medium"
+        android:fontFamily="@font/inter_bold"
         android:text="@string/profile_label"
         android:textColor="@color/highlight"
         android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/top"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -79,12 +78,24 @@
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:contentDescription="@string/profile_pictureDesc"
+        android:elevation="4dp"
         app:layout_constraintBottom_toBottomOf="@+id/profilePicBackground"
         app:layout_constraintEnd_toEndOf="@+id/profilePicBackground"
         app:layout_constraintStart_toStartOf="@+id/profilePicBackground"
         app:layout_constraintTop_toTopOf="@+id/profilePicBackground"
-        app:srcCompat="@drawable/pfp_1"
-        android:elevation="4dp"/>
+        app:srcCompat="@drawable/pfp_1" />
+
+    <View
+        android:id="@+id/profilePicBackground"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginStart="80dp"
+        android:layout_marginTop="92dp"
+        android:layout_marginEnd="80dp"
+        android:background="@color/detail"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/name_text"
@@ -122,6 +133,47 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="LabelFor,TouchTargetSizeCheck" />
+
+    <TextView
+        android:id="@+id/galleryLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/inter_light"
+        android:text="@string/gallery_text"
+        android:textColor="@color/highlight"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bio_text" />
+
+    <HorizontalScrollView
+        android:id="@+id/horizontalScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="325dp"
+        android:layout_marginTop="50dp"
+        android:background="@color/white"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:paddingStart="5dp"
+        android:elevation="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bio_text"
+        tools:ignore="RtlSymmetry">
+
+        <LinearLayout
+            android:id="@+id/imageContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bio_text"
+            tools:ignore="ScrollViewSize" />
+
+    </HorizontalScrollView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

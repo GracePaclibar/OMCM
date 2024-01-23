@@ -9,15 +9,6 @@
     android:background="@color/background"
     android:theme="@style/ThemeOverlay.AppCompat.Light">
 
-    <CalendarView
-        android:id="@+id/calendarView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:background="@color/white"
-        app:layout_constraintTop_toBottomOf="@+id/top"
-        tools:layout_editor_absoluteX="0dp" />
-
     <View
         android:id="@+id/top"
         android:layout_width="match_parent"
@@ -30,39 +21,57 @@
         tools:ignore="MissingConstraints" />
 
     <ImageButton
-        android:id="@+id/profileButton"
+        android:id="@+id/back_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="5dp"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
         android:background="#00FFFFFF"
-        android:contentDescription="@string/profile_buttonDesc"
+        android:contentDescription="@string/back_buttonDesc"
         android:elevation="4dp"
-        android:onClick="goToProfile"
+        android:onClick="goToMain"
         android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="@+id/top"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_proflle"
-        tools:ignore="RtlSymmetry,SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+        app:layout_constraintVertical_bias="0.5"
+        app:srcCompat="@drawable/ic_back"
+        tools:ignore="TouchTargetSizeCheck,ImageContrastCheck,RedundantDescriptionCheck" />
+
+    <TextView
+        android:id="@+id/e_consumption_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:contentDescription="@string/energy_page_desc"
+        android:elevation="4dp"
+        android:fontFamily="@font/inter_bold"
+        android:text="@string/energy_consumption_text"
+        android:textColor="@color/highlight"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/top"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/settingsButton"
+        android:id="@+id/waterBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="5dp"
         android:background="#00FFFFFF"
-        android:contentDescription="@string/settings_buttonDesc"
+        android:contentDescription="@string/water_btn_desc"
         android:elevation="4dp"
-        android:onClick="goToSettings"
+        android:onClick="goToWater"
         android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="@+id/top"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_setting"
+        app:srcCompat="@drawable/ic_water"
         tools:ignore="TouchTargetSizeCheck" />
 
     <View
@@ -86,7 +95,6 @@
         android:background="#00FFFFFF"
         android:contentDescription="@string/consumption_tab_desc"
         android:elevation="4dp"
-        android:onClick="goToConsumptions"
         android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -122,7 +130,6 @@
         android:background="#00FFFFFF"
         android:contentDescription="@string/scan_tab_desc"
         android:elevation="4dp"
-        android:onClick="openCamera"
         android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/bot"

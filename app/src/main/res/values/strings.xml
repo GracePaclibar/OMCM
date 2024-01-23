@@ -37,4 +37,14 @@
     <string name="credits_text">Credits/Licences</string>
     <string name="data_text">Data</string>
     <string name="version_info_text">Version Info</string>
+    <string name="consumption_tab_desc">Water and energy consumption tab button</string>
+    <string name="scan_tab_desc">Scan tab button</string>
+    <string name="sensors_tab_desc">Sensors tab button</string>
+    <string name="energy_tab_desc">Energy consumptions tab</string>
+    <string name="water_consumption_text">Water Consumption</string>
+    <string name="water_page_desc">Water consumption page</string>
+    <string name="energy_page_desc">Energy consumption page</string>
+    <string name="energy_consumption_text">Energy Consumption</string>
+    <string name="water_btn_desc">Water consumptions button</string>
+    <string name="gallery_text">Gallery</string>
 </resources>
