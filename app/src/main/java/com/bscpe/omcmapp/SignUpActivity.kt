@@ -1,10 +1,14 @@
 package com.bscpe.omcmapp
 
+import android.content.ContentValues.TAG
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import com.bscpe.omcmapp.databinding.ActivitySignUpBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -17,10 +21,14 @@ class SignUpActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignUpBinding
     private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
+    private lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySignUpBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
+        auth = Firebase.auth
 
         firebaseDatabase = FirebaseDatabase.getInstance()
         databaseReference = firebaseDatabase.reference.child("users")
@@ -30,7 +38,22 @@ class SignUpActivity : AppCompatActivity() {
             val signupPassword = binding.signupPassword.text.toString()
 
             if (signupUsername.isNotEmpty() && signupPassword.isNotEmpty()){
-                signupUser(signupUsername, signupPassword)
+                //signupUser(signupUsername, signupPassword)
+                auth.createUserWithEmailAndPassword(signupUsername, signupPassword)
+                    .addOnCompleteListener(this) { task ->
+                        if (task.isSuccessful) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "createUserWithEmail:success")
+                            val user = auth.currentUser
+                            Toast.makeText(this@SignUpActivity, "Signup Successful!", Toast.LENGTH_SHORT).show()
+                            startActivity(Intent(this@SignUpActivity, LoginActivity::class.java))
+                            finish()
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "createUserWithEmail:failure", task.exception)
+                            Toast.makeText(this@SignUpActivity, "User already exists!", Toast.LENGTH_SHORT).show()
+                        }
+                    }
             } else {
                 Toast.makeText(this@SignUpActivity, "All fields are required.", Toast.LENGTH_SHORT).show()
             }
@@ -38,6 +61,17 @@ class SignUpActivity : AppCompatActivity() {
 
         binding.loginRedirect.setOnClickListener {
             startActivity(Intent(this@SignUpActivity, LoginActivity::class.java))
+        }
+    }
+
+    public override fun onStart() {
+        super.onStart()
+        // Check if user is signed in (non-null) and update UI accordingly.
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            Toast.makeText(this@SignUpActivity, "Signup Successful!", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this@SignUpActivity, LoginActivity::class.java))
+            finish()
         }
     }
 
