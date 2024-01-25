@@ -115,7 +115,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun goToConsumptions(view: View) {
-        val intent = Intent(this, wConsumptionsActivity::class.java)
+        val intent = Intent(this, DashboardActivity::class.java)
 
         val options = ActivityOptions.makeCustomAnimation(this,
             R.anim.slide_enter_bottom,
