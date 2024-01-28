@@ -86,9 +86,8 @@ class ProfileActivity : AppCompatActivity() {
                     true
                 }
 
-                // Add ImageView to the list and the container layout
-                imageViews.add(imageView)
-                imageContainer.addView(imageView)
+                // Add ImageView to the left side of the container layout
+                imageContainer.addView(imageView, 0) // Adding at index 0 places it at the beginning
             }
         }
     }
