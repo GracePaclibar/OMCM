@@ -24,49 +24,66 @@
         android:inputType="text" />
 
     <EditText
+        android:id="@+id/signupUsernameFr"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/edittext_border"
+        android:hint="Username"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:padding="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signupUsername" />
+
+    <EditText
         android:id="@+id/signupPassword"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="16dp"
         android:background="@drawable/edittext_border"
         android:hint="Password"
+        android:importantForAutofill="no"
         android:inputType="textPassword"
         android:padding="12dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signupUsername"
-        app:layout_constraintBottom_toTopOf="@id/signupButton"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="30dp"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toBottomOf="@+id/signupUsernameFr" />
 
     <Button
         android:id="@+id/signupButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="43dp"
+        android:layout_marginEnd="16dp"
         android:background="@drawable/button"
         android:text="Sign Up"
         android:textColor="@color/colorPrimaryDark"
-        android:layout_marginTop="50dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/loginRedirect"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/signupPassword"/>
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signupPassword" />
 
     <TextView
         android:id="@+id/loginRedirect"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Already registered? Sign In"
-        android:textSize="18sp"
+        android:layout_marginTop="30dp"
         android:gravity="center"
+        android:text="Already registered? Sign In"
         android:textColor="@color/colorPrimaryDark"
-        android:layout_marginTop="70dp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/signupButton"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/signupButton" />
 
     <ImageView
         android:id="@+id/signupLogo"
