@@ -10,9 +10,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.bscpe.omcmapp" />
-                  <option name="mobileSdkAppId" value="1:292939474851:android:b6e282ca7d58d4a9035c16" />
-                  <option name="projectId" value="omcm-test" />
-                  <option name="projectNumber" value="292939474851" />
+                  <option name="mobileSdkAppId" value="1:922858828590:android:d5d75b07ec59dc1637c0bf" />
+                  <option name="projectId" value="omcm-mobile" />
+                  <option name="projectNumber" value="922858828590" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
