@@ -38,6 +38,11 @@ class ProfileEditActivity : AppCompatActivity() {
 
         profilePicImageView = findViewById(R.id.profilePic)
 
+        // Retrieve the saved resource ID of the selected image
+        val savedImageResId = sharedPreferences.getInt("selectedImageResId", R.drawable.pfp_1)
+        profilePicImageView.setImageResource(savedImageResId)
+
+        // Shows image options
         val uploadImageBtn: ImageButton = findViewById(R.id.uploadImageBtn)
         uploadImageBtn.setOnClickListener {
             showImageOptionsPopup()
@@ -60,24 +65,36 @@ class ProfileEditActivity : AppCompatActivity() {
         val pfp4Btn: ImageButton = popupView.findViewById(R.id.pfp4_btn)
 
         pfp1Btn.setOnClickListener {
+            // Save selected image resource ID to SharedPrefs
+            saveSelectedImageResId(R.drawable.pfp_1)
+
             // Update profilePic ImageView with the desired image for option 1
             profilePicImageView.setImageResource(R.drawable.pfp_1)
             popupWindow.dismiss()
         }
 
         pfp2Btn.setOnClickListener {
+            // Save selected image resource ID to SharedPrefs
+            saveSelectedImageResId(R.drawable.pfp_2)
+
             // Update profilePic ImageView with the desired image for option 2
             profilePicImageView.setImageResource(R.drawable.pfp_2)
             popupWindow.dismiss()
         }
 
         pfp3Btn.setOnClickListener {
+            // Save selected image resource ID to SharedPrefs
+            saveSelectedImageResId(R.drawable.pfp_3)
+
             // Update profilePic ImageView with the desired image for option 1
             profilePicImageView.setImageResource(R.drawable.pfp_3)
             popupWindow.dismiss()
         }
 
         pfp4Btn.setOnClickListener {
+            // Save selected image resource ID to SharedPrefs
+            saveSelectedImageResId(R.drawable.pfp_4)
+
             // Update profilePic ImageView with the desired image for option 2
             profilePicImageView.setImageResource(R.drawable.pfp_4)
             popupWindow.dismiss()
@@ -86,6 +103,12 @@ class ProfileEditActivity : AppCompatActivity() {
         // Show the popup at the location of uploadImageBtn
         val uploadImageBtn: ImageButton = findViewById(R.id.uploadImageBtn)
         popupWindow.showAtLocation(uploadImageBtn, Gravity.CENTER, 0, 0)
+    }
+
+    private fun saveSelectedImageResId(imageResId: Int) {
+        val editor = sharedPreferences.edit()
+        editor.putInt("selectedImageResId", imageResId)
+        editor.apply()
     }
 
     fun goToProfile(view: View) {

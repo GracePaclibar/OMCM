@@ -90,6 +90,13 @@ class ProfileActivity : AppCompatActivity() {
                 imageContainer.addView(imageView, 0) // Adding at index 0 places it at the beginning
             }
         }
+
+        // Retrieve chosen Profile Picture
+        val savedImageResId = sharedPreferences.getInt("selectedImageResId", R.drawable.pfp_1)
+        val profilePicImageView = findViewById<ImageView>(R.id.profilePic)
+
+        profilePicImageView.setImageResource(savedImageResId)
+
     }
 
     private fun showDeleteConfirmationDialog(imageUri: Uri, imageView: ImageView){

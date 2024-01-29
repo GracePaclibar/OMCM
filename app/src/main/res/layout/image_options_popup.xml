@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#00FFFFFF">
+    android:background="#80696969"
+    android:elevation="5dp">
 
     <ImageButton
         android:id="@+id/pfp4_btn"
