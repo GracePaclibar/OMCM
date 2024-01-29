@@ -48,4 +48,6 @@
     <string name="water_btn_desc">Water consumptions button</string>
     <string name="gallery_text">Gallery</string>
     <string name="delete_text">Delete</string>
+    <string name="system_configs_tab_desc">System Configs Tab</string>
+    <string name="user_uid">MgubOy9MW1OauZ6skvz0g8des2u1</string>
 </resources>

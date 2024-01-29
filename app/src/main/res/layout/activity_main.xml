@@ -105,17 +105,16 @@
         android:onClick="goToSensors"
         android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/scan_tab"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/consumption_tab"
         app:layout_constraintTop_toTopOf="@+id/bot"
+        app:layout_constraintEnd_toStartOf="@id/sysConfig_tab"
         app:layout_constraintVertical_bias="0.5"
         app:srcCompat="@drawable/ic_sensor" />
 
     <ImageButton
         android:id="@+id/scan_tab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="49dp"
+        android:layout_height="50dp"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="5dp"
@@ -128,6 +127,23 @@
         app:layout_constraintEnd_toEndOf="@+id/bot"
         app:layout_constraintTop_toTopOf="@+id/bot"
         app:srcCompat="@drawable/ic_scan" />
+
+    <ImageButton
+        android:id="@+id/sysConfig_tab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="#00FFFFFF"
+        android:contentDescription="@string/system_configs_tab_desc"
+        android:elevation="4dp"
+        android:onClick="openSysConfig"
+        android:padding="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/scan_tab"
+        app:layout_constraintStart_toEndOf="@id/sensors_tab"
+        app:layout_constraintTop_toTopOf="@+id/bot"
+        app:srcCompat="@drawable/ic_config" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
