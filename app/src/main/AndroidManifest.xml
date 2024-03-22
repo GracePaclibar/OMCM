@@ -64,6 +64,9 @@
         <activity
             android:name=".SystemConfigActivity"
             android:label="System Configurations" />
+        <activity
+            android:name=".FeedbacksActivity"
+            android:label="Feedbacks Page" />
 
         <meta-data
             android:name="preloaded_fonts"
