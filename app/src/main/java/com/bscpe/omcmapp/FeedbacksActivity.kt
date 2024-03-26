@@ -8,7 +8,6 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.FirebaseApp
-import com.google.firebase.database.FirebaseDatabase
 
 
 class FeedbacksActivity : AppCompatActivity(){
@@ -32,22 +31,25 @@ class FeedbacksActivity : AppCompatActivity(){
         val feedback = feedbackEditText.text.toString()
 
         if (feedback.isNotEmpty() && email.isNotEmpty()) {
-            val databaseRef = FirebaseDatabase.getInstance().reference
+            val subject = "Feedback from $email"
+            val message = feedback
 
-            // appending a child path for feedback and email to set value
-            val feedbackRef = databaseRef.child("Feedbacks").push() //generates UID for feedback
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "message/rfc822"
+                putExtra(Intent.EXTRA_EMAIL, arrayOf("smarthydra16@gmail.com"))
+                putExtra(Intent.EXTRA_SUBJECT, subject)
+                putExtra(Intent.EXTRA_TEXT, message)
 
-            // hashmap for email and feedback
-            val feedbackData = HashMap<String, Any>()
-            feedbackData["feedback"] = feedback
-            feedbackData["email"] = email
+                feedbackEditText.text.clear()
+                feedbackEmailEditText.text.clear()
+            }
 
-            feedbackRef.setValue(feedbackData)
+            try {
+                startActivity(Intent.createChooser(intent, "Please select an email client"))
 
-            feedbackEditText.text.clear()
-            feedbackEmailEditText.text.clear()
-
-            Toast.makeText(this, "Thank you for your feedback!", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Toast.makeText(this, "Failed to open email client.", Toast.LENGTH_SHORT).show()
+            }
         }
         else if (email.isEmpty()) {
             Toast.makeText(this, "Please enter your email.", Toast.LENGTH_SHORT).show()
@@ -56,6 +58,36 @@ class FeedbacksActivity : AppCompatActivity(){
             Toast.makeText(this, "Please enter your feedback.", Toast.LENGTH_SHORT).show()
         }
     }
+
+//    fun sendFeedback(view : View) {
+//        val email = feedbackEmailEditText.text.toString()
+//        val feedback = feedbackEditText.text.toString()
+//
+//        if (feedback.isNotEmpty() && email.isNotEmpty()) {
+//            val databaseRef = FirebaseDatabase.getInstance().reference
+//
+//            // appending a child path for feedback and email to set value
+//            val feedbackRef = databaseRef.child("Feedbacks").push() //generates UID for feedback
+//
+//            // hashmap for email and feedback
+//            val feedbackData = HashMap<String, Any>()
+//            feedbackData["feedback"] = feedback
+//            feedbackData["email"] = email
+//
+//            feedbackRef.setValue(feedbackData)
+//
+//            feedbackEditText.text.clear()
+//            feedbackEmailEditText.text.clear()
+//
+//            Toast.makeText(this, "Thank you for your feedback!", Toast.LENGTH_SHORT).show()
+//        }
+//        else if (email.isEmpty()) {
+//            Toast.makeText(this, "Please enter your email.", Toast.LENGTH_SHORT).show()
+//        }
+//        else {
+//            Toast.makeText(this, "Please enter your feedback.", Toast.LENGTH_SHORT).show()
+//        }
+//    }
 
     fun goToSettings(view: View) {
         val intent = Intent(this, SettingsActivity::class.java)
