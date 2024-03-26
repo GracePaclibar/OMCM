@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "922858828590",
+    "firebase_url": "https://omcm-mobile-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "omcm-mobile",
+    "storage_bucket": "omcm-mobile.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:922858828590:android:d5d75b07ec59dc1637c0bf",
+        "android_client_info": {
+          "package_name": "com.bscpe.omcmapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrZDjN_-zXGWJZ9nkF8bEkZBurNWSCn_s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -18,6 +18,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.firebase.FirebaseApp
 import java.io.File
 import java.io.FileOutputStream
 
@@ -43,6 +44,20 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+    // Connects activity_main.xml
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        FirebaseApp.initializeApp(this)
+
+        val cameraButton = findViewById<ImageButton>(R.id.scan_tab)
+
+        cameraButton.setOnClickListener {
+            openCamera()
+        }
+    }
 
     private fun saveImageToExternalStorage(image: Bitmap): Uri? {
         val imagesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
@@ -77,18 +92,6 @@ class MainActivity : AppCompatActivity() {
 
             // Apply the changes
             editor.apply()
-        }
-    }
-
-    // Connects activity_main.xml
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        val cameraButton = findViewById<ImageButton>(R.id.scan_tab)
-
-        cameraButton.setOnClickListener {
-            openCamera()
         }
     }
 
