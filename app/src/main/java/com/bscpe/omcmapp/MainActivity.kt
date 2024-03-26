@@ -12,14 +12,19 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.view.View
 import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.firebase.FirebaseApp
 import java.io.File
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
@@ -43,6 +48,34 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+    // Connects activity_main.xml
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        FirebaseApp.initializeApp(this)
+
+       val cameraButton = findViewById<ImageButton>(R.id.scan_tab)
+
+        cameraButton.setOnClickListener {
+            openCamera()
+        }
+
+        // current date view
+        val currentDateTextView: TextView = findViewById(R.id.currentDate)
+
+        // getting year and month
+        val calendar = Calendar.getInstance()
+        val currentMonth = calendar.get(Calendar.MONTH) + 1 // Month starts from 0
+        val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
+        val currentYear = calendar.get(Calendar.YEAR)
+
+        val currentDate = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()).format(calendar.time)
+        // setting text to textView
+        currentDateTextView.text = currentDate
+
+    }
 
     private fun saveImageToExternalStorage(image: Bitmap): Uri? {
         val imagesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
@@ -77,18 +110,6 @@ class MainActivity : AppCompatActivity() {
 
             // Apply the changes
             editor.apply()
-        }
-    }
-
-    // Connects activity_main.xml
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        val cameraButton = findViewById<ImageButton>(R.id.scan_tab)
-
-        cameraButton.setOnClickListener {
-            openCamera()
         }
     }
 

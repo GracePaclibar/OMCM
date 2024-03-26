@@ -15,6 +15,7 @@
         android:maxSdkVersion="32"
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -64,6 +65,9 @@
         <activity
             android:name=".SystemConfigActivity"
             android:label="System Configurations" />
+        <activity
+            android:name=".FeedbacksActivity"
+            android:label="Feedbacks Page" />
 
         <meta-data
             android:name="preloaded_fonts"
