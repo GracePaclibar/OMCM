@@ -66,17 +66,13 @@ class SystemConfigActivity: AppCompatActivity() {
         )
 
         saveButton.setOnClickListener {
-            // Retrieve the current user UID from Firebase Authentication
             val currentUser = FirebaseAuth.getInstance().currentUser
             val userUid = currentUser?.uid
 
-            // Retrieve the SSID and password from EditText fields
             val ssid = ssidEditText.text.toString().trim()
             val password = passEditText.text.toString().trim()
 
-            // Check if SSID and password are not empty and user UID is not null
             if (ssid.isNotEmpty() && password.isNotEmpty() && userUid != null) {
-                // Create a WifiInfo object
                 val wifiInfo = WifiInfo(ssid, password, Wifi_Detected = false)
 
                 val capitalizedWifiInfo = mapOf(
@@ -85,20 +81,17 @@ class SystemConfigActivity: AppCompatActivity() {
                     "Wifi_Detected" to wifiInfo.Wifi_Detected
                 )
 
-                // Upload WifiInfo object to Firebase Realtime Database
+                // Upload WifiInfo to Realtime Database
                 val database = FirebaseDatabase.getInstance()
                 val wifiRouterRef = database.getReference("UsersData/$userUid/WiFI_Router")
                 wifiRouterRef.setValue(capitalizedWifiInfo)
                     .addOnSuccessListener {
-                        // Upload successful
                         Toast.makeText(this, "Wi-Fi info saved", Toast.LENGTH_SHORT).show()
                     }
                     .addOnFailureListener { e ->
-                        // Upload failed
                         Toast.makeText(this, "Failed to save: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
             } else {
-                // Handle case where SSID, password, or user UID is null
                 Toast.makeText(this, "Please enter both SSID and password", Toast.LENGTH_SHORT).show()
             }
         }
