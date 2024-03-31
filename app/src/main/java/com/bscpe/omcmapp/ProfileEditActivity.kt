@@ -14,6 +14,8 @@ import android.widget.ImageView
 import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 class ProfileEditActivity : AppCompatActivity() {
 
@@ -26,12 +28,15 @@ class ProfileEditActivity : AppCompatActivity() {
 
         sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
 
+        val nameEditText = findViewById<EditText>(R.id.name_text)
+        val bioEditText = findViewById<EditText>(R.id.bio_text)
+
         // Retrieve and set the saved user name to the EditText
         val savedUserName = sharedPreferences.getString("userName", "")
         val editTextName = findViewById<EditText>(R.id.name_text)
         editTextName.setText(savedUserName)
 
-        // Retrieve and set the saved user name to the EditText
+        // Retrieve and set the saved user bio to the EditText
         val savedUserBio = sharedPreferences.getString("userBio", "")
         val editTextBio = findViewById<EditText>(R.id.bio_text)
         editTextBio.setText(savedUserBio)
@@ -47,6 +52,52 @@ class ProfileEditActivity : AppCompatActivity() {
         uploadImageBtn.setOnClickListener {
             showImageOptionsPopup()
         }
+
+        val saveButton = findViewById<ImageButton>(R.id.save_btn)
+
+        data class UserInfo (
+            val Bio: String,
+            val Name: String
+        )
+
+        saveButton.setOnClickListener{
+            val currentUser = FirebaseAuth.getInstance().currentUser
+            val userUid = currentUser?.uid
+
+            val name = nameEditText.text.toString().trim()
+            val bio = bioEditText.text.toString().trim()
+
+            if (name.isEmpty()) {
+                Toast.makeText(this, "Please enter your name", Toast.LENGTH_SHORT).show()
+            } else {
+                val userInfo = UserInfo(bio, name)
+
+                val capitalizedUserInfo = mapOf (
+                    "Bio" to userInfo.Bio,
+                    "Name" to userInfo.Name
+                )
+
+                // upload to realtime db
+                val database = FirebaseDatabase.getInstance()
+                val profileRef = database.getReference("UsersData/$userUid/Profile")
+                profileRef.setValue(capitalizedUserInfo)
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Changes saved", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(this, "Saving failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+
+                val editor = sharedPreferences.edit()
+                editor.putString("userName", name)
+                editor.putString("userBio", bio)
+                editor.apply()
+
+                Toast.makeText(this, "Changes Saved", Toast.LENGTH_SHORT).show()
+
+            }
+        }
+
 
     }
 
@@ -122,19 +173,14 @@ class ProfileEditActivity : AppCompatActivity() {
         startActivity(intent, options.toBundle())
     }
 
-    fun saveEdit(view: View) {
-        val editTextName = findViewById<EditText>(R.id.name_text)
-        val editTextBio = findViewById<EditText>(R.id.bio_text)
-
-        val userName = editTextName.text.toString()
-        val userBio = editTextBio.text.toString()
-
-        val editor = sharedPreferences.edit()
-        editor.putString("userName", userName)
-        editor.putString("userBio", userBio)
-        editor.apply()
-
-        Toast.makeText(this, "Changes Saved", Toast.LENGTH_SHORT).show()
-    }
+//    fun saveEdit(view: View) {
+//        val editTextName = findViewById<EditText>(R.id.name_text)
+//        val editTextBio = findViewById<EditText>(R.id.bio_text)
+//
+//        val userName = editTextName.text.toString()
+//        val userBio = editTextBio.text.toString()
+//
+//
+//    }
 
 }

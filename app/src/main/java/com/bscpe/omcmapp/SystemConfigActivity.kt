@@ -44,8 +44,8 @@ class SystemConfigActivity: AppCompatActivity() {
         val ssidEditText = findViewById<EditText>(R.id.wifiSSID)
         val passEditText = findViewById<EditText>(R.id.wifiPassword)
 
-        val ssid = ssidEditText.text.toString().trim()
-        val password = passEditText.text.toString().trim()
+//        val ssid = ssidEditText.text.toString().trim()
+//        val password = passEditText.text.toString().trim()
 
         val savedSSID = sharedPrefsWifi.getString("SSID", "")
         val savedPass = sharedPrefsWifi.getString("Pass", "")
