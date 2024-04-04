@@ -35,24 +35,19 @@ import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
+    private var currentPhotoPath: String = ""
+
     private val takePictureLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 // Image was captured successfully
-                val data: Intent? = result.data
-                val imageBitmap = data?.extras?.get("data") as Bitmap?
-                if (imageBitmap != null) {
-                    // Save the image to a file
-                    val imageFile = saveImageToFile(imageBitmap)
-                    if (imageFile != null) {
-                        // Upload the image to Firebase Storage
-                        val imageUri = Uri.fromFile(imageFile)
-                        uploadImageToFirebaseStorage(imageUri)
-                    } else {
-                        Toast.makeText(this, "Failed to save image", Toast.LENGTH_SHORT).show()
-                    }
+                val imageFile = File(currentPhotoPath)
+                if (imageFile.exists()) {
+                    // Upload the image to Firebase Storage
+                    val imageUri = Uri.fromFile(imageFile)
+                    uploadImageToFirebaseStorage(imageUri)
                 } else {
-                    Toast.makeText(this, "Failed to retrieve image", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Failed to save image", Toast.LENGTH_SHORT).show()
                 }
             } else {
                 // Image capture failed or was canceled
@@ -123,19 +118,42 @@ class MainActivity : AppCompatActivity() {
 
     private fun openCamera() {
         val captureImageIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        takePictureLauncher.launch(captureImageIntent)
+        // Ensure there's a camera activity to handle the intent
+        captureImageIntent.resolveActivity(packageManager)?.also {
+            // Create the File where the photo should go
+            val photoFile: File? = try {
+                createImageFile()
+            } catch (ex: IOException) {
+                // Error occurred while creating the File
+                null
+            }
+            // Continue only if the File was successfully created
+            photoFile?.also {
+                val photoURI: Uri = FileProvider.getUriForFile(
+                    this,
+                    "com.bscpe.omcmapp.provider",
+                    it
+                )
+                captureImageIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                takePictureLauncher.launch(captureImageIntent)
+            }
+        }
     }
 
     // create a file for captured image
+    @Throws(IOException::class)
     private fun createImageFile(): File {
         // Create an image file name
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return File.createTempFile(
-            "JPEG_${timeStamp}_",
-            ".jpg",
-            storageDir
-        )
+            "JPEG_${timeStamp}_", /* prefix */
+            ".jpg", /* suffix */
+            storageDir /* directory */
+        ).apply {
+            // Save a file: path for use with ACTION_VIEW intents
+            currentPhotoPath = absolutePath
+        }
     }
 
     private fun uploadImageToFirebaseStorage(imageUri: Uri) {
