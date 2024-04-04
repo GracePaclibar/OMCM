@@ -1,6 +1,7 @@
 package com.bscpe.omcmapp
 
 import android.Manifest
+import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
@@ -19,33 +20,43 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
-    private val CAMERA_PERMISSION_REQUEST_CODE = 1001
-
     private val takePictureLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                val imageBitmap = result.data?.extras?.get("data") as Bitmap?
+            if (result.resultCode == Activity.RESULT_OK) {
+                // Image was captured successfully
+                val data: Intent? = result.data
+                val imageBitmap = data?.extras?.get("data") as Bitmap?
                 if (imageBitmap != null) {
-                    // Save the image to external storage
-                    val imageUri = saveImageToExternalStorage(imageBitmap)
-
-                    // Save the image URI to SharedPreferences
-                    saveImageUriToSharedPreferences(imageUri)
-
-                    // Pass the image URI to the second activity
-                    val intent = Intent(this, ProfileActivity::class.java)
-                    intent.putExtra("imageUri", imageUri.toString())
-                    startActivity(intent)
+                    // Save the image to a file
+                    val imageFile = saveImageToFile(imageBitmap)
+                    if (imageFile != null) {
+                        // Upload the image to Firebase Storage
+                        val imageUri = Uri.fromFile(imageFile)
+                        uploadImageToFirebaseStorage(imageUri)
+                    } else {
+                        Toast.makeText(this, "Failed to save image", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(this, "Failed to retrieve image", Toast.LENGTH_SHORT).show()
                 }
+            } else {
+                // Image capture failed or was canceled
+                Toast.makeText(this, "Failed to capture image", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -67,9 +78,6 @@ class MainActivity : AppCompatActivity() {
 
         // getting year and month
         val calendar = Calendar.getInstance()
-        val currentMonth = calendar.get(Calendar.MONTH) + 1 // Month starts from 0
-        val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
-        val currentYear = calendar.get(Calendar.YEAR)
 
         val currentDate = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()).format(calendar.time)
         // setting text to textView
@@ -113,6 +121,72 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun openCamera() {
+        val captureImageIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        takePictureLauncher.launch(captureImageIntent)
+    }
+
+    // create a file for captured image
+    private fun createImageFile(): File {
+        // Create an image file name
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            "JPEG_${timeStamp}_",
+            ".jpg",
+            storageDir
+        )
+    }
+
+    private fun uploadImageToFirebaseStorage(imageUri: Uri) {
+        val userUid = FirebaseAuth.getInstance().currentUser?.uid
+
+        val storageRef = FirebaseStorage.getInstance().reference
+        val imagesRef = storageRef.child("images/$userUid/${imageUri.lastPathSegment}")
+
+        val uploadTask = imagesRef.putFile(imageUri)
+
+        uploadTask.addOnSuccessListener { taskSnapshot ->
+            // Image uploaded successfully
+            Toast.makeText(this, "Image uploaded successfully", Toast.LENGTH_SHORT).show()
+
+            imagesRef.downloadUrl.addOnSuccessListener { uri ->
+
+            }.addOnFailureListener { exception ->
+
+                Toast.makeText(this, "Failed to get download URL: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
+        }.addOnFailureListener { exception ->
+
+            Toast.makeText(this, "Image upload failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun saveImageToFile(imageBitmap: Bitmap): File? {
+        val imageFile = File.createTempFile(
+            "JPEG_${System.currentTimeMillis()}_",
+            ".jpg",
+            getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        )
+        return try {
+            FileOutputStream(imageFile).use { fos ->
+                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+                fos.flush()
+            }
+            imageFile
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    private fun saveImageUrlToDatabase(imageUrl: String) {
+        val userUid = FirebaseAuth.getInstance().currentUser?.uid
+
+        val database = FirebaseDatabase.getInstance()
+        val userRef = database.getReference("Users").child("$userUid")
+        userRef.child("imageUrl").setValue(imageUrl)
+    }
     fun goToProfile(view: View) {
         val intent = Intent(this,ProfileActivity::class.java)
 
@@ -123,7 +197,6 @@ class MainActivity : AppCompatActivity() {
 
         startActivity(intent, options.toBundle())
     }
-
     fun goToSettings(view: View) {
         val intent = Intent(this, SettingsActivity::class.java)
 
@@ -134,7 +207,6 @@ class MainActivity : AppCompatActivity() {
 
         startActivity(intent, options.toBundle())
     }
-
     fun goToConsumptions(view: View) {
         val intent = Intent(this, wConsumptionsActivity::class.java)
 
@@ -155,7 +227,6 @@ class MainActivity : AppCompatActivity() {
 
         startActivity(intent, options.toBundle())
     }
-
     fun openSysConfig(view: View) {
         val intent = Intent(this, SystemConfigActivity::class.java)
 
@@ -166,38 +237,4 @@ class MainActivity : AppCompatActivity() {
 
         startActivity(intent, options.toBundle())
     }
-
-    private fun openCamera() {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            // The CAMERA permission is already granted, proceed with opening the camera.
-            val captureImageIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            if (captureImageIntent.resolveActivity(packageManager) != null) {
-                takePictureLauncher.launch(captureImageIntent)
-            } else {
-                // Handle the case where no camera app is available
-                // You can display a message or take alternative actions
-                Toast.makeText(this, "it didnt work", Toast.LENGTH_SHORT).show()
-            }
-        } else {
-            // Request CAMERA permission at runtime
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.CAMERA),
-                CAMERA_PERMISSION_REQUEST_CODE
-            )
-        }
-    }
-
-
-
-//   //Displays Menu Bar
-//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-//        val inflater: MenuInflater = menuInflater
-//        inflater.inflate(R.menu.menu, menu)
-//        return true
-//    }
 }
