@@ -80,42 +80,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun saveImageToExternalStorage(image: Bitmap): Uri? {
-        val imagesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        imagesDir?.let {
-            val imageFile = File(it, "image_${System.currentTimeMillis()}.jpg")
-
-            FileOutputStream(imageFile).use { fos ->
-                image.compress(Bitmap.CompressFormat.JPEG, 100, fos)
-            }
-
-            return Uri.fromFile(imageFile)
-        }
-        return null
-    }
-
-    private fun saveImageUriToSharedPreferences(imageUri: Uri?) {
-        if (imageUri != null) {
-            val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-
-            // Retrieve the current count of saved images
-            val imageCount = sharedPreferences.getInt("imageCount", 0)
-
-            // Increment the count
-            val newImageCount = imageCount + 1
-
-            // Save the new count
-            val editor = sharedPreferences.edit()
-            editor.putInt("imageCount", newImageCount)
-
-            // Save the new image URI
-            editor.putString("imageUri_$newImageCount", imageUri.toString())
-
-            // Apply the changes
-            editor.apply()
-        }
-    }
-
     private fun openCamera() {
         val captureImageIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         // Ensure there's a camera activity to handle the intent
@@ -180,31 +144,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveImageToFile(imageBitmap: Bitmap): File? {
-        val imageFile = File.createTempFile(
-            "JPEG_${System.currentTimeMillis()}_",
-            ".jpg",
-            getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        )
-        return try {
-            FileOutputStream(imageFile).use { fos ->
-                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
-                fos.flush()
-            }
-            imageFile
-        } catch (e: IOException) {
-            e.printStackTrace()
-            null
-        }
-    }
+//    private fun saveImageUrlToDatabase(imageUrl: String) {
+//        val userUid = FirebaseAuth.getInstance().currentUser?.uid
+//
+//        val database = FirebaseDatabase.getInstance()
+//        val userRef = database.getReference("Users").child("$userUid")
+//        userRef.child("imageUrl").setValue(imageUrl)
+//    }
 
-    private fun saveImageUrlToDatabase(imageUrl: String) {
-        val userUid = FirebaseAuth.getInstance().currentUser?.uid
-
-        val database = FirebaseDatabase.getInstance()
-        val userRef = database.getReference("Users").child("$userUid")
-        userRef.child("imageUrl").setValue(imageUrl)
-    }
     fun goToProfile(view: View) {
         val intent = Intent(this,ProfileActivity::class.java)
 
