@@ -40,17 +40,16 @@ class MainActivity : AppCompatActivity() {
     private val takePictureLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                // Image was captured successfully
+
                 val imageFile = File(currentPhotoPath)
                 if (imageFile.exists()) {
-                    // Upload the image to Firebase Storage
+
                     val imageUri = Uri.fromFile(imageFile)
                     uploadImageToFirebaseStorage(imageUri)
                 } else {
                     Toast.makeText(this, "Failed to save image", Toast.LENGTH_SHORT).show()
                 }
             } else {
-                // Image capture failed or was canceled
                 Toast.makeText(this, "Failed to capture image", Toast.LENGTH_SHORT).show()
             }
         }
@@ -84,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         val captureImageIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         // Ensure there's a camera activity to handle the intent
         captureImageIntent.resolveActivity(packageManager)?.also {
-            // Create the File where the photo should go
+
             val photoFile: File? = try {
                 createImageFile()
             } catch (ex: IOException) {
@@ -124,24 +123,35 @@ class MainActivity : AppCompatActivity() {
         val userUid = FirebaseAuth.getInstance().currentUser?.uid
 
         val storageRef = FirebaseStorage.getInstance().reference
-        val imagesRef = storageRef.child("images/$userUid/${imageUri.lastPathSegment}")
+        val imageName = "image_${System.currentTimeMillis()}.jpg"
+        val imagesRef = storageRef.child("images/$userUid/$imageName")
 
         val uploadTask = imagesRef.putFile(imageUri)
 
         uploadTask.addOnSuccessListener { taskSnapshot ->
-            // Image uploaded successfully
             Toast.makeText(this, "Image uploaded successfully", Toast.LENGTH_SHORT).show()
 
             imagesRef.downloadUrl.addOnSuccessListener { uri ->
+                saveImagesUrlToSharedPreferences(uri.toString())
 
             }.addOnFailureListener { exception ->
-
                 Toast.makeText(this, "Failed to get download URL: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
         }.addOnFailureListener { exception ->
-
             Toast.makeText(this, "Image upload failed: ${exception.message}", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun saveImagesUrlToSharedPreferences(imageUrl: String)  {
+        val sharedPreferences = getSharedPreferences("SavedImages", Context.MODE_PRIVATE)
+
+        val imageCount = sharedPreferences.getInt("imageCount", 0)
+        val newImageCount = imageCount + 1
+
+        val editor = sharedPreferences.edit()
+        editor.putInt("imageCount", newImageCount)
+        editor.putString("imageUrl_$newImageCount", imageUrl)
+        editor.apply()
     }
 
 //    private fun saveImageUrlToDatabase(imageUrl: String) {
