@@ -143,7 +143,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun saveImagesUrlToSharedPreferences(imageUrl: String)  {
-        val sharedPreferences = getSharedPreferences("SavedImages", Context.MODE_PRIVATE)
+        val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
 
         val imageCount = sharedPreferences.getInt("imageCount", 0)
         val newImageCount = imageCount + 1

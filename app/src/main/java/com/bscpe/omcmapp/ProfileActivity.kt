@@ -1,11 +1,14 @@
 package com.bscpe.omcmapp
 
+import android.annotation.SuppressLint
 import android.app.ActivityOptions
 import android.app.AlertDialog
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
@@ -15,7 +18,12 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.squareup.picasso.Picasso
 import java.io.File
+
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -37,59 +45,11 @@ class ProfileActivity : AppCompatActivity() {
         val editTextBio = findViewById<EditText>(R.id.bio_text)
         editTextBio.setText(savedUserBio)
 
-        // Retrieve the count of saved images
-        val imageCount = sharedPreferences.getInt("imageCount", 0)
-
-        // Create a list to hold ImageViews
-        val imageViews = mutableListOf<ImageView>()
-
-        // Find the container layout for ImageViews
-        val imageContainer = findViewById<LinearLayout>(R.id.imageContainer)
-
         // Retrieve delete button
         val deleteButton = findViewById<Button>(R.id.Delete_btn)
 
         // Initial visibility of delete button
         deleteButton.visibility = View.GONE
-
-        // Iterate through the saved images and create ImageViews
-        for (i in 1..imageCount) {
-            val imageView = ImageView(this)
-            val layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            layoutParams.width = 675
-            layoutParams.height = layoutParams.width
-            layoutParams.gravity = Gravity.CENTER_VERTICAL
-
-            imageView.layoutParams = layoutParams
-            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
-
-            layoutParams.setMargins(5,10,5,0)
-
-            // Retrieve the image URI from SharedPreferences
-            val imageUriString = sharedPreferences.getString("imageUri_$i", null)
-            if (imageUriString != null) {
-                val imageUri = Uri.parse(imageUriString)
-                imageView.setImageURI(imageUri)
-
-                imageView.setOnClickListener {
-                    openImageInGallery(imageUri)
-                }
-
-                imageView.setOnLongClickListener{
-                    deleteButton.visibility = View.VISIBLE
-                    deleteButton.setOnClickListener{
-                        showDeleteConfirmationDialog(imageUri, imageView)
-                    }
-                    true
-                }
-
-                // Add ImageView to the left side of the container layout
-                imageContainer.addView(imageView, 0) // Adding at index 0 places it at the beginning
-            }
-        }
 
         // Retrieve chosen Profile Picture
         val savedImageResId = sharedPreferences.getInt("selectedImageResId", R.drawable.pfp_1)
@@ -97,7 +57,101 @@ class ProfileActivity : AppCompatActivity() {
 
         profilePicImageView.setImageResource(savedImageResId)
 
+        // FOR IMAGE VIEW STILL NOT WORKING
+        val userUid = FirebaseAuth.getInstance().currentUser?.uid
+        val folderReference = FirebaseStorage.getInstance().getReference().child("images/$userUid")
+        val imageContainer = findViewById<LinearLayout>(R.id.imageContainer)
+
+//        folderReference.listAll().addOnSuccessListener { result ->
+//            result.items.forEachIndexed { index, item ->
+//                if (index == 0) {
+//                    item.downloadUrl.addOnSuccessListener { uri ->
+//                        Picasso.get().load(uri).into(imageView)
+//                    } .addOnFailureListener { exception ->
+//                        Log.e(TAG, "Error downloading image: ${exception.message}", exception)
+//                    }
+//                }
+//            }
+//        } .addOnFailureListener { exception ->
+//            Log.e(TAG, "Error listing files in folder: ${exception.message}", exception)
+//        }
+
+        folderReference.listAll()
+            .addOnSuccessListener{ result ->
+                result.items.forEach { item ->
+                    item.downloadUrl
+                        .addOnSuccessListener { uri ->
+                            val imageView = ImageView(this)
+                            val layoutParams = LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                            )
+                            layoutParams.width = 675
+                            layoutParams.height = layoutParams.width
+                            layoutParams.gravity = Gravity.CENTER_VERTICAL
+                            imageView.layoutParams = layoutParams
+                            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+                            layoutParams.setMargins(5,10,5,0)
+
+                            Picasso.get().load(uri).rotate(90f).into(imageView)
+                            imageContainer.addView(imageView)
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e(TAG, "Error downloading image: ${e.message}", e)
+                        }
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e(TAG, "Error listing files in folder: ${e.message}", e)
+            }
     }
+
+    companion object {
+        private const val TAG = "ProfileActivity"
+    }
+
+//    private fun displayImages() {
+//        val imageCount = sharedPreferences.getInt("imageCount", 0)
+//
+//        val imageContainer = findViewById<LinearLayout>(R.id.imageContainer)
+//
+//        for (i in 1..imageCount) {
+//            val imageView = ImageView(this)
+//            val layoutParams = LinearLayout.LayoutParams(
+//                LinearLayout.LayoutParams.MATCH_PARENT,
+//                LinearLayout.LayoutParams.WRAP_CONTENT
+//            )
+//            layoutParams.width = 675
+//            layoutParams.height = layoutParams.width
+//            layoutParams.gravity = Gravity.CENTER_VERTICAL
+//            imageView.layoutParams = layoutParams
+//            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+//            layoutParams.setMargins(5,10,5,0)
+//
+//            // getting image URL from sharedPrefs
+//            val deleteButton = findViewById<Button>(R.id.Delete_btn)
+//
+//            val imageUriString = sharedPreferences.getString("imageUri_$i", null)
+//            if (imageUriString != null) {
+//                val imageUri = Uri.parse(imageUriString)
+//                imageView.setImageURI(imageUri)
+//
+//                imageView.setOnClickListener {
+//                    openImageInGallery(imageUri)
+//                }
+//
+//                imageView.setOnLongClickListener {
+//                    deleteButton.visibility = View.VISIBLE
+//                    deleteButton.setOnClickListener {
+//                        showDeleteConfirmationDialog(imageUri, imageView)
+//                    }
+//                    true
+//                }
+//
+//                imageContainer.addView(imageView, 0)
+//            }
+//        }
+//    }
 
     private fun showDeleteConfirmationDialog(imageUri: Uri, imageView: ImageView){
         val deleteButton = findViewById<Button>(R.id.Delete_btn)
