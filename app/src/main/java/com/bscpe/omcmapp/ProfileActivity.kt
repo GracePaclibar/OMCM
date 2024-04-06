@@ -64,8 +64,7 @@ class ProfileActivity : AppCompatActivity() {
 
         folderReference.listAll()
             .addOnSuccessListener{ result ->
-                val items = result.items.reversed()
-                items.forEach { item ->
+                result.items.forEach { item ->
                     item.downloadUrl
                         .addOnSuccessListener { uri ->
                             val imageView = ImageView(this)
@@ -81,7 +80,19 @@ class ProfileActivity : AppCompatActivity() {
                             layoutParams.setMargins(5,10,5,0)
 
                             Picasso.get().load(uri).rotate(90f).into(imageView)
-                            imageContainer.addView(imageView)
+                            imageContainer.addView(imageView,0)
+
+                            // open image using gallery app
+                            imageView.setOnClickListener {
+                                val galleryIntent = Intent(Intent.ACTION_VIEW, uri)
+                                galleryIntent.setDataAndType(uri, "image/*")
+                                startActivity(galleryIntent)
+                            }
+
+                            imageView.setOnLongClickListener{
+                                deleteButton.visibility = View.VISIBLE
+                                true
+                            }
                         }
                         .addOnFailureListener { e ->
                             Log.e(TAG, "Error downloading image: ${e.message}", e)
@@ -92,53 +103,9 @@ class ProfileActivity : AppCompatActivity() {
                 Log.e(TAG, "Error listing files in folder: ${e.message}", e)
             }
     }
-
     companion object {
         private const val TAG = "ProfileActivity"
     }
-
-//    private fun displayImages() {
-//        val imageCount = sharedPreferences.getInt("imageCount", 0)
-//
-//        val imageContainer = findViewById<LinearLayout>(R.id.imageContainer)
-//
-//        for (i in 1..imageCount) {
-//            val imageView = ImageView(this)
-//            val layoutParams = LinearLayout.LayoutParams(
-//                LinearLayout.LayoutParams.MATCH_PARENT,
-//                LinearLayout.LayoutParams.WRAP_CONTENT
-//            )
-//            layoutParams.width = 675
-//            layoutParams.height = layoutParams.width
-//            layoutParams.gravity = Gravity.CENTER_VERTICAL
-//            imageView.layoutParams = layoutParams
-//            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
-//            layoutParams.setMargins(5,10,5,0)
-//
-//            // getting image URL from sharedPrefs
-//            val deleteButton = findViewById<Button>(R.id.Delete_btn)
-//
-//            val imageUriString = sharedPreferences.getString("imageUri_$i", null)
-//            if (imageUriString != null) {
-//                val imageUri = Uri.parse(imageUriString)
-//                imageView.setImageURI(imageUri)
-//
-//                imageView.setOnClickListener {
-//                    openImageInGallery(imageUri)
-//                }
-//
-//                imageView.setOnLongClickListener {
-//                    deleteButton.visibility = View.VISIBLE
-//                    deleteButton.setOnClickListener {
-//                        showDeleteConfirmationDialog(imageUri, imageView)
-//                    }
-//                    true
-//                }
-//
-//                imageContainer.addView(imageView, 0)
-//            }
-//        }
-//    }
 
     private fun showDeleteConfirmationDialog(imageUri: Uri, imageView: ImageView){
         val deleteButton = findViewById<Button>(R.id.Delete_btn)
@@ -194,25 +161,6 @@ class ProfileActivity : AppCompatActivity() {
 
         // Apply changes
         editor.apply()
-    }
-
-    private fun openImageInGallery(imageUri: Uri) {
-        val intent = Intent(Intent.ACTION_VIEW)
-
-        // Use FileProvider to get a content URI
-        val fileProviderAuthority = "${packageName}.provider"
-        val contentUri = FileProvider.getUriForFile(this, fileProviderAuthority, File(imageUri.path!!))
-
-        intent.setDataAndType(contentUri, "image/*")
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-
-        // Check if there's a suitable app to handle the intent
-        if (intent.resolveActivity(packageManager) != null) {
-            startActivity(intent)
-        } else {
-            // Handle the case where no app can handle the intent
-            Toast.makeText(this, "No app can handle this action", Toast.LENGTH_SHORT).show()
-        }
     }
 
     fun goToMain(view: View) {
