@@ -62,23 +62,10 @@ class ProfileActivity : AppCompatActivity() {
         val folderReference = FirebaseStorage.getInstance().getReference().child("images/$userUid")
         val imageContainer = findViewById<LinearLayout>(R.id.imageContainer)
 
-//        folderReference.listAll().addOnSuccessListener { result ->
-//            result.items.forEachIndexed { index, item ->
-//                if (index == 0) {
-//                    item.downloadUrl.addOnSuccessListener { uri ->
-//                        Picasso.get().load(uri).into(imageView)
-//                    } .addOnFailureListener { exception ->
-//                        Log.e(TAG, "Error downloading image: ${exception.message}", exception)
-//                    }
-//                }
-//            }
-//        } .addOnFailureListener { exception ->
-//            Log.e(TAG, "Error listing files in folder: ${exception.message}", exception)
-//        }
-
         folderReference.listAll()
             .addOnSuccessListener{ result ->
-                result.items.forEach { item ->
+                val items = result.items.reversed()
+                items.forEach { item ->
                     item.downloadUrl
                         .addOnSuccessListener { uri ->
                             val imageView = ImageView(this)
