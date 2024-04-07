@@ -27,6 +27,8 @@ import java.io.File
 
 class ProfileActivity : AppCompatActivity() {
 
+    private val imageUrls = mutableListOf<String>()
+
     private val sharedPreferences by lazy {
         getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
     }
@@ -64,9 +66,13 @@ class ProfileActivity : AppCompatActivity() {
 
         folderReference.listAll()
             .addOnSuccessListener{ result ->
-                result.items.forEach { item ->
+                val items = result.items.reversed()
+                items.forEach { item ->
                     item.downloadUrl
                         .addOnSuccessListener { uri ->
+                            val imageUrl = uri.toString()
+                            imageUrls.add(imageUrl)
+
                             val imageView = ImageView(this)
                             val layoutParams = LinearLayout.LayoutParams(
                                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -93,6 +99,11 @@ class ProfileActivity : AppCompatActivity() {
                                 deleteButton.visibility = View.VISIBLE
                                 true
                             }
+
+                            deleteButton.setOnClickListener {
+                                // Show confirmation dialog and handle deletion
+                                showDeleteConfirmationDialog(uri, imageView)
+                            }
                         }
                         .addOnFailureListener { e ->
                             Log.e(TAG, "Error downloading image: ${e.message}", e)
@@ -107,7 +118,7 @@ class ProfileActivity : AppCompatActivity() {
         private const val TAG = "ProfileActivity"
     }
 
-    private fun showDeleteConfirmationDialog(imageUri: Uri, imageView: ImageView){
+    private fun showDeleteConfirmationDialog(imageUri: Uri, imageView: ImageView) {
         val deleteButton = findViewById<Button>(R.id.Delete_btn)
 
         AlertDialog.Builder(this)
@@ -123,44 +134,27 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun deleteImage(imageUri: Uri, imageView: ImageView) {
-        // Remove the ImageView from the container
         val imageContainer = findViewById<LinearLayout>(R.id.imageContainer)
+        val deleteButton = findViewById<Button>(R.id.Delete_btn)
+        val storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(imageUri.toString())
+        storageReference.delete()
+            .addOnSuccessListener {
+                imageUrls.remove(imageUri.toString())
+                refreshActivity()
 
-        imageContainer.removeView(imageView)
-
-        // Update your data (Shared Preferences) to remove the image URI
-        removeImageUriFromSharedPreferences(imageUri)
+                imageContainer.removeView(imageView)
+                deleteButton.visibility = View.GONE
+                Toast.makeText(this, "Image deleted successfully", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                // Failed to delete file
+                Log.e(TAG, "Error deleting image: ${e.message}", e)
+                Toast.makeText(this, "Failed to delete image", Toast.LENGTH_SHORT).show()
+            }
     }
 
-    private fun removeImageUriFromSharedPreferences(imageUri: Uri) {
-        val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-
-        // Retrieve the count of saved images
-        val imageCount = sharedPreferences.getInt("imageCount", 0)
-
-        // Create a new list to store the updated image URIs
-        val updatedImageUris = mutableListOf<String>()
-
-        // Iterate through the saved images and check if the current image URI matches
-        for (i in 1..imageCount) {
-            val storedUriString = sharedPreferences.getString("imageUri_$i", null)
-            if (storedUriString != null && Uri.parse(storedUriString) != imageUri) {
-                // Add the non-matching image URI to the updated list
-                updatedImageUris.add(storedUriString)
-            }
-        }
-
-        // Update the image URIs in SharedPreferences
-        for (i in updatedImageUris.indices) {
-            editor.putString("imageUri_${i + 1}", updatedImageUris[i])
-        }
-
-        // Decrease the image count
-        editor.putInt("imageCount", updatedImageUris.size)
-
-        // Apply changes
-        editor.apply()
+    private fun refreshActivity() {
+        recreate()
     }
 
     fun goToMain(view: View) {
