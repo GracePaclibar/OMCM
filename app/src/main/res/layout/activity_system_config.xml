@@ -212,19 +212,6 @@
         app:layout_constraintTop_toTopOf="@+id/power_state"
         tools:ignore="MissingConstraints,UseSwitchCompatOrMaterialXml" />
 
-    <Button
-        android:id="@+id/rebootButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/button"
-        android:text="Reboot System"
-        android:textColor="@color/colorPrimaryDark"
-        android:layout_marginTop="25dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:visibility="invisible"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/power_state"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

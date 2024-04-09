@@ -19,6 +19,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.getValue
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
@@ -59,7 +64,6 @@ class ProfileActivity : AppCompatActivity() {
 
         profilePicImageView.setImageResource(savedImageResId)
 
-        // FOR IMAGE VIEW STILL NOT WORKING
         val userUid = FirebaseAuth.getInstance().currentUser?.uid
         val folderReference = FirebaseStorage.getInstance().getReference().child("images/$userUid")
         val imageContainer = findViewById<LinearLayout>(R.id.imageContainer)
@@ -113,6 +117,35 @@ class ProfileActivity : AppCompatActivity() {
             .addOnFailureListener { e ->
                 Log.e(TAG, "Error listing files in folder: ${e.message}", e)
             }
+
+        val databaseReference = FirebaseDatabase.getInstance().getReference("UsersData/$userUid/Profile")
+
+        data class Profile (
+            val Bio: String = "",
+            val Name: String = ""
+        ) {
+            constructor() : this("","")
+        }
+
+        databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val profile = dataSnapshot.getValue(Profile::class.java)
+                    if (profile != null && profile.Bio.isNotEmpty()) {
+                        editTextBio.setText(profile.Bio)
+                    }
+                    if (profile != null && profile.Name.isNotEmpty()) {
+                        editTextName.setText(profile.Name)
+                    }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e("Firebase", "Error getting data", databaseError.toException())
+            }
+        })
+
+
     }
     companion object {
         private const val TAG = "ProfileActivity"

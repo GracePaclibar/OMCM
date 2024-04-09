@@ -87,6 +87,7 @@
         android:background="#00FFFFFF"
         android:contentDescription="@string/save_button_desc"
         android:elevation="4dp"
+        android:onClick="goToProfile"
         android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="@+id/top"
         app:layout_constraintEnd_toEndOf="parent"
