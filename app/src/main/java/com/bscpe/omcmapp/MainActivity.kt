@@ -26,9 +26,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
+import java.time.DayOfWeek
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -36,6 +36,16 @@ import java.util.Locale
 class MainActivity : AppCompatActivity() {
 
     private var currentPhotoPath: String = ""
+
+    private val calendar = Calendar.getInstance()
+    private val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+    private lateinit var monView: View
+    private lateinit var tuesView: View
+    private lateinit var wedView: View
+    private lateinit var thursView: View
+    private lateinit var friView: View
+    private lateinit var satView: View
+    private lateinit var sunView: View
 
     private val takePictureLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -67,16 +77,35 @@ class MainActivity : AppCompatActivity() {
             openCamera()
         }
 
-        // current date view
+        monView = findViewById(R.id.monDay)
+        tuesView = findViewById(R.id.tuesDay)
+        wedView = findViewById(R.id.wednesDay)
+        thursView = findViewById(R.id.thursDay)
+        friView = findViewById(R.id.friDay)
+        satView = findViewById(R.id.satDay)
+        sunView = findViewById(R.id.sunDay)
+
         val currentDateTextView: TextView = findViewById(R.id.currentDate)
-
-        // getting year and month
-        val calendar = Calendar.getInstance()
-
         val currentDate = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()).format(calendar.time)
+
         // setting text to textView
         currentDateTextView.text = currentDate
 
+        // set mini calendar color
+        miniCalendar(dayOfWeek)
+
+    }
+
+    private fun miniCalendar(dayOfWeek: Int) {
+        when (dayOfWeek) {
+            1 -> sunView.setBackgroundResource(R.drawable.current_day)
+            2 -> monView.setBackgroundResource(R.drawable.current_day)
+            3 -> tuesView.setBackgroundResource(R.drawable.current_day)
+            4 -> wedView.setBackgroundResource(R.drawable.current_day)
+            5 -> thursView.setBackgroundResource(R.drawable.current_day)
+            6 -> friView.setBackgroundResource(R.drawable.current_day)
+            7 -> satView.setBackgroundResource(R.drawable.current_day)
+        }
     }
 
     private fun openCamera() {
@@ -110,9 +139,9 @@ class MainActivity : AppCompatActivity() {
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return File.createTempFile(
-            "JPEG_${timeStamp}_", /* prefix */
-            ".jpg", /* suffix */
-            storageDir /* directory */
+            "JPEG_${timeStamp}_",
+            ".jpg",
+            storageDir
         ).apply {
             // Save a file: path for use with ACTION_VIEW intents
             currentPhotoPath = absolutePath
@@ -153,14 +182,6 @@ class MainActivity : AppCompatActivity() {
         editor.putString("imageUrl_$newImageCount", imageUrl)
         editor.apply()
     }
-
-//    private fun saveImageUrlToDatabase(imageUrl: String) {
-//        val userUid = FirebaseAuth.getInstance().currentUser?.uid
-//
-//        val database = FirebaseDatabase.getInstance()
-//        val userRef = database.getReference("Users").child("$userUid")
-//        userRef.child("imageUrl").setValue(imageUrl)
-//    }
 
     fun goToProfile(view: View) {
         val intent = Intent(this,ProfileActivity::class.java)

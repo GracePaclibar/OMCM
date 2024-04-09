@@ -14,9 +14,86 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:background="@color/main"
-        android:elevation="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
+
+    <View
+        android:id="@+id/sunDay"
+        android:layout_width="45dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="124dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/week_day"
+        android:elevation="4dp"
+        app:layout_constraintEnd_toStartOf="@+id/monDay"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
+
+    <View
+        android:id="@+id/monDay"
+        android:layout_width="45dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="124dp"
+        android:layout_marginEnd="9dp"
+        android:background="@drawable/week_day"
+        app:layout_constraintEnd_toStartOf="@+id/tuesDay"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
+
+    <View
+        android:id="@+id/tuesDay"
+        android:layout_width="45dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="124dp"
+        android:layout_marginEnd="9dp"
+        android:background="@drawable/week_day"
+        app:layout_constraintEnd_toStartOf="@+id/wednesDay"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
+
+    <View
+        android:id="@+id/wednesDay"
+        android:layout_width="45dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="124dp"
+        android:background="@drawable/week_day"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
+
+    <View
+        android:id="@+id/thursDay"
+        android:layout_width="45dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="9dp"
+        android:layout_marginTop="124dp"
+        android:background="@drawable/week_day"
+        app:layout_constraintStart_toEndOf="@+id/wednesDay"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
+
+    <View
+        android:id="@+id/friDay"
+        android:layout_width="45dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="9dp"
+        android:layout_marginTop="124dp"
+        android:background="@drawable/week_day"
+        app:layout_constraintStart_toEndOf="@+id/thursDay"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
+
+    <View
+        android:id="@+id/satDay"
+        android:layout_width="45dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="9dp"
+        android:layout_marginTop="124dp"
+        android:background="@drawable/week_day"
+        app:layout_constraintStart_toEndOf="@+id/friDay"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
 
@@ -145,9 +222,107 @@
         android:fontFamily="@font/inter_bold"
         android:text="Month Year"
         android:textColor="@color/highlight"
-        android:textSize="20sp"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/top" />
+
+    <TextView
+        android:id="@+id/sunText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        android:fontFamily="@font/inter_light"
+        android:text="S"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/sunDay"
+        app:layout_constraintEnd_toEndOf="@+id/sunDay"
+        app:layout_constraintStart_toStartOf="@+id/sunDay"
+        app:layout_constraintTop_toTopOf="@+id/sunDay" />
+
+    <TextView
+        android:id="@+id/monText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        android:fontFamily="@font/inter_light"
+        android:text="M"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/monDay"
+        app:layout_constraintEnd_toEndOf="@+id/monDay"
+        app:layout_constraintStart_toStartOf="@+id/monDay"
+        app:layout_constraintTop_toTopOf="@+id/monDay" />
+
+    <TextView
+        android:id="@+id/tuesText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        android:fontFamily="@font/inter_light"
+        android:text="T"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tuesDay"
+        app:layout_constraintEnd_toEndOf="@+id/tuesDay"
+        app:layout_constraintStart_toStartOf="@+id/tuesDay"
+        app:layout_constraintTop_toTopOf="@+id/tuesDay" />
+
+    <TextView
+        android:id="@+id/wednesText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        android:fontFamily="@font/inter_light"
+        android:text="W"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/wednesDay"
+        app:layout_constraintEnd_toEndOf="@+id/wednesDay"
+        app:layout_constraintStart_toStartOf="@+id/wednesDay"
+        app:layout_constraintTop_toTopOf="@+id/wednesDay" />
+
+    <TextView
+        android:id="@+id/thursText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        android:fontFamily="@font/inter_light"
+        android:text="T"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/thursDay"
+        app:layout_constraintEnd_toEndOf="@+id/thursDay"
+        app:layout_constraintStart_toStartOf="@+id/thursDay"
+        app:layout_constraintTop_toTopOf="@+id/thursDay" />
+
+    <TextView
+        android:id="@+id/friText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        android:fontFamily="@font/inter_light"
+        android:text="F"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/friDay"
+        app:layout_constraintEnd_toEndOf="@+id/friDay"
+        app:layout_constraintStart_toStartOf="@+id/friDay"
+        app:layout_constraintTop_toTopOf="@+id/friDay" />
+
+    <TextView
+        android:id="@+id/satText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        android:fontFamily="@font/inter_light"
+        android:text="S"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/satDay"
+        app:layout_constraintEnd_toEndOf="@+id/satDay"
+        app:layout_constraintStart_toStartOf="@+id/satDay"
+        app:layout_constraintTop_toTopOf="@+id/satDay" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
