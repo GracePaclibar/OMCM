@@ -209,32 +209,6 @@
         app:layout_constraintTop_toBottomOf="@+id/load_data_label" />
 
     <TextView
-        android:id="@+id/manual_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="29dp"
-        android:layout_marginTop="7dp"
-        android:layout_marginEnd="313dp"
-        android:fontFamily="@font/inter_light"
-        android:text="@string/manual_text"
-        android:textColor="@color/highlight"
-        android:textSize="20sp"
-        android:padding="5dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/help_label" />
-
-    <View
-        android:id="@+id/barrier_2"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_marginTop="7dp"
-        android:background="@color/detail"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/manual_label" />
-
-    <TextView
         android:id="@+id/feedbacks_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -249,7 +223,7 @@
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/barrier_2"
+        app:layout_constraintTop_toBottomOf="@+id/help_label"
         tools:ignore="TouchTargetSizeCheck" />
 
     <View
@@ -303,6 +277,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/barrier_5" />
+
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/button"
+        android:text="Logout"
+        android:textColor="@color/colorPrimaryDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/version_label" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
