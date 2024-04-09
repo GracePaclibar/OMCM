@@ -93,8 +93,15 @@ class ProfileEditActivity : AppCompatActivity() {
                 editor.putString("userBio", bio)
                 editor.apply()
 
-                Toast.makeText(this, "Changes Saved", Toast.LENGTH_SHORT).show()
+                // going back to profile
+                val intent = Intent(this, ProfileActivity::class.java)
 
+                val options = ActivityOptions.makeCustomAnimation(this,
+                    R.anim.slide_enter_bottom, //Enter animation
+                    R.anim.slide_exit_top //Exit animation
+                )
+
+                startActivity(intent, options.toBundle())
             }
         }
 
@@ -172,15 +179,5 @@ class ProfileEditActivity : AppCompatActivity() {
 
         startActivity(intent, options.toBundle())
     }
-
-//    fun saveEdit(view: View) {
-//        val editTextName = findViewById<EditText>(R.id.name_text)
-//        val editTextBio = findViewById<EditText>(R.id.bio_text)
-//
-//        val userName = editTextName.text.toString()
-//        val userBio = editTextBio.text.toString()
-//
-//
-//    }
 
 }

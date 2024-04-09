@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -14,7 +15,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class SystemConfigActivity: AppCompatActivity() {
     override fun onCreate(savedInstantState: Bundle?) {
@@ -41,6 +45,8 @@ class SystemConfigActivity: AppCompatActivity() {
         saveButton.visibility = View.GONE
 
         val userUid = FirebaseAuth.getInstance().currentUser?.uid
+
+        val databaseRef = FirebaseDatabase.getInstance().getReference("UsersData/$userUid/WiFI_Router")
         val ssidEditText = findViewById<EditText>(R.id.wifiSSID)
         val passEditText = findViewById<EditText>(R.id.wifiPassword)
 
@@ -70,10 +76,29 @@ class SystemConfigActivity: AppCompatActivity() {
         passEditText.addTextChangedListener(textWatcher)
 
         data class WifiInfo (
-            val AUTH: String,
-            val SSID: String,
-            val Wifi_Detected: Boolean
-        )
+            val AUTH: String = "",
+            val SSID: String = "",
+            val Wifi_Detected: Boolean = false
+        ) {
+            constructor() : this("", "")
+        }
+
+        databaseRef.addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    val wifiInfo = dataSnapshot.getValue(WifiInfo::class.java)
+                    if (wifiInfo != null && wifiInfo.AUTH.isNotEmpty()) {
+                        passEditText.setText(wifiInfo.AUTH)
+                    }
+                    if (wifiInfo != null && wifiInfo.SSID.isNotEmpty()) {
+                        ssidEditText.setText(wifiInfo.SSID)
+                    }
+                }
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e("Firebase", "Error getting data", databaseError.toException())
+            }
+        })
 
         saveButton.setOnClickListener {
             val currentUser = FirebaseAuth.getInstance().currentUser
@@ -83,7 +108,7 @@ class SystemConfigActivity: AppCompatActivity() {
             val password = passEditText.text.toString().trim()
 
             if (ssid.isNotEmpty() && password.isNotEmpty() && userUid != null) {
-                val wifiInfo = WifiInfo(ssid, password, Wifi_Detected = false)
+                val wifiInfo = WifiInfo(password, ssid, Wifi_Detected = false)
 
                 val capitalizedWifiInfo = mapOf(
                     "AUTH" to wifiInfo.AUTH,
