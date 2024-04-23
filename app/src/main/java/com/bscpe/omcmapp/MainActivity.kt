@@ -1,12 +1,9 @@
 package com.bscpe.omcmapp
 
-import android.Manifest
 import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -18,17 +15,16 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import com.github.lzyzsd.circleprogress.DonutProgress
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
+
 import com.google.firebase.storage.FirebaseStorage
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.time.DayOfWeek
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -46,6 +42,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var friView: View
     private lateinit var satView: View
     private lateinit var sunView: View
+    private lateinit var temperatureProgress: DonutProgress
+    private lateinit var humidityProgress: DonutProgress
+    private lateinit var luxProgress: DonutProgress
+    private lateinit var databaseReference: DatabaseReference
+    private lateinit var valueEventListener: ValueEventListener
+
+    private var latestTemperature: Double = 0.0
+    private var latestHumidity: Double = 0.0
+    private var latestLux: Double = 0.0
 
     private val takePictureLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -64,14 +69,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-    // Connects activity_main.xml
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         FirebaseApp.initializeApp(this)
 
-       val cameraButton = findViewById<ImageButton>(R.id.scan_tab)
+        val cameraButton = findViewById<ImageButton>(R.id.scan_tab)
 
         cameraButton.setOnClickListener {
             openCamera()
@@ -88,12 +92,54 @@ class MainActivity : AppCompatActivity() {
         val currentDateTextView: TextView = findViewById(R.id.currentDate)
         val currentDate = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()).format(calendar.time)
 
-        // setting text to textView
         currentDateTextView.text = currentDate
 
-        // set mini calendar color
         miniCalendar(dayOfWeek)
 
+        temperatureProgress = findViewById(R.id.temperatureProgress)
+        humidityProgress = findViewById(R.id.humidityProgress)
+        luxProgress = findViewById(R.id.luxProgress)
+
+        databaseReference = FirebaseDatabase.getInstance().reference.child("UsersData").child("QXOWPYhfnYeeWPUmS0MJ34Ccaj03").child("readings")
+
+        valueEventListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                var latestReading: Reading? = null
+                for (readingSnapshot in snapshot.children) {
+                    latestReading = readingSnapshot.getValue(Reading::class.java)
+                }
+
+                latestReading?.let {
+                    latestTemperature = it.temperature
+                    latestHumidity = it.humidity
+                    latestLux = it.lux
+                    updateProgress()
+                    updateGraph(it.temperature, it.humidity, it.lux)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+            }
+        }
+
+        databaseReference.addValueEventListener(valueEventListener)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        databaseReference.removeEventListener(valueEventListener)
+    }
+
+    private fun updateProgress() {
+        temperatureProgress.progress = latestTemperature.toFloat()
+        humidityProgress.progress = latestHumidity.toFloat()
+        luxProgress.progress = latestLux.toFloat()
+    }
+
+    private fun updateGraph(temperature: Double, humidity: Double, lux: Double) {
+        // Update your graph with the new reading values
+        // graph.update(temperature, humidity, lux)
     }
 
     private fun miniCalendar(dayOfWeek: Int) {
@@ -110,16 +156,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun openCamera() {
         val captureImageIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        // Ensure there's a camera activity to handle the intent
         captureImageIntent.resolveActivity(packageManager)?.also {
 
             val photoFile: File? = try {
                 createImageFile()
             } catch (ex: IOException) {
-                // Error occurred while creating the File
                 null
             }
-            // Continue only if the File was successfully created
+
             photoFile?.also {
                 val photoURI: Uri = FileProvider.getUriForFile(
                     this,
@@ -132,10 +176,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // create a file for captured image
     @Throws(IOException::class)
     private fun createImageFile(): File {
-        // Create an image file name
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return File.createTempFile(
@@ -143,7 +185,6 @@ class MainActivity : AppCompatActivity() {
             ".jpg",
             storageDir
         ).apply {
-            // Save a file: path for use with ACTION_VIEW intents
             currentPhotoPath = absolutePath
         }
     }
@@ -184,25 +225,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun goToProfile(view: View) {
-        val intent = Intent(this,ProfileActivity::class.java)
+        val intent = Intent(this, ProfileActivity::class.java)
 
         val options = ActivityOptions.makeCustomAnimation(this,
-            R.anim.slide_enter_left, //Enter animation
-            R.anim.slide_exit_right //Exit animation
+            R.anim.slide_enter_left,
+            R.anim.slide_exit_right
         )
 
         startActivity(intent, options.toBundle())
     }
+
     fun goToSettings(view: View) {
         val intent = Intent(this, SettingsActivity::class.java)
 
         val options = ActivityOptions.makeCustomAnimation(this,
-            R.anim.slide_enter_right, //Enter animation
-            R.anim.slide_exit_left //Exit animation
+            R.anim.slide_enter_right,
+            R.anim.slide_exit_left
         )
 
         startActivity(intent, options.toBundle())
     }
+
     fun goToConsumptions(view: View) {
         val intent = Intent(this, wConsumptionsActivity::class.java)
 
@@ -213,6 +256,7 @@ class MainActivity : AppCompatActivity() {
 
         startActivity(intent, options.toBundle())
     }
+
     fun goToSensors(view: View) {
         val intent = Intent(this, SensorsActivity::class.java)
 
@@ -223,6 +267,7 @@ class MainActivity : AppCompatActivity() {
 
         startActivity(intent, options.toBundle())
     }
+
     fun openSysConfig(view: View) {
         val intent = Intent(this, SystemConfigActivity::class.java)
 
@@ -234,3 +279,10 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent, options.toBundle())
     }
 }
+
+data class Reading(
+    val temperature: Double = 0.0,
+    val humidity: Double = 0.0,
+    val lux: Double = 0.0,
+    val timestamp: String = ""
+)

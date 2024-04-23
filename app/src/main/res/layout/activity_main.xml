@@ -5,8 +5,8 @@
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/background"
+    android:orientation="vertical"
     android:theme="@style/ThemeOverlay.AppCompat.Light">
 
     <View
@@ -173,9 +173,9 @@
         android:onClick="goToSensors"
         android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/sysConfig_tab"
         app:layout_constraintStart_toEndOf="@+id/consumption_tab"
         app:layout_constraintTop_toTopOf="@+id/bot"
-        app:layout_constraintEnd_toStartOf="@id/sysConfig_tab"
         app:layout_constraintVertical_bias="0.5"
         app:srcCompat="@drawable/ic_sensor" />
 
@@ -222,7 +222,7 @@
         android:fontFamily="@font/inter_bold"
         android:text="Month Year"
         android:textColor="@color/highlight"
-        android:textSize="18sp"
+        android:textSize="25sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/top" />
 
@@ -324,5 +324,64 @@
         app:layout_constraintStart_toStartOf="@+id/satDay"
         app:layout_constraintTop_toTopOf="@+id/satDay" />
 
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="313dp"
+        android:layout_height="436dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
+        android:layout_marginBottom="92dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.297"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/top"
+        app:layout_constraintVertical_bias="1.0">
+
+        <com.github.lzyzsd.circleprogress.DonutProgress
+            android:id="@+id/temperatureProgress"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="18dp"
+            android:layout_marginEnd="16dp"
+            app:donut_finished_color="#4CAF50"
+            app:donut_suffix_text=" °C"
+            app:donut_inner_bottom_text_size="18sp"
+            app:donut_progress="0"
+            app:donut_unfinished_color="#D3D3D3" />
+
+        <com.github.lzyzsd.circleprogress.DonutProgress
+            android:id="@+id/humidityProgress"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_below="@id/temperatureProgress"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:donut_finished_color="#FFA500"
+            app:donut_suffix_text="%"
+            app:donut_inner_bottom_text_size="18sp"
+            app:donut_progress="0"
+            app:donut_unfinished_color="#D3D3D3" />
+
+        <com.github.lzyzsd.circleprogress.DonutProgress
+            android:id="@+id/luxProgress"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_below="@id/humidityProgress"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:donut_suffix_text=" lux"
+            app:donut_finished_color="#FFC107"
+            app:donut_inner_bottom_text_size="18sp"
+            app:donut_progress="0"
+            app:donut_unfinished_color="#D3D3D3" />
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
