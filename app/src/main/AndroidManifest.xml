@@ -68,6 +68,9 @@
         <activity
             android:name=".FeedbacksActivity"
             android:label="Feedbacks Page" />
+        <activity
+            android:name=".LinechartsActivity"
+            android:label="Line Charts" />
 
         <meta-data
             android:name="preloaded_fonts"
