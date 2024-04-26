@@ -13,7 +13,10 @@ class LinechartsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_linecharts)
 
         supportFragmentManager.beginTransaction()
-            .replace(R.id.tempFragmentContainer, LinechartsFragment())
+            .replace(R.id.tempFragmentContainer, LinechartsTempFragment())
+            .replace(R.id.humidFragmentContainer, LinechartsHumidFragment())
+            .replace(R.id.lightFragmentContainer, LinechartsLightFragment())
+
             .commit()
     }
 

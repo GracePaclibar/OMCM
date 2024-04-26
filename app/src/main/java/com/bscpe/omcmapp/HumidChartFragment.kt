@@ -17,18 +17,18 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class LinechartsTempFragment : Fragment(R.layout.fragment_temp_chart) {
+class LinechartsHumidFragment : Fragment(R.layout.fragment_humid_chart) {
 
-    private lateinit var tempChart: LineChart
-    private val temperatureValues = mutableListOf<Float>()
+    private lateinit var humidChart: LineChart
+    private val humidValues = mutableListOf<Float>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_temp_chart, container, false)
-        tempChart = view.findViewById(R.id.temp_lineChart)
+        val view = inflater.inflate(R.layout.fragment_humid_chart, container, false)
+        humidChart = view.findViewById(R.id.humid_lineChart)
         return view
     }
 
@@ -54,12 +54,12 @@ class LinechartsTempFragment : Fragment(R.layout.fragment_temp_chart) {
                     Log.d("FirebaseData", "Child Node Key: ${snapshot.key}")
 
                     for (childSnapshot in snapshot.children) {
-                        val temperatureString = snapshot.child("temperature").getValue(String::class.java)
-                        val temperatureFloat = temperatureString?.toFloatOrNull()
+                        val humidString = snapshot.child("humidity").getValue(String::class.java)
+                        val humidFloat = humidString?.toFloatOrNull()
 
                         // Check if the temperature value is not null and not already in the list
-                        if (temperatureFloat != null && !temperatureValues.contains(temperatureFloat)) {
-                            temperatureValues.add(temperatureFloat)
+                        if (humidFloat != null && !humidValues.contains(humidFloat)) {
+                            humidValues.add(humidFloat)
                         }
                     }
                     setupChart()
@@ -73,20 +73,21 @@ class LinechartsTempFragment : Fragment(R.layout.fragment_temp_chart) {
 
     private fun setupChart() {
         val entries = mutableListOf<Entry>()
-        for((index, temperature) in temperatureValues.withIndex()) {
+        for((index, temperature) in humidValues.withIndex()) {
             entries.add(Entry(index.toFloat(), temperature))
         }
 
-        val dataSet = LineDataSet(entries, "Temperature")
+        val dataSet = LineDataSet(entries, "Humidity")
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.highlight)
         dataSet.setCircleColor(ContextCompat.getColor(requireContext(), R.color.highlight))
         dataSet.lineWidth = 2F
 
-        tempChart.description.isEnabled = false
-        tempChart.legend.isEnabled = false
+
+        humidChart.description.isEnabled = false
+        humidChart.legend.isEnabled = false
 
         val lineData = LineData(dataSet)
-        tempChart.data = lineData
-        tempChart.invalidate()
+        humidChart.data = lineData
+        humidChart.invalidate()
     }
 }

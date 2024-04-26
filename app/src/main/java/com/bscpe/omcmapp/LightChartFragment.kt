@@ -17,10 +17,10 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class LinechartsTempFragment : Fragment(R.layout.fragment_temp_chart) {
+class LinechartsLightFragment : Fragment(R.layout.fragment_light_chart) {
 
-    private lateinit var tempChart: LineChart
-    private val temperatureValues = mutableListOf<Float>()
+    private lateinit var lightChart: LineChart
+    private val lightValues = mutableListOf<Float>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,7 +28,7 @@ class LinechartsTempFragment : Fragment(R.layout.fragment_temp_chart) {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_temp_chart, container, false)
-        tempChart = view.findViewById(R.id.temp_lineChart)
+        lightChart = view.findViewById(R.id.temp_lineChart)
         return view
     }
 
@@ -54,12 +54,12 @@ class LinechartsTempFragment : Fragment(R.layout.fragment_temp_chart) {
                     Log.d("FirebaseData", "Child Node Key: ${snapshot.key}")
 
                     for (childSnapshot in snapshot.children) {
-                        val temperatureString = snapshot.child("temperature").getValue(String::class.java)
-                        val temperatureFloat = temperatureString?.toFloatOrNull()
+                        val lightString = snapshot.child("lux").getValue(String::class.java)
+                        val lightFloat = lightString?.toFloatOrNull()
 
                         // Check if the temperature value is not null and not already in the list
-                        if (temperatureFloat != null && !temperatureValues.contains(temperatureFloat)) {
-                            temperatureValues.add(temperatureFloat)
+                        if (lightFloat != null) {
+                            lightValues.add(lightFloat)
                         }
                     }
                     setupChart()
@@ -73,20 +73,20 @@ class LinechartsTempFragment : Fragment(R.layout.fragment_temp_chart) {
 
     private fun setupChart() {
         val entries = mutableListOf<Entry>()
-        for((index, temperature) in temperatureValues.withIndex()) {
+        for((index, temperature) in lightValues.withIndex()) {
             entries.add(Entry(index.toFloat(), temperature))
         }
 
-        val dataSet = LineDataSet(entries, "Temperature")
+        val dataSet = LineDataSet(entries, "Light")
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.highlight)
         dataSet.setCircleColor(ContextCompat.getColor(requireContext(), R.color.highlight))
         dataSet.lineWidth = 2F
 
-        tempChart.description.isEnabled = false
-        tempChart.legend.isEnabled = false
+        lightChart.description.isEnabled = false
+        lightChart.legend.isEnabled = false
 
         val lineData = LineData(dataSet)
-        tempChart.data = lineData
-        tempChart.invalidate()
+        lightChart.data = lineData
+        lightChart.invalidate()
     }
 }
