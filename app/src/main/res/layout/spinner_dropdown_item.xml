@@ -3,7 +3,8 @@
     android:id="@android:id/text1"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textColor="@color/highlight"
+    android:textColor="@color/white"
     android:fontFamily="@font/inter_light"
-    android:background="@drawable/chart_border"
+    android:paddingStart="5dp"
+    android:background="@drawable/spinner_border"
     android:textSize="16sp" />
