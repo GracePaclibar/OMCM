@@ -1,12 +1,9 @@
 package com.bscpe.omcmapp
 
-import android.Manifest
 import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -18,17 +15,13 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.time.DayOfWeek
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -106,6 +99,17 @@ class MainActivity : AppCompatActivity() {
             6 -> friView.setBackgroundResource(R.drawable.current_day)
             7 -> satView.setBackgroundResource(R.drawable.current_day)
         }
+    }
+
+    fun goToCharts(view: View) {
+        val intent = Intent(this, TempChartsActivity::class.java)
+
+        val options = ActivityOptions.makeCustomAnimation(this,
+            R.anim.slide_enter_right,
+            R.anim.slide_exit_left
+        )
+
+        startActivity(intent, options.toBundle())
     }
 
     private fun openCamera() {

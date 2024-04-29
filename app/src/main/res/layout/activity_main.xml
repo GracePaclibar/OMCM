@@ -144,27 +144,26 @@
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="MissingConstraints" />
 
-    <ImageButton
-        android:id="@+id/consumption_tab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:background="#00FFFFFF"
-        android:contentDescription="@string/consumption_tab_desc"
-        android:elevation="4dp"
-        android:onClick="goToConsumptions"
-        android:padding="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/bot"
-        app:srcCompat="@drawable/ic_chart" />
+<!--    <ImageButton-->
+<!--        android:id="@+id/consumption_tab"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="10dp"-->
+<!--        android:layout_marginTop="5dp"-->
+<!--        android:background="#00FFFFFF"-->
+<!--        android:contentDescription="@string/consumption_tab_desc"-->
+<!--        android:elevation="4dp"-->
+<!--        android:onClick="goToConsumptions"-->
+<!--        android:padding="10dp"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/bot"-->
+<!--        app:srcCompat="@drawable/ic_chart" />-->
 
     <ImageButton
         android:id="@+id/sensors_tab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
         android:background="#00FFFFFF"
@@ -173,9 +172,8 @@
         android:onClick="goToSensors"
         android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/consumption_tab"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/bot"
-        app:layout_constraintEnd_toStartOf="@id/sysConfig_tab"
         app:layout_constraintVertical_bias="0.5"
         app:srcCompat="@drawable/ic_sensor" />
 
@@ -208,8 +206,8 @@
         android:onClick="openSysConfig"
         android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/scan_tab"
-        app:layout_constraintStart_toEndOf="@id/sensors_tab"
+        app:layout_constraintEnd_toStartOf="@+id/scan_tab"
+        app:layout_constraintStart_toEndOf="@+id/sensors_tab"
         app:layout_constraintTop_toTopOf="@+id/bot"
         app:srcCompat="@drawable/ic_config" />
 
@@ -323,6 +321,19 @@
         app:layout_constraintEnd_toEndOf="@+id/satDay"
         app:layout_constraintStart_toStartOf="@+id/satDay"
         app:layout_constraintTop_toTopOf="@+id/satDay" />
+
+    <Button
+        android:id="@+id/test"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="161dp"
+        android:layout_marginEnd="162dp"
+        android:onClick="goToCharts"
+        android:text="charts"
+        app:layout_constraintBottom_toTopOf="@+id/bot"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/top" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

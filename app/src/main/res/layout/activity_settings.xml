@@ -59,12 +59,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="29dp"
         android:layout_marginTop="24dp"
-        android:layout_marginEnd="288dp"
         android:fontFamily="@font/inter_light"
         android:text="@string/language_label"
         android:textColor="@color/highlight"
         android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/top" />
 
@@ -73,12 +71,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="29dp"
-        android:layout_marginEnd="243dp"
         android:fontFamily="@font/inter_light"
         android:text="@string/current_language"
         android:textColor="@color/highlight"
         android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/language_label" />
 
@@ -88,12 +84,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="29dp"
         android:layout_marginTop="12dp"
-        android:layout_marginEnd="332dp"
         android:fontFamily="@font/inter_light"
         android:text="@string/display_category"
         android:textColor="@color/main"
         android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/current_language_label" />
 
@@ -116,12 +110,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="29dp"
         android:layout_marginTop="12dp"
-        android:layout_marginEnd="349dp"
         android:fontFamily="@font/inter_light"
         android:text="@string/data_text"
         android:textColor="@color/main"
         android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/display_mode" />
 
@@ -131,12 +123,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="29dp"
         android:layout_marginTop="7dp"
-        android:layout_marginEnd="313dp"
         android:fontFamily="@font/inter_light"
         android:text="@string/backup_text"
         android:textColor="@color/highlight"
         android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/data_category_label" />
 
@@ -145,12 +135,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="29dp"
-        android:layout_marginEnd="313dp"
         android:fontFamily="@font/inter_light"
         android:text="@string/save_data_text"
         android:textColor="@color/highlight"
         android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/backup_label" />
 
@@ -170,12 +158,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="29dp"
         android:layout_marginTop="7dp"
-        android:layout_marginEnd="310dp"
         android:fontFamily="@font/inter_light"
         android:text="@string/restore_text"
         android:textColor="@color/highlight"
         android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/barrier" />
 
@@ -184,12 +170,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="29dp"
-        android:layout_marginEnd="254dp"
         android:fontFamily="@font/inter_light"
         android:text="@string/load_existing_data_text"
         android:textColor="@color/highlight"
         android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/restore_label" />
 
@@ -199,12 +183,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="29dp"
         android:layout_marginTop="12dp"
-        android:layout_marginEnd="350dp"
         android:fontFamily="@font/inter_light"
         android:text="@string/help_text"
         android:textColor="@color/main"
         android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/load_data_label" />
 
@@ -214,14 +196,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="29dp"
         android:layout_marginTop="7dp"
-        android:layout_marginEnd="101dp"
         android:fontFamily="@font/inter_light"
         android:onClick="goToFeedbacks"
         android:padding="5dp"
         android:text="@string/feedbacks_text"
         android:textColor="@color/highlight"
         android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/help_label"
         tools:ignore="TouchTargetSizeCheck" />
@@ -242,13 +222,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="29dp"
         android:layout_marginTop="7dp"
-        android:layout_marginEnd="224dp"
         android:fontFamily="@font/inter_light"
+        android:padding="5dp"
         android:text="@string/credits_text"
         android:textColor="@color/highlight"
         android:textSize="20sp"
-        android:padding="5dp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/barrier_4" />
 
@@ -268,13 +246,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="29dp"
         android:layout_marginTop="7dp"
-        android:layout_marginEnd="270dp"
         android:fontFamily="@font/inter_light"
+        android:padding="5dp"
         android:text="@string/version_info_text"
         android:textColor="@color/highlight"
         android:textSize="20sp"
-        android:padding="5dp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/barrier_5" />
 

@@ -68,6 +68,16 @@
         <activity
             android:name=".FeedbacksActivity"
             android:label="Feedbacks Page" />
+        <activity
+            android:name=".TempChartsActivity"
+            android:label="Temp Charts" />
+        <activity
+            android:name=".HumidChartsActivity"
+            android:label="Humid Charts" />
+        <activity
+            android:name=".LightChartsActivity"
+            android:label="Light Charts" />
+
 
         <meta-data
             android:name="preloaded_fonts"
