@@ -56,16 +56,5 @@
     <string name="send_feedback_button_desc">send feedback button</string>
     <string name="send_button">Send</string>
     <string name="send_button_desc">Send button</string>
-    <string name="charts_text">Charts</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
-    <string-array name="Filter">
-        <item>Today</item>
-        <item>This Week</item>
-        <item>This Month</item>
-        <item>3 Months</item>
-        <item>6 Months</item>
-        <item>All Time</item>
-    </string-array>
+    <string name="gpu">GPU</string>
 </resources>

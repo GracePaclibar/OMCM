@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.view.View
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
@@ -64,11 +65,27 @@ class MainActivity : AppCompatActivity() {
 
         FirebaseApp.initializeApp(this)
 
-       val cameraButton = findViewById<ImageButton>(R.id.scan_tab)
+        // Find the button by its ID
+        val cameraScan = findViewById<ImageButton>(R.id.camera_scan_tab)
+
+        // Set OnClickListener to the button
+        cameraScan.setOnClickListener {
+            // Create an Intent to start SecondActivity
+            val intent = Intent(this, CameraDetectActivity::class.java)
+
+            // Start SecondActivity
+            startActivity(intent)
+        }
+
+        val cameraButton = findViewById<ImageButton>(R.id.scan_tab)
 
         cameraButton.setOnClickListener {
             openCamera()
         }
+
+
+
+
 
         monView = findViewById(R.id.monDay)
         tuesView = findViewById(R.id.tuesDay)
@@ -87,6 +104,8 @@ class MainActivity : AppCompatActivity() {
         // set mini calendar color
         miniCalendar(dayOfWeek)
 
+
+
     }
 
     private fun miniCalendar(dayOfWeek: Int) {
@@ -99,17 +118,6 @@ class MainActivity : AppCompatActivity() {
             6 -> friView.setBackgroundResource(R.drawable.current_day)
             7 -> satView.setBackgroundResource(R.drawable.current_day)
         }
-    }
-
-    fun goToCharts(view: View) {
-        val intent = Intent(this, TempChartsActivity::class.java)
-
-        val options = ActivityOptions.makeCustomAnimation(this,
-            R.anim.slide_enter_right,
-            R.anim.slide_exit_left
-        )
-
-        startActivity(intent, options.toBundle())
     }
 
     private fun openCamera() {
@@ -237,4 +245,6 @@ class MainActivity : AppCompatActivity() {
 
         startActivity(intent, options.toBundle())
     }
+
+
 }
