@@ -8,15 +8,13 @@ import androidx.appcompat.app.AppCompatActivity
 
 class TempChartsActivity : AppCompatActivity() {
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tempcharts)
 
         supportFragmentManager.beginTransaction()
             .replace(R.id.tempFragmentContainer, LinechartsTempFragment())
-            .replace(R.id.internalEnvFragmentContainer, InternalEnvFragment())
+            .replace(R.id.tempEnvFragmentContainer, TempEnvFragment())
 
             .commit()
     }

@@ -16,11 +16,15 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class LinechartsTempFragment : Fragment(R.layout.fragment_temp_chart) {
 
     private lateinit var tempChart: LineChart
-    private val temperatureValues = mutableListOf<Float>()
+    private val intTemperatureValues = mutableListOf<Float>()
+    private val extTemperatureValues = mutableListOf<Float>()
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,13 +57,16 @@ class LinechartsTempFragment : Fragment(R.layout.fragment_temp_chart) {
                     // Log the key of each child node
                     Log.d("FirebaseData", "Child Node Key: ${snapshot.key}")
 
-                    for (childSnapshot in snapshot.children) {
-                        val temperatureString = snapshot.child("temperature").getValue(String::class.java)
-                        val temperatureFloat = temperatureString?.toFloatOrNull()
+                    val unixTime = snapshot.key?.toLong() ?: 0 // Assuming key is Unix timestamp
+                    val formattedDate = parseUnixToDate(unixTime)
+                    Log.d("FirebaseData", "Date: $formattedDate")
 
-                        // Check if the temperature value is not null and not already in the list
-                        if (temperatureFloat != null && !temperatureValues.contains(temperatureFloat)) {
-                            temperatureValues.add(temperatureFloat)
+                    for (childSnapshot in snapshot.children) {
+                        val intTemperatureString = snapshot.child("internal_temperature").getValue(String::class.java)
+                        val intTemperatureFloat = intTemperatureString?.toFloatOrNull()
+
+                        if (intTemperatureFloat != null ) {
+                            intTemperatureValues.add(intTemperatureFloat)
                         }
                     }
                     setupChart()
@@ -73,20 +80,30 @@ class LinechartsTempFragment : Fragment(R.layout.fragment_temp_chart) {
 
     private fun setupChart() {
         val entries = mutableListOf<Entry>()
-        for((index, temperature) in temperatureValues.withIndex()) {
-            entries.add(Entry(index.toFloat(), temperature))
+        for((index, intTemperature) in intTemperatureValues.withIndex()) {
+            entries.add(Entry(index.toFloat(), intTemperature))
         }
 
         val dataSet = LineDataSet(entries, "Temperature")
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.highlight)
         dataSet.setCircleColor(ContextCompat.getColor(requireContext(), R.color.highlight))
+        dataSet.setDrawCircles(false)
+        dataSet.setDrawValues(false)
         dataSet.lineWidth = 2F
 
         tempChart.description.isEnabled = false
         tempChart.legend.isEnabled = false
 
+        tempChart.axisRight.isEnabled = false
+
         val lineData = LineData(dataSet)
         tempChart.data = lineData
         tempChart.invalidate()
+    }
+
+    private fun parseUnixToDate(unixTime: Long): String {
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        val date = Date(unixTime * 1000)
+        return sdf.format(date)
     }
 }

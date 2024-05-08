@@ -101,8 +101,30 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun goToCharts(view: View) {
+    fun goToTempCharts(view: View) {
         val intent = Intent(this, TempChartsActivity::class.java)
+
+        val options = ActivityOptions.makeCustomAnimation(this,
+            R.anim.slide_enter_right,
+            R.anim.slide_exit_left
+        )
+
+        startActivity(intent, options.toBundle())
+    }
+
+    fun goToHumidCharts(view: View) {
+        val intent = Intent(this, HumidChartsActivity::class.java)
+
+        val options = ActivityOptions.makeCustomAnimation(this,
+            R.anim.slide_enter_right,
+            R.anim.slide_exit_left
+        )
+
+        startActivity(intent, options.toBundle())
+    }
+
+    fun goToLightCharts(view: View) {
+        val intent = Intent(this, LightChartsActivity::class.java)
 
         val options = ActivityOptions.makeCustomAnimation(this,
             R.anim.slide_enter_right,

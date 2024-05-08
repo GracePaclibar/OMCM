@@ -323,17 +323,44 @@
         app:layout_constraintTop_toTopOf="@+id/satDay" />
 
     <Button
-        android:id="@+id/test"
+        android:id="@+id/temp_charts_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="161dp"
         android:layout_marginEnd="162dp"
-        android:onClick="goToCharts"
-        android:text="charts"
+        android:onClick="goToTempCharts"
+        android:text="temp charts"
         app:layout_constraintBottom_toTopOf="@+id/bot"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/top" />
+        app:layout_constraintTop_toBottomOf="@+id/top"
+        app:layout_constraintVertical_bias="0.313" />
+
+    <Button
+        android:id="@+id/humid_charts_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="161dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="162dp"
+        android:onClick="goToHumidCharts"
+        android:text="humid charts"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/temp_charts_btn" />
+
+    <Button
+        android:id="@+id/light_charts_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="161dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="162dp"
+        android:onClick="goToLightCharts"
+        android:text="light charts"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/humid_charts_btn" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

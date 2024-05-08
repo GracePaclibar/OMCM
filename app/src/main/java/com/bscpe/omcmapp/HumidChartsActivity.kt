@@ -14,6 +14,7 @@ class HumidChartsActivity : AppCompatActivity() {
 
         supportFragmentManager.beginTransaction()
             .replace(R.id.humidFragmentContainer, LinechartsHumidFragment())
+            .replace(R.id.humidEnvFragmentContainer, HumidEnvFragment())
 
             .commit()
     }

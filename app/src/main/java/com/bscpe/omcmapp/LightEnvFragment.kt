@@ -17,18 +17,18 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class InternalEnvFragment : Fragment(R.layout.fragment_internal_env) {
+class LightEnvFragment : Fragment(R.layout.fragment_light_env) {
 
     private lateinit var spinner: Spinner
     private lateinit var filter: Array<String>
-    private val temperatureValues = mutableListOf<Float>()
+    private val intLightValues = mutableListOf<Pair<Float, String?>>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_internal_env, container, false)
+        val view = inflater.inflate(R.layout.fragment_light_env, container, false)
 
         filter = resources.getStringArray(R.array.Filter)
         spinner = view.findViewById(R.id.time_filter)
@@ -41,7 +41,7 @@ class InternalEnvFragment : Fragment(R.layout.fragment_internal_env) {
             spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>,
                                             view: View?, position: Int, id: Long) {
-                    temperatureValues.clear()
+                    intLightValues.clear()
                     val selectedItem = filter[position]
 //                    Toast.makeText(parent.context, "Selected item: $selectedItem", Toast.LENGTH_SHORT).show()
                     fillTable(position)
@@ -98,11 +98,12 @@ class InternalEnvFragment : Fragment(R.layout.fragment_internal_env) {
                     Log.d("FirebaseData", "Child Node Key: ${snapshot.key}")
 
                     for (childSnapshot in snapshot.children) {
-                        val temperatureString = snapshot.child("temperature").getValue(String::class.java)
-                        val temperatureFloat = temperatureString?.toFloatOrNull()
+                        val intLightString = snapshot.child("lux").getValue(String::class.java)
+                        val intLightFloat = intLightString?.toFloatOrNull()
+                        val intLightTimestampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                        if (temperatureFloat != null && !temperatureValues.contains(temperatureFloat)) {
-                            temperatureValues.add(temperatureFloat)
+                        if (intLightFloat != null) {
+                            intLightValues.add(intLightFloat to intLightTimestampString)
                         }
                     }
                     setupTable()
@@ -115,20 +116,37 @@ class InternalEnvFragment : Fragment(R.layout.fragment_internal_env) {
     }
 
     private fun setupTable() {
-        temperatureValues.sortDescending()
+        intLightValues.sortByDescending { it.first }
 
-        if (temperatureValues.isNotEmpty()) {
-            val textViewAve = view?.findViewById<TextView>(R.id.int_ave)
-            val textViewMax = view?.findViewById<TextView>(R.id.int_max)
-            val textViewMin = view?.findViewById<TextView>(R.id.int_min)
+        if (intLightValues.isNotEmpty()) {
+            val intTextViewAve = view?.findViewById<TextView>(R.id.int_ave)
+            val intTextViewMax = view?.findViewById<TextView>(R.id.int_max)
+            val intTextViewMin = view?.findViewById<TextView>(R.id.int_min)
+            val intMaxTimeTextView = view?.findViewById<TextView>(R.id.int_max_time)
+            val intMinTimeTextView = view?.findViewById<TextView>(R.id.int_min_time)
 
-            val averageTemp = String.format("%.2f", temperatureValues.average())
-            val highestTemp = temperatureValues.maxOrNull()
-            val lowestTemp = temperatureValues.minOrNull()
+            val intAverageTemp = String.format("%.2f", intLightValues.map { it.first }.average())
+            val (intMaxTemp, intMaxTimestamp) = intLightValues.first()
+            val (intMinTemp, intMinTimestamp) = intLightValues.last()
 
-            textViewAve?.text = averageTemp
-            textViewMax?.text = highestTemp.toString()
-            textViewMin?.text = lowestTemp.toString()
+            intTextViewAve?.text = "$intAverageTemp lux"
+            intTextViewMax?.text = "$intMaxTemp lux"
+            intTextViewMin?.text = "$intMinTemp lux"
+            intMaxTimeTextView?.text = getTimeFromTimestamp(intMaxTimestamp)
+            intMinTimeTextView?.text = getTimeFromTimestamp(intMinTimestamp)
+
         }
+    }
+
+    private fun getTimeFromTimestamp(timestamp: String?): String {
+        if (timestamp != null) {
+            val timeParts = timestamp.split(" ")[1].split(":")
+            val hours = timeParts[0].toInt()
+            val minutes = timeParts[1]
+            val period = if (hours < 12) "AM" else "PM"
+            val adjustedHours = if (hours == 0 || hours == 12) 12 else hours % 12
+            return String.format("%d:%s %s", adjustedHours, minutes, period)
+        }
+        return ""
     }
 }
