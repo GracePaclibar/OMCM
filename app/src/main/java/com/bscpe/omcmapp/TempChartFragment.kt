@@ -19,11 +19,11 @@ import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.Date
 
-class LinechartsHumidFragment : Fragment(R.layout.fragment_humid_chart) {
+class LinechartsTempFragment : Fragment(R.layout.fragment_temp_chart) {
 
-    private lateinit var humidChart: LineChart
-    private val intHumidValues = mutableListOf<Float>()
-    private val extHumidValues = mutableListOf<Float>()
+    private lateinit var tempChart: LineChart
+    private val intTemperatureValues = mutableListOf<Float>()
+    private val extTemperatureValues = mutableListOf<Float>()
 
 
     override fun onCreateView(
@@ -31,8 +31,8 @@ class LinechartsHumidFragment : Fragment(R.layout.fragment_humid_chart) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_humid_chart, container, false)
-        humidChart = view.findViewById(R.id.humid_lineChart)
+        val view = inflater.inflate(R.layout.fragment_temp_chart, container, false)
+        tempChart = view.findViewById(R.id.temp_lineChart)
         return view
     }
 
@@ -62,11 +62,11 @@ class LinechartsHumidFragment : Fragment(R.layout.fragment_humid_chart) {
                     Log.d("FirebaseData", "Date: $formattedDate")
 
                     for (childSnapshot in snapshot.children) {
-                        val intHumidString = snapshot.child("internal_humidity").getValue(String::class.java)
-                        val intHumidFloat = intHumidString?.toFloatOrNull()
+                        val intTemperatureString = snapshot.child("internal_temperature").getValue(String::class.java)
+                        val intTemperatureFloat = intTemperatureString?.toFloatOrNull()
 
-                        if (intHumidFloat != null ) {
-                            intHumidValues.add(intHumidFloat)
+                        if (intTemperatureFloat != null ) {
+                            intTemperatureValues.add(intTemperatureFloat)
                         }
                     }
                     setupChart()
@@ -80,25 +80,25 @@ class LinechartsHumidFragment : Fragment(R.layout.fragment_humid_chart) {
 
     private fun setupChart() {
         val entries = mutableListOf<Entry>()
-        for((index, intTemperature) in intHumidValues.withIndex()) {
+        for((index, intTemperature) in intTemperatureValues.withIndex()) {
             entries.add(Entry(index.toFloat(), intTemperature))
         }
 
-        val dataSet = LineDataSet(entries, "Humidity")
+        val dataSet = LineDataSet(entries, "Temperature")
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.highlight)
         dataSet.setCircleColor(ContextCompat.getColor(requireContext(), R.color.highlight))
         dataSet.setDrawCircles(false)
         dataSet.setDrawValues(false)
         dataSet.lineWidth = 2F
 
-        humidChart.description.isEnabled = false
-        humidChart.legend.isEnabled = false
+        tempChart.description.isEnabled = false
+        tempChart.legend.isEnabled = false
 
-        humidChart.axisRight.isEnabled = false
+        tempChart.axisRight.isEnabled = false
 
         val lineData = LineData(dataSet)
-        humidChart.data = lineData
-        humidChart.invalidate()
+        tempChart.data = lineData
+        tempChart.invalidate()
     }
 
     private fun parseUnixToDate(unixTime: Long): String {

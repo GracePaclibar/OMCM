@@ -73,13 +73,15 @@ class LinechartsLightFragment : Fragment(R.layout.fragment_light_chart) {
 
     private fun setupChart() {
         val entries = mutableListOf<Entry>()
-        for((index, temperature) in lightValues.withIndex()) {
-            entries.add(Entry(index.toFloat(), temperature))
+        for((index, lux) in lightValues.withIndex()) {
+            entries.add(Entry(index.toFloat(), lux))
         }
 
         val dataSet = LineDataSet(entries, "Light")
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.highlight)
         dataSet.setCircleColor(ContextCompat.getColor(requireContext(), R.color.highlight))
+        dataSet.setDrawCircles(false)
+        dataSet.setDrawValues(false)
         dataSet.lineWidth = 2F
 
         lightChart.description.isEnabled = false
