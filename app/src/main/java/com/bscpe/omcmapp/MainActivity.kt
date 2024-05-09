@@ -245,6 +245,16 @@ class MainActivity : AppCompatActivity() {
 
         startActivity(intent, options.toBundle())
     }
+    fun goToImageSelect(view: View) {
+        val intent = Intent(this, ImageSelectActivity::class.java)
+
+        val options = ActivityOptions.makeCustomAnimation(this,
+            R.anim.slide_enter_bottom,
+            R.anim.slide_exit_top
+        )
+
+        startActivity(intent, options.toBundle())
+    }
 
 
 }

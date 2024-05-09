@@ -73,6 +73,11 @@
             android:label="Camera Detect"
             android:exported="false">
         </activity>
+        <activity
+            android:name=".ImageSelectActivity"
+            android:label="Image Select"
+            android:exported="false">
+        </activity>
         <uses-native-library
             android:name="libOpenCL.so"
             android:required="false"/>
