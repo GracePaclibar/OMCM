@@ -94,4 +94,5 @@ dependencies {
     implementation("org.tensorflow:tensorflow-lite-gpu-api:2.16.1")
     implementation("org.tensorflow:tensorflow-lite-api:2.16.1")
     implementation("org.tensorflow:tensorflow-lite-gpu:2.16.1")
+    implementation("com.github.lzyzsd:circleprogress:1.2.1")
 }
