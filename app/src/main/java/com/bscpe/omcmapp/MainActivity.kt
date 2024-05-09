@@ -140,6 +140,7 @@ class MainActivity : AppCompatActivity() {
                         latestHumidity = it.internal_humidity.toDoubleOrNull() ?: 0.0
                         latestLux = it.lux.toDoubleOrNull() ?: 0.0
                         updateProgress()
+                        findViewById<TextView>(R.id.TimestampTextView).text = "Latest Timestamp: ${it.timestamp}"
                     }
                 }
 
@@ -163,7 +164,7 @@ class MainActivity : AppCompatActivity() {
 
         // Show lux as High or Low based on its value
         val luxText = if (latestLux > 500) "High" else "Low"
-        luxTextView.text = "Lux: $luxText (${latestLux.toInt()})"
+        luxTextView.text = "Luminosity: $luxText (${latestLux.toInt()} lux)"
     }
 
     private fun updateGraph(temperature: Double, humidity: Double, lux: Double) {
