@@ -57,4 +57,6 @@
     <string name="send_button">Send</string>
     <string name="send_button_desc">Send button</string>
     <string name="gpu">GPU</string>
+    <string name="button2"><u>See More</u></string>
+    <string name="button3"><u>See More</u></string>
 </resources>
