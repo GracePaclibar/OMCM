@@ -195,6 +195,44 @@
         app:srcCompat="@drawable/ic_scan" />
 
     <ImageButton
+        android:id="@+id/camera_scan_tab"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="#00FFFFFF"
+        android:contentDescription="Camera scan button"
+        android:elevation="4dp"
+        android:onClick="goToCameraDetect"
+        android:padding="20dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/image_scan_tab"
+        app:layout_constraintStart_toEndOf="@+id/scan_tab"
+        app:layout_constraintTop_toTopOf="@+id/bot"
+        app:layout_constraintVertical_bias="0.48"
+        app:srcCompat="@drawable/ic_camera_scan" />
+
+
+    <ImageButton
+        android:id="@+id/image_scan_tab"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="#00FFFFFF"
+        android:contentDescription="Image scan button"
+        android:elevation="4dp"
+        android:onClick="goToCameraDetect"
+        android:padding="20dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/bot"
+        app:layout_constraintTop_toTopOf="@+id/bot"
+        app:layout_constraintVertical_bias="0.48"
+        app:srcCompat="@drawable/ic_image_scan" />
+
+    <ImageButton
         android:id="@+id/sysConfig_tab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
