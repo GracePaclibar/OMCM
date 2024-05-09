@@ -56,4 +56,5 @@
     <string name="send_feedback_button_desc">send feedback button</string>
     <string name="send_button">Send</string>
     <string name="send_button_desc">Send button</string>
+    <string name="gpu">GPU</string>
 </resources>
