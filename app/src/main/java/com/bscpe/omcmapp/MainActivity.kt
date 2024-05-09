@@ -140,7 +140,7 @@ class MainActivity : AppCompatActivity() {
                         latestHumidity = it.internal_humidity.toDoubleOrNull() ?: 0.0
                         latestLux = it.lux.toDoubleOrNull() ?: 0.0
                         updateProgress()
-                        findViewById<TextView>(R.id.TimestampTextView).text = "Latest Timestamp: ${it.timestamp}"
+                        findViewById<TextView>(R.id.TimestampTextView).text = "As of: ${it.timestamp}"
                     }
                 }
 
