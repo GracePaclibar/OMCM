@@ -350,7 +350,6 @@
             app:donut_finished_color="#4CAF50"
             app:donut_suffix_text=" °C"
             app:donut_inner_bottom_text_size="18sp"
-            app:donut_progress="0"
             app:donut_unfinished_color="#D3D3D3" />
 
         <com.github.lzyzsd.circleprogress.DonutProgress
@@ -365,23 +364,23 @@
             app:donut_finished_color="#FFA500"
             app:donut_suffix_text="%"
             app:donut_inner_bottom_text_size="18sp"
-            app:donut_progress="0"
             app:donut_unfinished_color="#D3D3D3" />
 
-        <com.github.lzyzsd.circleprogress.DonutProgress
-            android:id="@+id/luxProgress"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
+        <TextView
+            android:id="@+id/luxTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_below="@id/humidityProgress"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            app:donut_suffix_text=" lux"
-            app:donut_finished_color="#FFC107"
-            app:donut_inner_bottom_text_size="18sp"
-            app:donut_progress="0"
-            app:donut_unfinished_color="#D3D3D3" />
+            android:fontFamily="@font/inter_light"
+            android:text="Lux: "
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/humidityProgress" />
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

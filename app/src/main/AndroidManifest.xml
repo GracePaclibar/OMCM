@@ -68,6 +68,17 @@
         <activity
             android:name=".FeedbacksActivity"
             android:label="Feedbacks Page" />
+        <activity
+            android:name=".CameraDetectActivity"
+            android:label="Camera Detect"
+            android:exported="false">
+        </activity>
+        <uses-native-library
+            android:name="libOpenCL.so"
+            android:required="false"/>
+        <uses-native-library
+            android:name="libOpenCL-pixel.so"
+            android:required="false" />
 
         <meta-data
             android:name="preloaded_fonts"
@@ -82,6 +93,8 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+
     </application>
 
 </manifest>

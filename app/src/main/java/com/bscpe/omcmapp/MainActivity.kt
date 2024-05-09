@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sunView: View
     private lateinit var temperatureProgress: DonutProgress
     private lateinit var humidityProgress: DonutProgress
-    private lateinit var luxProgress: DonutProgress
+    private lateinit var luxTextView: TextView
     private lateinit var databaseReference: DatabaseReference
     private lateinit var valueEventListener: ValueEventListener
 
@@ -68,7 +68,6 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Failed to capture image", Toast.LENGTH_SHORT).show()
             }
         }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -98,32 +97,38 @@ class MainActivity : AppCompatActivity() {
 
         temperatureProgress = findViewById(R.id.temperatureProgress)
         humidityProgress = findViewById(R.id.humidityProgress)
-        luxProgress = findViewById(R.id.luxProgress)
+        luxTextView = findViewById(R.id.luxTextView)
 
-        databaseReference = FirebaseDatabase.getInstance().reference.child("UsersData").child("QXOWPYhfnYeeWPUmS0MJ34Ccaj03").child("readings")
+        // Get the UID of the currently logged-in user
+        val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
 
-        valueEventListener = object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                var latestReading: Reading? = null
-                for (readingSnapshot in snapshot.children) {
-                    latestReading = readingSnapshot.getValue(Reading::class.java)
+        // Check if the user is logged in
+        if (currentUserUid != null) {
+            // Construct the database reference based on the UID of the logged-in user
+            databaseReference = FirebaseDatabase.getInstance().reference.child("UsersData").child(currentUserUid).child("readings")
+
+            valueEventListener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    var latestReading: Reading? = null
+                    for (readingSnapshot in snapshot.children) {
+                        latestReading = readingSnapshot.getValue(Reading::class.java)
+                    }
+
+                    latestReading?.let {
+                        latestTemperature = it.internal_temperature.toDoubleOrNull() ?: 0.0
+                        latestHumidity = it.internal_humidity.toDoubleOrNull() ?: 0.0
+                        latestLux = it.lux.toDoubleOrNull() ?: 0.0
+                        updateProgress()
+                    }
                 }
 
-                latestReading?.let {
-                    latestTemperature = it.temperature
-                    latestHumidity = it.humidity
-                    latestLux = it.lux
-                    updateProgress()
-                    updateGraph(it.temperature, it.humidity, it.lux)
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle error
                 }
             }
 
-            override fun onCancelled(error: DatabaseError) {
-                // Handle error
-            }
+            databaseReference.addValueEventListener(valueEventListener)
         }
-
-        databaseReference.addValueEventListener(valueEventListener)
     }
 
     override fun onDestroy() {
@@ -134,7 +139,10 @@ class MainActivity : AppCompatActivity() {
     private fun updateProgress() {
         temperatureProgress.progress = latestTemperature.toFloat()
         humidityProgress.progress = latestHumidity.toFloat()
-        luxProgress.progress = latestLux.toFloat()
+
+        // Show lux as High or Low based on its value
+        val luxText = if (latestLux > 500) "High" else "Low"
+        luxTextView.text = "Lux: $luxText (${latestLux.toInt()})"
     }
 
     private fun updateGraph(temperature: Double, humidity: Double, lux: Double) {
@@ -281,8 +289,11 @@ class MainActivity : AppCompatActivity() {
 }
 
 data class Reading(
-    val temperature: Double = 0.0,
-    val humidity: Double = 0.0,
-    val lux: Double = 0.0,
-    val timestamp: String = ""
+    val external_humidity: String = "",
+    val external_temperature: String = "",
+    val internal_temperature: String = "",
+    val internal_humidity: String = "",
+    val lux: String = "",
+    val timestamp: String = "",
+    val unixtimestamp: Int = 0
 )

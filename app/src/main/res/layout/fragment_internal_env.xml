@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".InternalEnvFragment">
+
+    <TextView
+        android:id="@+id/internal_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/inter_bold"
+        android:padding="5dp"
+        android:text="Internal Environment"
+        android:textColor="@color/highlight"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/time_filter"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:background="@drawable/spinner_border"
+        android:fontFamily="@font/inter_bold"
+        android:minWidth="125dp"
+        android:paddingStart="10dp"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TableLayout
+        android:id="@+id/internal_table"
+        android:layout_width="355dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/internal_text">
+
+        <TableRow android:paddingVertical="3dp">
+
+            <TextView
+                android:layout_width="118dp"
+                android:layout_column="1"
+                android:fontFamily="@font/inter_light"
+                android:gravity="center"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="Average:" />
+
+            <TextView
+                android:id="@+id/int_ave"
+                android:layout_width="118dp"
+                android:layout_column="1"
+                android:fontFamily="@font/inter_light"
+                android:gravity="center"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="ave" />
+
+        </TableRow>
+
+        <TableRow android:paddingVertical="3dp">
+
+            <TextView
+                android:layout_width="118dp"
+                android:layout_column="1"
+                android:fontFamily="@font/inter_light"
+                android:gravity="center"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="Max:" />
+
+            <TextView
+                android:id="@+id/int_max"
+                android:layout_width="118dp"
+                android:layout_column="1"
+                android:fontFamily="@font/inter_light"
+                android:gravity="center"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="max" />
+
+            <TextView
+                android:id="@+id/int_max_time"
+                android:layout_width="118dp"
+                android:layout_column="1"
+                android:fontFamily="@font/inter_light"
+                android:gravity="center"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="time" />
+
+        </TableRow>
+
+        <TableRow android:paddingVertical="3dp">
+
+            <TextView
+                android:layout_width="118dp"
+                android:layout_column="1"
+                android:fontFamily="@font/inter_light"
+                android:gravity="center"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="Min:" />
+
+            <TextView
+                android:id="@+id/int_min"
+                android:layout_width="118dp"
+                android:layout_column="1"
+                android:fontFamily="@font/inter_light"
+                android:gravity="center"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="min" />
+
+            <TextView
+                android:id="@+id/int_min_time"
+                android:layout_width="118dp"
+                android:layout_column="1"
+                android:fontFamily="@font/inter_light"
+                android:gravity="center"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="time" />
+
+        </TableRow>
+
+    </TableLayout>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/main"
+        app:layout_constraintTop_toBottomOf="@id/internal_table">
+
+    </View>
+
+    <TextView
+        android:id="@+id/external_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/inter_bold"
+        android:padding="5dp"
+        android:text="External Environment"
+        android:textColor="@color/highlight"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider" />
+
+    <TableLayout
+        android:id="@+id/external_table"
+        android:layout_width="355dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/external_text">
+
+        <TableRow android:paddingVertical="3dp">
+
+            <TextView
+                android:layout_width="118dp"
+                android:layout_column="1"
+                android:fontFamily="@font/inter_light"
+                android:gravity="center"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="Average:" />
+
+            <TextView
+                android:id="@+id/ext_ave"
+                android:layout_width="118dp"
+                android:layout_column="1"
+                android:fontFamily="@font/inter_light"
+                android:gravity="center"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="ave" />
+
+        </TableRow>
+
+        <TableRow android:paddingVertical="3dp">
+
+            <TextView
+                android:layout_width="118dp"
+                android:layout_column="1"
+                android:fontFamily="@font/inter_light"
+                android:gravity="center"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="Max:" />
+
+            <TextView
+                android:id="@+id/ext_max"
+                android:layout_width="118dp"
+                android:layout_column="1"
+                android:fontFamily="@font/inter_light"
+                android:gravity="center"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="max" />
+
+            <TextView
+                android:id="@+id/ext_max_time"
+                android:layout_width="118dp"
+                android:layout_column="1"
+                android:fontFamily="@font/inter_light"
+                android:gravity="center"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="time" />
+
+        </TableRow>
+
+        <TableRow android:paddingVertical="3dp">
+
+            <TextView
+                android:layout_width="118dp"
+                android:layout_column="1"
+                android:fontFamily="@font/inter_light"
+                android:gravity="center"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="Min:" />
+
+            <TextView
+                android:id="@+id/ext_min"
+                android:layout_width="118dp"
+                android:layout_column="1"
+                android:fontFamily="@font/inter_light"
+                android:gravity="center"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="min" />
+
+            <TextView
+                android:id="@+id/ext_min_time"
+                android:layout_width="118dp"
+                android:layout_column="1"
+                android:fontFamily="@font/inter_light"
+                android:gravity="center"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="time" />
+
+        </TableRow>
+
+    </TableLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
