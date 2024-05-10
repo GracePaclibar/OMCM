@@ -138,6 +138,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/network_label" />
 
+    <ImageButton
+        android:id="@+id/visibility_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="@drawable/ic_visibility"
+        android:elevation="5dp"
+        app:layout_constraintEnd_toEndOf="@+id/wifiPassword"
+        app:layout_constraintTop_toTopOf="@+id/wifiPassword" />
+
     <EditText
         android:id="@+id/wifiPassword"
         android:layout_width="0dp"
@@ -188,28 +198,53 @@
         tools:ignore="MissingConstraints" />
 
     <TextView
-        android:id="@+id/power_state"
+        android:id="@+id/auto_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="20dp"
         android:fontFamily="@font/inter_light"
-        android:text="Turn Off/On"
+        android:text="Automatic"
         android:textColor="@color/highlight"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sysControls_label" />
 
     <Switch
-        android:id="@+id/power_switch"
+        android:id="@+id/auto_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
         android:minWidth="48dp"
         android:minHeight="48dp"
-        app:layout_constraintBottom_toBottomOf="@+id/power_state"
+        app:layout_constraintBottom_toBottomOf="@+id/auto_state"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/power_state"
+        app:layout_constraintTop_toTopOf="@+id/auto_state"
+        tools:ignore="MissingConstraints,UseSwitchCompatOrMaterialXml" />
+
+    <TextView
+        android:id="@+id/manual_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/inter_light"
+        android:text="Manual"
+        android:textColor="@color/highlight"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/auto_state" />
+
+    <Switch
+        android:id="@+id/manual_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:minWidth="48dp"
+        android:minHeight="48dp"
+        app:layout_constraintBottom_toBottomOf="@+id/manual_state"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/manual_state"
         tools:ignore="MissingConstraints,UseSwitchCompatOrMaterialXml" />
 
 
