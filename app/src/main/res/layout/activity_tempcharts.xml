@@ -60,7 +60,7 @@
         <FrameLayout
             android:id="@+id/temp_chart"
             android:layout_width="380dp"
-            android:layout_height="205dp"
+            android:layout_height="230dp"
             android:layout_marginStart="5dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="5dp"
@@ -72,7 +72,7 @@
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/tempFragmentContainer"
                 android:layout_width="355dp"
-                android:layout_height="175dp"
+                android:layout_height="200dp"
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="15dp" />
 
