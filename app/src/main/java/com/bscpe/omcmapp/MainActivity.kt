@@ -184,6 +184,39 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun goToTempCharts(view: View) {
+        val intent = Intent(this, TempChartsActivity::class.java)
+
+        val options = ActivityOptions.makeCustomAnimation(this,
+            R.anim.slide_enter_right,
+            R.anim.slide_exit_left
+        )
+
+        startActivity(intent, options.toBundle())
+    }
+
+    fun goToHumidCharts(view: View) {
+        val intent = Intent(this, HumidChartsActivity::class.java)
+
+        val options = ActivityOptions.makeCustomAnimation(this,
+            R.anim.slide_enter_right,
+            R.anim.slide_exit_left
+        )
+
+        startActivity(intent, options.toBundle())
+    }
+
+    fun goToLightCharts(view: View) {
+        val intent = Intent(this, LightChartsActivity::class.java)
+
+        val options = ActivityOptions.makeCustomAnimation(this,
+            R.anim.slide_enter_right,
+            R.anim.slide_exit_left
+        )
+
+        startActivity(intent, options.toBundle())
+    }
+
     private fun openCamera() {
         val captureImageIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         // Ensure there's a camera activity to handle the intent
@@ -301,6 +334,16 @@ class MainActivity : AppCompatActivity() {
     }
     fun openSysConfig(view: View) {
         val intent = Intent(this, SystemConfigActivity::class.java)
+
+        val options = ActivityOptions.makeCustomAnimation(this,
+            R.anim.slide_enter_bottom,
+            R.anim.slide_exit_top
+        )
+
+        startActivity(intent, options.toBundle())
+    }
+    fun goToImageSelect(view: View) {
+        val intent = Intent(this, ImageSelectActivity::class.java)
 
         val options = ActivityOptions.makeCustomAnimation(this,
             R.anim.slide_enter_bottom,

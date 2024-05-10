@@ -79,6 +79,24 @@
 
         </FrameLayout>
 
+        <FrameLayout
+            android:layout_width="380dp"
+            android:layout_height="365dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/chart_border"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/humidity_chart">
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/humidEnvFragmentContainer"
+                android:layout_width="355dp"
+                android:layout_height="335dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp" />
+
+        </FrameLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>
