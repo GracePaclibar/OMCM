@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -17,7 +18,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class LightEnvFragment : Fragment(R.layout.fragment_light_env) {
+class LightEnvFragment : Fragment(R.layout.fragment_temp_int_env) {
 
     private lateinit var spinner: Spinner
     private lateinit var filter: Array<String>
@@ -28,10 +29,17 @@ class LightEnvFragment : Fragment(R.layout.fragment_light_env) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_light_env, container, false)
+        val view = inflater.inflate(R.layout.fragment_temp_int_env, container, false)
 
         filter = resources.getStringArray(R.array.Filter)
         spinner = view.findViewById(R.id.time_filter)
+
+        // changing units and icons
+        val unit = view.findViewById<TextView>(R.id.unit)
+        unit.text = "lux"
+
+        val icon = view.findViewById<ImageView>(R.id.temp_icon)
+        icon.setImageResource(R.drawable.ic_light)
 
         if (spinner != null) {
             val adapter = ArrayAdapter(requireContext(), R.layout.spinner_dropdown_item, filter)
@@ -122,18 +130,18 @@ class LightEnvFragment : Fragment(R.layout.fragment_light_env) {
             val intTextViewAve = view?.findViewById<TextView>(R.id.int_ave)
             val intTextViewMax = view?.findViewById<TextView>(R.id.int_max)
             val intTextViewMin = view?.findViewById<TextView>(R.id.int_min)
-            val intMaxTimeTextView = view?.findViewById<TextView>(R.id.int_max_time)
-            val intMinTimeTextView = view?.findViewById<TextView>(R.id.int_min_time)
+//            val intMaxTimeTextView = view?.findViewById<TextView>(R.id.int_max_time)
+//            val intMinTimeTextView = view?.findViewById<TextView>(R.id.int_min_time)
 
-            val intAverageTemp = intLightValues.map { it.first }.average().toInt().toString()
-            val (intMaxTemp, intMaxTimestamp) = intLightValues.first()
-            val (intMinTemp, intMinTimestamp) = intLightValues.last()
+            val intAverageLight = intLightValues.map { it.first }.average().toInt().toString()
+            val (intMaxLight, intMaxTimestamp) = intLightValues.first()
+            val (intMinLight, intMinTimestamp) = intLightValues.last()
 
-            intTextViewAve?.text = "$intAverageTemp lux"
-            intTextViewMax?.text = "$intMaxTemp lux"
-            intTextViewMin?.text = "$intMinTemp lux"
-            intMaxTimeTextView?.text = getTimeFromTimestamp(intMaxTimestamp)
-            intMinTimeTextView?.text = getTimeFromTimestamp(intMinTimestamp)
+            intTextViewAve?.text = "$intAverageLight"
+            intTextViewMax?.text = "$intMaxLight lux"
+            intTextViewMin?.text = "$intMinLight lux"
+//            intMaxTimeTextView?.text = getTimeFromTimestamp(intMaxTimestamp)
+//            intMinTimeTextView?.text = getTimeFromTimestamp(intMinTimestamp)
 
         }
     }

@@ -51,8 +51,6 @@ class LightChartFragment : Fragment(R.layout.fragment_light_chart) {
 
         myRef.limitToLast(5).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                // Log the key of the parent node
-                Log.d("FirebaseData", "Parent Node Key: ${dataSnapshot.key}")
 
                 val currentDate = view?.findViewById<TextView>(R.id.currentDateChart)
 
@@ -64,8 +62,6 @@ class LightChartFragment : Fragment(R.layout.fragment_light_chart) {
                 val dateOutputFormatter = SimpleDateFormat("MMM dd", Locale.getDefault())
 
                 for (snapshot in dataSnapshot.children) {
-                    // Log the key of each child node
-                    Log.d("FirebaseData", "Child Node Key: ${snapshot.key}")
 
                     for (childSnapshot in snapshot.children) {
                         val lightString = snapshot.child("lux").getValue(String::class.java)

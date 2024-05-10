@@ -36,7 +36,6 @@ class TempIntEnvFragment : Fragment(R.layout.fragment_temp_int_env) {
         val sharedViewModel: SpinnerModel by activityViewModels()
 
         sharedViewModel.selectedPosition.observe(viewLifecycleOwner) { position ->
-            // Update spinner selection here
             spinner.setSelection(position)
         }
 

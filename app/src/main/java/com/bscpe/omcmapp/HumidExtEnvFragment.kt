@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -19,11 +20,11 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class TempExtEnvFragment : Fragment(R.layout.fragment_temp_ext_env) {
+class HumidExtEnvFragment : Fragment(R.layout.fragment_temp_ext_env) {
 
     private lateinit var spinner: Spinner
     private lateinit var filter: Array<String>
-    private val extTemperatureValues = mutableListOf<Pair<Float, String?>>()
+    private val extHumidValues = mutableListOf<Pair<Float, String?>>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,6 +37,13 @@ class TempExtEnvFragment : Fragment(R.layout.fragment_temp_ext_env) {
         spinner = view.findViewById(R.id.time_filter)
 
         val sharedViewModel: SpinnerModel by activityViewModels()
+
+        // changing units and icons
+        val unit = view.findViewById<TextView>(R.id.unit)
+        unit.text = "%"
+
+        val icon = view.findViewById<ImageView>(R.id.temp_icon)
+        icon.setImageResource(R.drawable.ic_humid)
 
         sharedViewModel.selectedPosition.observe(viewLifecycleOwner) { position ->
             spinner.setSelection(position)
@@ -50,7 +58,7 @@ class TempExtEnvFragment : Fragment(R.layout.fragment_temp_ext_env) {
                 override fun onItemSelected(parent: AdapterView<*>,
                                             view: View?, position: Int, id: Long) {
                     sharedViewModel.selectedPosition.value = position
-                    extTemperatureValues.clear()
+                    extHumidValues.clear()
                     val selectedItem = filter[position]
 //                    Toast.makeText(parent.context, "Selected item: $selectedItem", Toast.LENGTH_SHORT).show()
                     fillTable(position)
@@ -105,12 +113,12 @@ class TempExtEnvFragment : Fragment(R.layout.fragment_temp_ext_env) {
                 for (snapshot in dataSnapshot.children) {
 
                     for (childSnapshot in snapshot.children) {
-                        val extTemperatureString = snapshot.child("external_temperature").getValue(String::class.java)
-                        val extTemperatureFloat = extTemperatureString?.toFloatOrNull()
-                        val extTempTimestampString = snapshot.child("timestamp").getValue(String::class.java)
+                        val extHumidString = snapshot.child("external_humidity").getValue(String::class.java)
+                        val extHumidFloat = extHumidString?.toFloatOrNull()
+                        val extHumidTimestampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                        if (extTemperatureFloat != null) {
-                            extTemperatureValues.add(extTemperatureFloat to extTempTimestampString)
+                        if (extHumidFloat != null) {
+                            extHumidValues.add(extHumidFloat to extHumidTimestampString)
                         }
                     }
                     setupTable()
@@ -123,22 +131,22 @@ class TempExtEnvFragment : Fragment(R.layout.fragment_temp_ext_env) {
     }
 
     private fun setupTable() {
-        extTemperatureValues.sortByDescending { it.first }
+        extHumidValues.sortByDescending { it.first }
 
-        if (extTemperatureValues.isNotEmpty()) {
+        if (extHumidValues.isNotEmpty()) {
             val extTextViewAve = view?.findViewById<TextView>(R.id.ext_ave)
             val extTextViewMax = view?.findViewById<TextView>(R.id.ext_max)
             val extTextViewMin = view?.findViewById<TextView>(R.id.ext_min)
 //            val extMaxTimeTextView = view?.findViewById<TextView>(R.id.ext_max_time)
 //            val extMinTimeTextView = view?.findViewById<TextView>(R.id.ext_min_time)
 
-            val extAverageTemp = String.format("%.2f", extTemperatureValues.map { it.first }.average())
-            val (extMaxTemp, extMaxTimestamp) = extTemperatureValues.first()
-            val (extMinTemp, extMinTimestamp) = extTemperatureValues.last()
+            val extAverageHumid = String.format("%.2f", extHumidValues.map { it.first }.average())
+            val (extMaxHumid, extMaxTimestamp) = extHumidValues.first()
+            val (extMinHumid, extMinTimestamp) = extHumidValues.last()
 
-            extTextViewAve?.text = "$extAverageTemp"
-            extTextViewMax?.text = "$extMaxTemp°C"
-            extTextViewMin?.text = "$extMinTemp°C"
+            extTextViewAve?.text = "$extAverageHumid"
+            extTextViewMax?.text = "$extMaxHumid%"
+            extTextViewMin?.text = "$extMinHumid%"
 //            extMaxTimeTextView?.text = getTimeFromTimestamp(extMaxTimestamp)
 //            extMinTimeTextView?.text = getTimeFromTimestamp(extMinTimestamp)
         }
