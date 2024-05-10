@@ -108,14 +108,14 @@ class TempChartFragment : Fragment(R.layout.fragment_temp_chart) {
     ) {
         if (intEntries.isNotEmpty() && extEntries.isNotEmpty()) {
             val intDataSet = LineDataSet(intEntries, "Internal Temperature")
-            intDataSet.color = ContextCompat.getColor(requireContext(), R.color.main)
+            intDataSet.color = ContextCompat.getColor(requireContext(), R.color.highlight)
             intDataSet.setDrawCircles(false)
             intDataSet.setDrawValues(false)
             intDataSet.lineWidth = 2F
             intDataSet.form = Legend.LegendForm.LINE
 
             val extDataSet = LineDataSet(extEntries, "External Temperature")
-            extDataSet.color = ContextCompat.getColor(requireContext(), R.color.highlight)
+            extDataSet.color = ContextCompat.getColor(requireContext(), R.color.main)
             extDataSet.setDrawCircles(false)
             extDataSet.setDrawValues(false)
             extDataSet.lineWidth = 2F
