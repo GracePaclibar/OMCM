@@ -119,5 +119,4 @@ class TempChartFragment : Fragment(R.layout.fragment_temp_chart) {
         tempChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
         tempChart.invalidate()
     }
-
 }
