@@ -69,6 +69,15 @@
             android:name=".FeedbacksActivity"
             android:label="Feedbacks Page" />
         <activity
+            android:name=".TempChartsActivity"
+            android:label="Temp Charts" />
+        <activity
+            android:name=".HumidChartsActivity"
+            android:label="Humid Charts" />
+        <activity
+            android:name=".LightChartsActivity"
+            android:label="Light Charts" />
+        <activity
             android:name=".CameraDetectActivity"
             android:label="Camera Detect"
             android:exported="false">

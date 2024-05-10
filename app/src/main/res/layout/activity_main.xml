@@ -368,14 +368,11 @@
         android:layout_width="313dp"
         android:layout_height="436dp"
         android:layout_marginStart="25dp"
+        android:layout_marginTop="25dp"
         android:layout_marginEnd="25dp"
-        android:layout_marginBottom="92dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.297"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/top"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintTop_toBottomOf="@+id/wednesDay">
 
         <com.github.lzyzsd.circleprogress.DonutProgress
             android:id="@+id/temperatureProgress"
@@ -386,10 +383,10 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="50dp"
             android:layout_marginEnd="16dp"
-            app:donut_max="60"
             app:donut_finished_color="#4CAF50"
-            app:donut_suffix_text=" °C"
             app:donut_inner_bottom_text_size="18sp"
+            app:donut_max="60"
+            app:donut_suffix_text=" °C"
             app:donut_unfinished_color="#D3D3D3" />
 
         <com.github.lzyzsd.circleprogress.DonutProgress
@@ -402,8 +399,8 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             app:donut_finished_color="#FFA500"
-            app:donut_suffix_text="%"
             app:donut_inner_bottom_text_size="18sp"
+            app:donut_suffix_text="%"
             app:donut_unfinished_color="#D3D3D3" />
 
         <TextView
@@ -411,9 +408,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/humidityProgress"
+            android:background="@color/main"
             android:fontFamily="@font/inter_light"
             android:text="Lux: "
-            android:background="@color/main"
             android:textColor="@color/highlight"
             android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -423,25 +420,25 @@
             android:id="@+id/TimestampTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@color/main"
             android:fontFamily="@font/inter_light"
             android:text="As of: "
-            android:background="@color/main"
             android:textColor="@color/highlight"
             android:textSize="18sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/textView4"
             android:layout_width="100dp"
             android:layout_height="23dp"
-            android:fontFamily="@font/inter_light"
-            android:text="Temperature"
             android:layout_marginTop="50dp"
             android:background="@color/main"
-            android:textColor="@color/highlight"
+            android:fontFamily="@font/inter_light"
+            android:text="Temperature"
             android:textAlignment="center"
-            android:textSize="15sp"/>
+            android:textColor="@color/highlight"
+            android:textSize="15sp" />
 
         <TextView
             android:id="@+id/textView5"
@@ -450,9 +447,9 @@
             android:layout_marginTop="180dp"
             android:background="@color/main"
             android:fontFamily="@font/inter_light"
-            android:textColor="@color/highlight"
-            android:textAlignment="center"
             android:text="Humidity"
+            android:textAlignment="center"
+            android:textColor="@color/highlight"
             android:textSize="15sp" />
 
         <Button
@@ -460,13 +457,14 @@
             android:layout_width="73dp"
             android:layout_height="34dp"
             android:layout_marginLeft="20dp"
-            android:layout_marginRight="5dp"
             android:layout_marginTop="90dp"
+            android:layout_marginRight="5dp"
             android:layout_toRightOf="@id/temperatureProgress"
             android:background="@color/background"
             android:fontFamily="@font/inter_light"
             android:text="@string/button2"
             android:textColor="@color/main"
+            android:onClick="goToTempCharts"
             android:textSize="9sp" />
 
         <Button
@@ -474,13 +472,14 @@
             android:layout_width="73dp"
             android:layout_height="34dp"
             android:layout_marginLeft="20dp"
-            android:layout_marginRight="5dp"
             android:layout_marginTop="235dp"
+            android:layout_marginRight="5dp"
             android:layout_toRightOf="@id/humidityProgress"
             android:background="@color/background"
             android:fontFamily="@font/inter_light"
             android:text="@string/button3"
             android:textColor="@color/main"
+            android:onClick="goToHumidCharts"
             android:textSize="9sp" />
 
 
