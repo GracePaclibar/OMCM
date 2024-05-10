@@ -5,11 +5,13 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
@@ -44,6 +46,10 @@ class SystemConfigActivity: AppCompatActivity() {
         val saveButton = findViewById<Button>(R.id.saveNtwk_btn)
         saveButton.visibility = View.GONE
 
+        // Initial visibility of pass visibility button
+        val visibilityButton = findViewById<ImageButton>(R.id.visibility_btn)
+        visibilityButton.visibility = View.GONE
+
         val userUid = FirebaseAuth.getInstance().currentUser?.uid
 
         val databaseRef = FirebaseDatabase.getInstance().getReference("UsersData/$userUid/WiFI_Router")
@@ -66,8 +72,16 @@ class SystemConfigActivity: AppCompatActivity() {
 
                 if (wifiSSID.isNotEmpty() && wifiPass.isNotEmpty()) {
                     saveButton.visibility = View.VISIBLE
+                    if (wifiPass.isNotEmpty()) {
+                        visibilityButton.visibility = View.VISIBLE
+
+                        visibilityButton.setOnClickListener {
+                            seePassword(visibilityButton, passEditText)
+                        }
+                    }
                 } else {
                     saveButton.visibility = View.GONE
+                    visibilityButton.visibility = View.GONE
                 }
             }
         }
@@ -83,15 +97,26 @@ class SystemConfigActivity: AppCompatActivity() {
             constructor() : this("", "")
         }
 
+        fun mapToWifiInfo(map: Map<String, Any>): WifiInfo {
+            val auth = map["AUTH"] as? String ?: ""
+            val ssid = map["SSID"] as? String ?: ""
+            val wifiDetectedString = map["Wifi_Detected"] as? String ?: "false"
+            val wifiDetected = wifiDetectedString.toBoolean()
+            return WifiInfo(auth, ssid, wifiDetected)
+        }
+
         databaseRef.addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if(dataSnapshot.exists()) {
-                    val wifiInfo = dataSnapshot.getValue(WifiInfo::class.java)
-                    if (wifiInfo != null && wifiInfo.AUTH.isNotEmpty()) {
-                        passEditText.setText(wifiInfo.AUTH)
-                    }
-                    if (wifiInfo != null && wifiInfo.SSID.isNotEmpty()) {
-                        ssidEditText.setText(wifiInfo.SSID)
+                    val wifiInfoMap = dataSnapshot.value as? Map<String, Any>
+                    if (wifiInfoMap != null) {
+                        val wifiInfo = mapToWifiInfo(wifiInfoMap)
+                        if (wifiInfo.AUTH.isNotEmpty()) {
+                            passEditText.setText(wifiInfo.AUTH)
+                        }
+                        if (wifiInfo.SSID.isNotEmpty()) {
+                            ssidEditText.setText(wifiInfo.SSID)
+                        }
                     }
                 }
             }
@@ -138,26 +163,36 @@ class SystemConfigActivity: AppCompatActivity() {
             }
         }
 
-        val powerSwitch = findViewById<Switch>(R.id.power_switch)
+        val autoSwitch = findViewById<Switch>(R.id.auto_switch)
+        val manualSwitch = findViewById<Switch>(R.id.manual_switch)
 
-        val switchState = sharedPrefs.getBoolean("switchState", false)
-        powerSwitch.isChecked = switchState
+        autoSwitch.isChecked = true
+        manualSwitch.isChecked = false
 
-        data class PowerState (
-            val isOn: Boolean
+        val autoSwitchState = sharedPrefs.getBoolean("autoSwitchState", true)
+        autoSwitch.isChecked = autoSwitchState
+
+        val manualSwitchState = sharedPrefs.getBoolean("manualSwitchState", false)
+        manualSwitch.isChecked = manualSwitchState
+
+        data class ModeState (
+            val isAuto: Boolean,
+            val isManual: Boolean
         )
 
-        powerSwitch.setOnCheckedChangeListener { _, isChecked ->
+        autoSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
+                manualSwitch.isChecked = false
 
                 val currentUser = FirebaseAuth.getInstance().currentUser
                 val userUid = currentUser?.uid
 
                 if (userUid != null) {
-                    val powerState = PowerState(isOn = true)
+                    val powerState = ModeState(isAuto = true, isManual = false)
 
                     val capitalizedPowerState = mapOf(
-                        "isOn" to powerState.isOn
+                        "isAuto" to powerState.isAuto,
+                        "isManual" to powerState.isManual
                     )
 
                     // Upload to Realtime DB
@@ -165,7 +200,7 @@ class SystemConfigActivity: AppCompatActivity() {
                     val powerRef = database.getReference("UsersData/$userUid/Control_Key/Manual")
                     powerRef.setValue(capitalizedPowerState)
                         .addOnSuccessListener {
-                            Toast.makeText(this, "Power On", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Auto Mode", Toast.LENGTH_SHORT).show()
                         }
                         .addOnFailureListener{ e ->
                             Toast.makeText(this, "Failed to apply change: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -177,33 +212,66 @@ class SystemConfigActivity: AppCompatActivity() {
                 // saving switch state
                 val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
                 val editor = sharedPrefs.edit()
-                editor.putBoolean("switchState", isChecked)
+                editor.putBoolean("autoSwitchState", true)
+                editor.putBoolean("manualSwitchState", false)
                 editor.apply()
 
             } else {
-                val currentUser = FirebaseAuth.getInstance().currentUser
-                val userUid = currentUser?.uid
-
-                val powerState = PowerState(isOn = false)
-                val capitalizedPowerState = mapOf (
-                    "isOn" to powerState.isOn
-                )
-
-                // Upload to Realtime DB
-                val database = FirebaseDatabase.getInstance()
-                val powerRef = database.getReference("UsersData/$userUid/Control_Key/Manual")
-                powerRef.setValue(capitalizedPowerState)
-                    .addOnSuccessListener {
-                        Toast.makeText(this, "Power Off", Toast.LENGTH_SHORT).show()
-                    }
-                    .addOnFailureListener{ e ->
-                        Toast.makeText(this, "Failed to apply change: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
+                manualSwitch.isChecked = true
 
                 // saving switch state
                 val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
                 val editor = sharedPrefs.edit()
-                editor.putBoolean("switchState", isChecked)
+                editor.putBoolean("autoSwitchState", false)
+                editor.putBoolean("manualSwitchState", true)
+                editor.apply()
+            }
+        }
+
+        manualSwitch.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                autoSwitch.isChecked = false
+
+                val currentUser = FirebaseAuth.getInstance().currentUser
+                val userUid = currentUser?.uid
+
+                if (userUid != null) {
+                    val powerState = ModeState(isAuto = false, isManual = true)
+
+                    val capitalizedPowerState = mapOf(
+                        "isAuto" to powerState.isAuto,
+                        "isManual" to powerState.isManual
+                    )
+
+                    // Upload to Realtime DB
+                    val database = FirebaseDatabase.getInstance()
+                    val powerRef = database.getReference("UsersData/$userUid/Control_Key/Manual")
+                    powerRef.setValue(capitalizedPowerState)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Manual Mode", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener{ e ->
+                            Toast.makeText(this, "Failed to apply change: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
+                } else {
+                    Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show()
+                }
+
+                // saving switch state
+                val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+                val editor = sharedPrefs.edit()
+                editor.putBoolean("autoSwitchState", false)
+                editor.putBoolean("manualSwitchState", true)
+                editor.apply()
+
+            } else {
+                autoSwitch.isChecked = true
+
+                // saving switch state
+                val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+                val editor = sharedPrefs.edit()
+                editor.putBoolean("autoSwitchState", true)
+                editor.putBoolean("manualSwitchState", false)
                 editor.apply()
             }
         }
@@ -220,5 +288,19 @@ class SystemConfigActivity: AppCompatActivity() {
         startActivity(intent, options.toBundle())
     }
 
+    fun seePassword(visibilityButton: ImageButton, passEditText: EditText) {
+        val isVisible = passEditText.inputType != InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+
+        if (isVisible) {
+            visibilityButton.setImageResource(R.drawable.ic_visibility)
+            passEditText.inputType =
+                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+        } else {
+            visibilityButton.setImageResource(R.drawable.ic_visibility_off)
+            passEditText.inputType =
+                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+        }
+        passEditText.setSelection(passEditText.text.length)
+    }
 }
 
