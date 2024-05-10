@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
@@ -26,7 +27,7 @@ class HumidChartFragment : Fragment(R.layout.fragment_humid_chart) {
 
     private lateinit var humidChart: LineChart
     private val intHumidValues = mutableListOf<Float>()
-    private val extHumidValues = mutableListOf<Float>()
+    private val extHumidValues = mutableListOf<Float?>()
 
 
     override fun onCreateView(
@@ -58,7 +59,6 @@ class HumidChartFragment : Fragment(R.layout.fragment_humid_chart) {
 
                 val currentDate = view?.findViewById<TextView>(R.id.currentDateChart)
 
-                val entries = mutableListOf<Entry>()
                 val labels = mutableListOf<String>()
 
                 val dateFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
@@ -72,11 +72,13 @@ class HumidChartFragment : Fragment(R.layout.fragment_humid_chart) {
                     for (childSnapshot in snapshot.children) {
                         val intHumidString = snapshot.child("internal_humidity").getValue(String::class.java)
                         val intHumidFloat = intHumidString?.toFloatOrNull()
+                        val extHumidString = snapshot.child("external_humidity").getValue(String::class.java)
+                        val extHumidFloat = extHumidString?.toFloatOrNull()
                         val intHumidTimestampString = snapshot.child("timestamp").getValue(String::class.java)
 
                         if (intHumidFloat != null && intHumidTimestampString != null) {
                             intHumidValues.add(intHumidFloat)
-                            entries.add(Entry(entries.size.toFloat(), intHumidFloat))
+                            extHumidValues.add(extHumidFloat)
 
                             val date = dateFormatter.parse(intHumidTimestampString)
                             val timeFormattedTime = timeOutputFormatter.format(date)
@@ -87,7 +89,20 @@ class HumidChartFragment : Fragment(R.layout.fragment_humid_chart) {
                         }
                     }
                 }
-                setupChart(entries, labels)
+
+                val intEntries = mutableListOf<Entry>()
+                for ((index, value) in intHumidValues.withIndex()) {
+                    intEntries.add(Entry(index.toFloat(), value))
+                }
+
+                val extEntries = mutableListOf<Entry>()
+                for ((index, value) in extHumidValues.withIndex()) {
+                    value?.let {
+                        extEntries.add(Entry(index.toFloat(), it))
+                    }
+                }
+
+                setupChart(intEntries, extEntries, labels)
             }
             override fun onCancelled(databaseError: DatabaseError) {
                 Log.e("LinechartsFragment", "Database error: ${databaseError.message}")
@@ -95,29 +110,41 @@ class HumidChartFragment : Fragment(R.layout.fragment_humid_chart) {
         })
     }
 
-    private fun setupChart(entries: List<Entry>, labels: List<String>) {
-        val entries = mutableListOf<Entry>()
-        for((index, intTemperature) in intHumidValues.withIndex()) {
-            entries.add(Entry(index.toFloat(), intTemperature))
+    private fun setupChart(
+        intEntries: List<Entry>,
+        extEntries: List<Entry>,
+        labels: List<String>
+    ) {
+        if (intEntries.isNotEmpty() && extEntries.isNotEmpty()) {
+            val intDataSet = LineDataSet(intEntries, "Internal Humidity")
+            intDataSet.color = ContextCompat.getColor(requireContext(), R.color.main)
+            intDataSet.setDrawCircles(false)
+            intDataSet.setDrawValues(false)
+            intDataSet.lineWidth = 2F
+            intDataSet.form = Legend.LegendForm.LINE
+
+            val extDataSet = LineDataSet(extEntries, "External Humidity")
+            extDataSet.color = ContextCompat.getColor(requireContext(), R.color.highlight)
+            extDataSet.setDrawCircles(false)
+            extDataSet.setDrawValues(false)
+            extDataSet.lineWidth = 2F
+            extDataSet.form = Legend.LegendForm.LINE
+
+            humidChart.description.isEnabled = false
+            humidChart.legend.isEnabled = true
+            humidChart.axisRight.isEnabled = false
+
+            val legend = humidChart.legend
+            legend.verticalAlignment = Legend.LegendVerticalAlignment.TOP
+
+            val lineData = LineData(intDataSet, extDataSet)
+            humidChart.data = lineData
+
+            humidChart.xAxis.valueFormatter = IndexAxisValueFormatter(labels)
+            humidChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
+            humidChart.invalidate()
+        } else {
+            Log.d("ChartSetup", "No humidity data to display.")
         }
-
-        val dataSet = LineDataSet(entries, "Humidity")
-        dataSet.color = ContextCompat.getColor(requireContext(), R.color.highlight)
-        dataSet.setCircleColor(ContextCompat.getColor(requireContext(), R.color.highlight))
-        dataSet.setDrawCircles(false)
-        dataSet.setDrawValues(false)
-        dataSet.lineWidth = 2F
-
-        humidChart.description.isEnabled = false
-        humidChart.legend.isEnabled = false
-        humidChart.axisRight.isEnabled = false
-
-        val lineData = LineData(dataSet)
-        humidChart.data = lineData
-
-        //        tempChart.xAxis.isEnabled = false
-        humidChart.xAxis.valueFormatter = IndexAxisValueFormatter(labels)
-        humidChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
-        humidChart.invalidate()
     }
 }
