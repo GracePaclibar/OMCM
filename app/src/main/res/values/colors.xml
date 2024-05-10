@@ -16,4 +16,7 @@
     <color name="detail">#CEDEBD</color>
     <color name="background">#FAF1E4</color>
     <color name="transparent">#00FFFFFF</color>
+    <color name="bounding_box_color">#234567</color>
+    <color name="gray">#999</color>
+    <color name="orange">#F93</color>
 </resources>

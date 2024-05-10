@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.view.View
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
@@ -19,6 +20,8 @@ import androidx.core.content.FileProvider
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
+import com.github.lzyzsd.circleprogress.DonutProgress
+import com.google.firebase.database.*
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -39,6 +42,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var friView: View
     private lateinit var satView: View
     private lateinit var sunView: View
+    private lateinit var temperatureProgress: DonutProgress
+    private lateinit var humidityProgress: DonutProgress
+    private lateinit var luxTextView: TextView
+    private lateinit var databaseReference: DatabaseReference
+    private lateinit var valueEventListener: ValueEventListener
+    private var latestTemperature: Double = 0.0
+    private var latestHumidity: Double = 0.0
+    private var latestLux: Double = 0.0
 
     private val takePictureLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -64,11 +75,27 @@ class MainActivity : AppCompatActivity() {
 
         FirebaseApp.initializeApp(this)
 
-       val cameraButton = findViewById<ImageButton>(R.id.scan_tab)
+        // Find the button by its ID
+        val cameraScan = findViewById<ImageButton>(R.id.camera_scan_tab)
+
+        // Set OnClickListener to the button
+        cameraScan.setOnClickListener {
+            // Create an Intent to start SecondActivity
+            val intent = Intent(this, CameraDetectActivity::class.java)
+
+            // Start SecondActivity
+            startActivity(intent)
+        }
+
+        val cameraButton = findViewById<ImageButton>(R.id.scan_tab)
 
         cameraButton.setOnClickListener {
             openCamera()
         }
+
+
+
+
 
         monView = findViewById(R.id.monDay)
         tuesView = findViewById(R.id.tuesDay)
@@ -87,6 +114,62 @@ class MainActivity : AppCompatActivity() {
         // set mini calendar color
         miniCalendar(dayOfWeek)
 
+
+
+        temperatureProgress = findViewById(R.id.temperatureProgress)
+        humidityProgress = findViewById(R.id.humidityProgress)
+        luxTextView = findViewById(R.id.luxTextView)
+
+        // Get the UID of the currently logged-in user
+        val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
+
+        // Check if the user is logged in
+        if (currentUserUid != null) {
+            // Construct the database reference based on the UID of the logged-in user
+            databaseReference = FirebaseDatabase.getInstance().reference.child("UsersData").child(currentUserUid).child("readings")
+
+            valueEventListener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    var latestReading: Reading? = null
+                    for (readingSnapshot in snapshot.children) {
+                        latestReading = readingSnapshot.getValue(Reading::class.java)
+                    }
+
+                    latestReading?.let {
+                        latestTemperature = it.internal_temperature.toDoubleOrNull() ?: 0.0
+                        latestHumidity = it.internal_humidity.toDoubleOrNull() ?: 0.0
+                        latestLux = it.lux.toDoubleOrNull() ?: 0.0
+                        updateProgress()
+                        findViewById<TextView>(R.id.TimestampTextView).text = "As of: ${it.timestamp}"
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle error
+                }
+            }
+
+            databaseReference.addValueEventListener(valueEventListener)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        databaseReference.removeEventListener(valueEventListener)
+    }
+
+    private fun updateProgress() {
+        temperatureProgress.progress = latestTemperature.toFloat()
+        humidityProgress.progress = latestHumidity.toFloat()
+
+        // Show lux as High or Low based on its value
+        val luxText = if (latestLux > 500) "High" else "Low"
+        luxTextView.text = "Luminosity: $luxText (${latestLux.toInt()} lux)"
+    }
+
+    private fun updateGraph(temperature: Double, humidity: Double, lux: Double) {
+        // Update your graph with the new reading values
+        // graph.update(temperature, humidity, lux)
     }
 
     private fun miniCalendar(dayOfWeek: Int) {
@@ -259,4 +342,25 @@ class MainActivity : AppCompatActivity() {
 
         startActivity(intent, options.toBundle())
     }
+    fun goToImageSelect(view: View) {
+        val intent = Intent(this, ImageSelectActivity::class.java)
+
+        val options = ActivityOptions.makeCustomAnimation(this,
+            R.anim.slide_enter_bottom,
+            R.anim.slide_exit_top
+        )
+
+        startActivity(intent, options.toBundle())
+    }
+
+
 }
+data class Reading(
+    val external_humidity: String = "",
+    val external_temperature: String = "",
+    val internal_temperature: String = "",
+    val internal_humidity: String = "",
+    val lux: String = "",
+    val timestamp: String = "",
+    val unixtimestamp: Int = 0
+)
