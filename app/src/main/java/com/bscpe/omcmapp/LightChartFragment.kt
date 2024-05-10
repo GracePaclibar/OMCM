@@ -17,7 +17,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class LinechartsLightFragment : Fragment(R.layout.fragment_light_chart) {
+class LightChartFragment : Fragment(R.layout.fragment_light_chart) {
 
     private lateinit var lightChart: LineChart
     private val lightValues = mutableListOf<Float>()
@@ -27,8 +27,8 @@ class LinechartsLightFragment : Fragment(R.layout.fragment_light_chart) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_temp_chart, container, false)
-        lightChart = view.findViewById(R.id.temp_lineChart)
+        val view = inflater.inflate(R.layout.fragment_light_chart, container, false)
+        lightChart = view.findViewById(R.id.light_lineChart)
         return view
     }
 
@@ -73,13 +73,15 @@ class LinechartsLightFragment : Fragment(R.layout.fragment_light_chart) {
 
     private fun setupChart() {
         val entries = mutableListOf<Entry>()
-        for((index, temperature) in lightValues.withIndex()) {
-            entries.add(Entry(index.toFloat(), temperature))
+        for((index, lux) in lightValues.withIndex()) {
+            entries.add(Entry(index.toFloat(), lux))
         }
 
         val dataSet = LineDataSet(entries, "Light")
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.highlight)
         dataSet.setCircleColor(ContextCompat.getColor(requireContext(), R.color.highlight))
+        dataSet.setDrawCircles(false)
+        dataSet.setDrawValues(false)
         dataSet.lineWidth = 2F
 
         lightChart.description.isEnabled = false

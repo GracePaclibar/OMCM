@@ -59,4 +59,17 @@
     <string name="gpu">GPU</string>
     <string name="button2"><u>See More</u></string>
     <string name="button3"><u>See More</u></string>
+    <string name="charts_text">Charts</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="graphical_data_text">Graphical Data</string>
+
+    <string-array name="Filter">
+        <item>Today</item>
+        <item>This Week</item>
+        <item>This Month</item>
+        <item>3 Months</item>
+        <item>6 Months</item>
+        <item>All Time</item>
+    </string-array>
 </resources>
