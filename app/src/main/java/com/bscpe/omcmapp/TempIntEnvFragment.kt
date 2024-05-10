@@ -1,5 +1,6 @@
 package com.bscpe.omcmapp
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,20 +18,18 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class TempEnvFragment : Fragment(R.layout.fragment_internal_env) {
+class TempIntEnvFragment : Fragment(R.layout.fragment_temp_int_env) {
 
     private lateinit var spinner: Spinner
     private lateinit var filter: Array<String>
     private val intTemperatureValues = mutableListOf<Pair<Float, String?>>()
-    private val extTemperatureValues = mutableListOf<Pair<Float, String?>>()
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_internal_env, container, false)
+        val view = inflater.inflate(R.layout.fragment_temp_int_env, container, false)
 
         filter = resources.getStringArray(R.array.Filter)
         spinner = view.findViewById(R.id.time_filter)
@@ -44,19 +43,25 @@ class TempEnvFragment : Fragment(R.layout.fragment_internal_env) {
                 override fun onItemSelected(parent: AdapterView<*>,
                                             view: View?, position: Int, id: Long) {
                     intTemperatureValues.clear()
-                    extTemperatureValues.clear()
                     val selectedItem = filter[position]
 //                    Toast.makeText(parent.context, "Selected item: $selectedItem", Toast.LENGTH_SHORT).show()
                     fillTable(position)
+
+                    // save selection
+                    val sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+                    val editor = sharedPreferences.edit()
+                    editor.putInt("selectedPosition", position)
+                    editor.apply()
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>) {
-                    TODO()
+                    // Handle case when nothing is selected
                 }
             }
         }
         return view
     }
+
 
     private fun fillTable(selectedFilterPosition: Int) {
         when (selectedFilterPosition) {
@@ -105,13 +110,8 @@ class TempEnvFragment : Fragment(R.layout.fragment_internal_env) {
                         val intTemperatureFloat = intTemperatureString?.toFloatOrNull()
                         val intTempTimestampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                        val extTemperatureString = snapshot.child("external_temperature").getValue(String::class.java)
-                        val extTemperatureFloat = extTemperatureString?.toFloatOrNull()
-                        val extTempTimestampString = snapshot.child("timestamp").getValue(String::class.java)
-
-                        if (intTemperatureFloat != null && extTemperatureFloat != null) {
+                        if (intTemperatureFloat != null) {
                             intTemperatureValues.add(intTemperatureFloat to intTempTimestampString)
-                            extTemperatureValues.add(extTemperatureFloat to extTempTimestampString)
                         }
                     }
                     setupTable()
@@ -125,9 +125,8 @@ class TempEnvFragment : Fragment(R.layout.fragment_internal_env) {
 
     private fun setupTable() {
         intTemperatureValues.sortByDescending { it.first }
-        extTemperatureValues.sortByDescending { it.first }
 
-        if (intTemperatureValues.isNotEmpty() && extTemperatureValues.isNotEmpty()) {
+        if (intTemperatureValues.isNotEmpty()) {
             val intTextViewAve = view?.findViewById<TextView>(R.id.int_ave)
             val intTextViewMax = view?.findViewById<TextView>(R.id.int_max)
             val intTextViewMin = view?.findViewById<TextView>(R.id.int_min)
@@ -138,27 +137,11 @@ class TempEnvFragment : Fragment(R.layout.fragment_internal_env) {
             val (intMaxTemp, intMaxTimestamp) = intTemperatureValues.first()
             val (intMinTemp, intMinTimestamp) = intTemperatureValues.last()
 
-            intTextViewAve?.text = "$intAverageTemp°C"
+            intTextViewAve?.text = "$intAverageTemp"
             intTextViewMax?.text = "$intMaxTemp°C"
             intTextViewMin?.text = "$intMinTemp°C"
             intMaxTimeTextView?.text = getTimeFromTimestamp(intMaxTimestamp)
             intMinTimeTextView?.text = getTimeFromTimestamp(intMinTimestamp)
-
-            val extTextViewAve = view?.findViewById<TextView>(R.id.ext_ave)
-            val extTextViewMax = view?.findViewById<TextView>(R.id.ext_max)
-            val extTextViewMin = view?.findViewById<TextView>(R.id.ext_min)
-            val extMaxTimeTextView = view?.findViewById<TextView>(R.id.ext_max_time)
-            val extMinTimeTextView = view?.findViewById<TextView>(R.id.ext_min_time)
-
-            val extAverageTemp = String.format("%.2f", extTemperatureValues.map { it.first }.average())
-            val (extMaxTemp, extMaxTimestamp) = extTemperatureValues.first()
-            val (extMinTemp, extMinTimestamp) = extTemperatureValues.last()
-
-            extTextViewAve?.text = "$extAverageTemp°C"
-            extTextViewMax?.text = "$extMaxTemp°C"
-            extTextViewMin?.text = "$extMinTemp°C"
-            extMaxTimeTextView?.text = getTimeFromTimestamp(extMaxTimestamp)
-            extMinTimeTextView?.text = getTimeFromTimestamp(extMinTimestamp)
         }
     }
 

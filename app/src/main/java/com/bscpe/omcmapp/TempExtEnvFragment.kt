@@ -17,12 +17,11 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class HumidEnvFragment : Fragment(R.layout.fragment_temp_ext_env) {
+class TempExtEnvFragment : Fragment(R.layout.fragment_temp_ext_env) {
 
     private lateinit var spinner: Spinner
     private lateinit var filter: Array<String>
-    private val intHumidValues = mutableListOf<Pair<Float, String?>>()
-    private val extHumidValues = mutableListOf<Pair<Float, String?>>()
+    private val extTemperatureValues = mutableListOf<Pair<Float, String?>>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,8 +41,7 @@ class HumidEnvFragment : Fragment(R.layout.fragment_temp_ext_env) {
             spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>,
                                             view: View?, position: Int, id: Long) {
-                    intHumidValues.clear()
-                    extHumidValues.clear()
+                    extTemperatureValues.clear()
                     val selectedItem = filter[position]
 //                    Toast.makeText(parent.context, "Selected item: $selectedItem", Toast.LENGTH_SHORT).show()
                     fillTable(position)
@@ -94,23 +92,16 @@ class HumidEnvFragment : Fragment(R.layout.fragment_temp_ext_env) {
 
         myRef.limitToLast(limit).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                Log.d("FirebaseData", "Parent Node Key: ${dataSnapshot.key}")
 
                 for (snapshot in dataSnapshot.children) {
-                    Log.d("FirebaseData", "Child Node Key: ${snapshot.key}")
 
                     for (childSnapshot in snapshot.children) {
-                        val intHumidityString = snapshot.child("internal_humidity").getValue(String::class.java)
-                        val intHumidityFloat = intHumidityString?.toFloatOrNull()
-                        val intHumidTimestampString = snapshot.child("timestamp").getValue(String::class.java)
+                        val extTemperatureString = snapshot.child("external_temperature").getValue(String::class.java)
+                        val extTemperatureFloat = extTemperatureString?.toFloatOrNull()
+                        val extTempTimestampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                        val extHumidityString = snapshot.child("external_humidity").getValue(String::class.java)
-                        val extHumidityFloat = extHumidityString?.toFloatOrNull()
-                        val extHumidTimestampString = snapshot.child("timestamp").getValue(String::class.java)
-
-                        if (intHumidityFloat != null && extHumidityFloat != null) {
-                            intHumidValues.add(intHumidityFloat to intHumidTimestampString)
-                            extHumidValues.add(extHumidityFloat to extHumidTimestampString)
+                        if (extTemperatureFloat != null) {
+                            extTemperatureValues.add(extTemperatureFloat to extTempTimestampString)
                         }
                     }
                     setupTable()
@@ -123,39 +114,22 @@ class HumidEnvFragment : Fragment(R.layout.fragment_temp_ext_env) {
     }
 
     private fun setupTable() {
-        intHumidValues.sortByDescending { it.first }
-        extHumidValues.sortByDescending { it.first }
+        extTemperatureValues.sortByDescending { it.first }
 
-        if (intHumidValues.isNotEmpty() && extHumidValues.isNotEmpty()) {
-            val intTextViewAve = view?.findViewById<TextView>(R.id.int_ave)
-            val intTextViewMax = view?.findViewById<TextView>(R.id.int_max)
-            val intTextViewMin = view?.findViewById<TextView>(R.id.int_min)
-            val intMaxTimeTextView = view?.findViewById<TextView>(R.id.int_max_time)
-            val intMinTimeTextView = view?.findViewById<TextView>(R.id.int_min_time)
-
-            val intAverageTemp = String.format("%.2f", intHumidValues.map { it.first }.average())
-            val (intMaxTemp, intMaxTimestamp) = intHumidValues.first()
-            val (intMinTemp, intMinTimestamp) = intHumidValues.last()
-
-            intTextViewAve?.text = "$intAverageTemp%"
-            intTextViewMax?.text = "$intMaxTemp%"
-            intTextViewMin?.text = "$intMinTemp%"
-            intMaxTimeTextView?.text = getTimeFromTimestamp(intMaxTimestamp)
-            intMinTimeTextView?.text = getTimeFromTimestamp(intMinTimestamp)
-
+        if (extTemperatureValues.isNotEmpty()) {
             val extTextViewAve = view?.findViewById<TextView>(R.id.ext_ave)
             val extTextViewMax = view?.findViewById<TextView>(R.id.ext_max)
             val extTextViewMin = view?.findViewById<TextView>(R.id.ext_min)
 //            val extMaxTimeTextView = view?.findViewById<TextView>(R.id.ext_max_time)
 //            val extMinTimeTextView = view?.findViewById<TextView>(R.id.ext_min_time)
 
-            val extAverageTemp = String.format("%.2f", extHumidValues.map { it.first }.average())
-            val (extMaxTemp, extMaxTimestamp) = extHumidValues.first()
-            val (extMinTemp, extMinTimestamp) = extHumidValues.last()
+            val extAverageTemp = String.format("%.2f", extTemperatureValues.map { it.first }.average())
+            val (extMaxTemp, extMaxTimestamp) = extTemperatureValues.first()
+            val (extMinTemp, extMinTimestamp) = extTemperatureValues.last()
 
-            extTextViewAve?.text = "$extAverageTemp%"
-            extTextViewMax?.text = "$extMaxTemp%"
-            extTextViewMin?.text = "$extMinTemp%"
+            extTextViewAve?.text = "$extAverageTemp"
+            extTextViewMax?.text = "$extMaxTemp°C"
+            extTextViewMin?.text = "$extMinTemp°C"
 //            extMaxTimeTextView?.text = getTimeFromTimestamp(extMaxTimestamp)
 //            extMinTimeTextView?.text = getTimeFromTimestamp(extMinTimestamp)
         }
