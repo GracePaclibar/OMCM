@@ -1,5 +1,6 @@
 package com.bscpe.omcmapp
 
+import SpinnerModel
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +13,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -31,6 +33,13 @@ class TempIntEnvFragment : Fragment(R.layout.fragment_temp_int_env) {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_temp_int_env, container, false)
 
+        val sharedViewModel: SpinnerModel by activityViewModels()
+
+        sharedViewModel.selectedPosition.observe(viewLifecycleOwner) { position ->
+            // Update spinner selection here
+            spinner.setSelection(position)
+        }
+
         filter = resources.getStringArray(R.array.Filter)
         spinner = view.findViewById(R.id.time_filter)
 
@@ -42,6 +51,7 @@ class TempIntEnvFragment : Fragment(R.layout.fragment_temp_int_env) {
             spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>,
                                             view: View?, position: Int, id: Long) {
+                    sharedViewModel.selectedPosition.value = position
                     intTemperatureValues.clear()
                     val selectedItem = filter[position]
 //                    Toast.makeText(parent.context, "Selected item: $selectedItem", Toast.LENGTH_SHORT).show()
