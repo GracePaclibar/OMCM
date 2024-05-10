@@ -387,7 +387,9 @@
             android:layout_marginTop="50dp"
             android:layout_marginEnd="16dp"
             app:donut_max="60"
-            app:donut_finished_color="#4CAF50"
+            app:donut_background_color="@color/main"
+            app:donut_text_color="@color/highlight"
+            app:donut_finished_color="@color/highlight"
             app:donut_suffix_text=" °C"
             app:donut_inner_bottom_text_size="18sp"
             app:donut_unfinished_color="#D3D3D3" />
@@ -401,7 +403,9 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            app:donut_finished_color="#FFA500"
+            app:donut_background_color="@color/main"
+            app:donut_text_color="@color/highlight"
+            app:donut_finished_color="@color/highlight"
             app:donut_suffix_text="%"
             app:donut_inner_bottom_text_size="18sp"
             app:donut_unfinished_color="#D3D3D3" />
