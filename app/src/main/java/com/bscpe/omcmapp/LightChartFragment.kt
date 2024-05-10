@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
@@ -95,15 +96,18 @@ class LightChartFragment : Fragment(R.layout.fragment_light_chart) {
             entries.add(Entry(index.toFloat(), intTemperature))
         }
 
-        val dataSet = LineDataSet(entries, "Temperature")
+        val dataSet = LineDataSet(entries, "Light")
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.highlight)
-        dataSet.setCircleColor(ContextCompat.getColor(requireContext(), R.color.highlight))
         dataSet.setDrawCircles(false)
         dataSet.setDrawValues(false)
         dataSet.lineWidth = 2F
+        dataSet.form = Legend.LegendForm.LINE
+
+        val legend = lightChart.legend
+        legend.verticalAlignment = Legend.LegendVerticalAlignment.TOP
 
         lightChart.description.isEnabled = false
-        lightChart.legend.isEnabled = false
+        lightChart.legend.isEnabled = true
         lightChart.axisRight.isEnabled = false
 
         val lineData = LineData(dataSet)
