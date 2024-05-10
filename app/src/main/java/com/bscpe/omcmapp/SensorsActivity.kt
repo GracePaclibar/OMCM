@@ -12,6 +12,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import android.view.View
+import android.widget.Toast
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 
@@ -38,28 +39,29 @@ class SensorsActivity : AppCompatActivity() {
     }
 
     private fun getSensorsData() {
-
         sensorsRecyclerView.visibility = View.GONE
         tvLoadingData.visibility = View.VISIBLE
         val currentUser = FirebaseAuth.getInstance().currentUser
-        dbRef = FirebaseDatabase.getInstance().getReference("UsersData/${currentUser?.uid}/readings")
+        dbRef =
+            FirebaseDatabase.getInstance().getReference("UsersData/${currentUser?.uid}/readings")
 
-        dbRef.addValueEventListener(object : ValueEventListener {
+        // Modify the query to order data by timestamp in descending order
+        dbRef.orderByChild("timestamp").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 sensorsList.clear()
-                if (snapshot.exists()){
-                    for (empSnap in snapshot.children){
+                if (snapshot.exists()) {
+                    val reversedList = snapshot.children.reversed() // Reverse the order of children
+                    for (empSnap in reversedList) {
                         val empData = empSnap.getValue(SensorsModel::class.java)
-                        sensorsList.add(empData!!)
+                        empData?.let { sensorsList.add(it) }
                     }
                     val mAdapter = SensorsAdapter(sensorsList)
                     sensorsRecyclerView.adapter = mAdapter
 
-                    mAdapter.setOnItemClickListener(object : SensorsAdapter.onItemClickListener{
+                    mAdapter.setOnItemClickListener(object : SensorsAdapter.onItemClickListener {
                         override fun onItemClick(position: Int) {
-
-                            val intent = Intent(this@SensorsActivity, SensorsDetailsActivity::class.java)
-
+                            val intent =
+                                Intent(this@SensorsActivity, SensorsDetailsActivity::class.java)
                             //put extras
                             intent.putExtra("temperature", sensorsList[position].temperature)
                             intent.putExtra("humidity", sensorsList[position].humidity)
@@ -67,18 +69,31 @@ class SensorsActivity : AppCompatActivity() {
                             intent.putExtra("timestamp", sensorsList[position].timestamp)
                             startActivity(intent)
                         }
-
                     })
 
                     sensorsRecyclerView.visibility = View.VISIBLE
                     tvLoadingData.visibility = View.GONE
+                } else {
+                    // Handle case when no data is available
+                    // For example, show a toast or a message to the user
+                    Toast.makeText(this@SensorsActivity, "No data available", Toast.LENGTH_SHORT)
+                        .show()
+                    sensorsRecyclerView.visibility = View.GONE
+                    tvLoadingData.visibility = View.VISIBLE
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+                // Handle onCancelled
+                // For example, show an error message
+                Toast.makeText(
+                    this@SensorsActivity,
+                    "Failed to retrieve data: ${error.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+                sensorsRecyclerView.visibility = View.GONE
+                tvLoadingData.visibility = View.VISIBLE
             }
-
         })
     }
 }
