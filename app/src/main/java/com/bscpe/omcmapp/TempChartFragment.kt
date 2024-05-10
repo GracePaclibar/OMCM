@@ -5,26 +5,29 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.Legend
+import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
-import java.util.Date
+import java.util.Locale
 
 class TempChartFragment : Fragment(R.layout.fragment_temp_chart) {
 
     private lateinit var tempChart: LineChart
     private val intTemperatureValues = mutableListOf<Float>()
     private val extTemperatureValues = mutableListOf<Float>()
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,39 +41,59 @@ class TempChartFragment : Fragment(R.layout.fragment_temp_chart) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fetchDataFromFB()
+        fetchDataFromFB(view)
     }
 
-    private fun fetchDataFromFB() {
+    private fun fetchDataFromFB(view: View) {
         val database = FirebaseDatabase.getInstance()
         val currentUser = FirebaseAuth.getInstance().currentUser
         val userUid = currentUser?.uid
 
         val myRef = database.getReference("UsersData/$userUid/readings")
 
-        myRef.limitToLast(5).addListenerForSingleValueEvent(object : ValueEventListener {
+        myRef.limitToLast(7).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                // Log the key of the parent node
-                Log.d("FirebaseData", "Parent Node Key: ${dataSnapshot.key}")
+                val currentDate = view.findViewById<TextView>(R.id.currentDateChart)
+
+                val labels = mutableListOf<String>()
+
+                val dateFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                val timeOutputFormatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
+                val dateOutputFormatter = SimpleDateFormat("MMM dd", Locale.getDefault())
 
                 for (snapshot in dataSnapshot.children) {
-                    // Log the key of each child node
-                    Log.d("FirebaseData", "Child Node Key: ${snapshot.key}")
-
-                    val unixTime = snapshot.key?.toLong() ?: 0 // Assuming key is Unix timestamp
-                    val formattedDate = parseUnixToDate(unixTime)
-                    Log.d("FirebaseData", "Date: $formattedDate")
-
                     for (childSnapshot in snapshot.children) {
                         val intTemperatureString = snapshot.child("internal_temperature").getValue(String::class.java)
                         val intTemperatureFloat = intTemperatureString?.toFloatOrNull()
+                        val extTemperatureString = snapshot.child("external_temperature").getValue(String::class.java)
+                        val extTemperatureFloat = extTemperatureString?.toFloatOrNull()
+                        val intTempTimestampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                        if (intTemperatureFloat != null ) {
+                        if (intTemperatureFloat != null && intTempTimestampString != null && extTemperatureFloat != null) {
                             intTemperatureValues.add(intTemperatureFloat)
+                            extTemperatureValues.add(extTemperatureFloat)
+
+                            val date = dateFormatter.parse(intTempTimestampString)
+                            val timeFormattedTime = timeOutputFormatter.format(date)
+                            val dateFormattedDate = dateOutputFormatter.format(date)
+
+                            currentDate.text = dateFormattedDate
+                            labels.add(timeFormattedTime)
                         }
                     }
-                    setupChart()
                 }
+
+                val intEntries = mutableListOf<Entry>()
+                for ((index, value) in intTemperatureValues.withIndex()) {
+                    intEntries.add(Entry(index.toFloat(), value))
+                }
+
+                val extEntries = mutableListOf<Entry>()
+                for ((index, value) in extTemperatureValues.withIndex()) {
+                    extEntries.add(Entry(index.toFloat(), value))
+                }
+
+                setupChart(intEntries, extEntries, labels)
             }
             override fun onCancelled(databaseError: DatabaseError) {
                 Log.e("LinechartsFragment", "Database error: ${databaseError.message}")
@@ -78,32 +101,41 @@ class TempChartFragment : Fragment(R.layout.fragment_temp_chart) {
         })
     }
 
-    private fun setupChart() {
-        val entries = mutableListOf<Entry>()
-        for((index, intTemperature) in intTemperatureValues.withIndex()) {
-            entries.add(Entry(index.toFloat(), intTemperature))
+    private fun setupChart(
+        intEntries: List<Entry>,
+        extEntries: List<Entry>,
+        labels: List<String>
+    ) {
+        if (intEntries.isNotEmpty() && extEntries.isNotEmpty()) {
+            val intDataSet = LineDataSet(intEntries, "Internal Temperature")
+            intDataSet.color = ContextCompat.getColor(requireContext(), R.color.main)
+            intDataSet.setDrawCircles(false)
+            intDataSet.setDrawValues(false)
+            intDataSet.lineWidth = 2F
+            intDataSet.form = Legend.LegendForm.LINE
+
+            val extDataSet = LineDataSet(extEntries, "External Temperature")
+            extDataSet.color = ContextCompat.getColor(requireContext(), R.color.highlight)
+            extDataSet.setDrawCircles(false)
+            extDataSet.setDrawValues(false)
+            extDataSet.lineWidth = 2F
+
+            tempChart.description.isEnabled = false
+            tempChart.legend.isEnabled = true
+            tempChart.axisRight.isEnabled = false
+            extDataSet.form = Legend.LegendForm.LINE
+
+            val legend = tempChart.legend
+            legend.verticalAlignment = Legend.LegendVerticalAlignment.TOP
+
+            val lineData = LineData(intDataSet, extDataSet)
+            tempChart.data = lineData
+
+            tempChart.xAxis.valueFormatter = IndexAxisValueFormatter(labels)
+            tempChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
+            tempChart.invalidate()
+        } else {
+            Log.d("ChartSetup", "No temperature data to display.")
         }
-
-        val dataSet = LineDataSet(entries, "Temperature")
-        dataSet.color = ContextCompat.getColor(requireContext(), R.color.highlight)
-        dataSet.setCircleColor(ContextCompat.getColor(requireContext(), R.color.highlight))
-        dataSet.setDrawCircles(false)
-        dataSet.setDrawValues(false)
-        dataSet.lineWidth = 2F
-
-        tempChart.description.isEnabled = false
-        tempChart.legend.isEnabled = false
-
-        tempChart.axisRight.isEnabled = false
-
-        val lineData = LineData(dataSet)
-        tempChart.data = lineData
-        tempChart.invalidate()
-    }
-
-    private fun parseUnixToDate(unixTime: Long): String {
-        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-        val date = Date(unixTime * 1000)
-        return sdf.format(date)
     }
 }
