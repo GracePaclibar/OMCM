@@ -17,7 +17,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class LinechartsLightFragment : Fragment(R.layout.fragment_light_chart) {
+class LightChartFragment : Fragment(R.layout.fragment_light_chart) {
 
     private lateinit var lightChart: LineChart
     private val lightValues = mutableListOf<Float>()
@@ -27,8 +27,8 @@ class LinechartsLightFragment : Fragment(R.layout.fragment_light_chart) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_temp_chart, container, false)
-        lightChart = view.findViewById(R.id.temp_lineChart)
+        val view = inflater.inflate(R.layout.fragment_light_chart, container, false)
+        lightChart = view.findViewById(R.id.light_lineChart)
         return view
     }
 

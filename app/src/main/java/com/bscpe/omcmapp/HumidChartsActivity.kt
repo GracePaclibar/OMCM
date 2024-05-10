@@ -13,7 +13,7 @@ class HumidChartsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_humidcharts)
 
         supportFragmentManager.beginTransaction()
-            .replace(R.id.humidFragmentContainer, LinechartsHumidFragment())
+            .replace(R.id.humidFragmentContainer, HumidChartFragment())
             .replace(R.id.humidEnvFragmentContainer, HumidEnvFragment())
 
             .commit()

@@ -19,7 +19,7 @@ import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.Date
 
-class LinechartsTempFragment : Fragment(R.layout.fragment_temp_chart) {
+class TempChartFragment : Fragment(R.layout.fragment_temp_chart) {
 
     private lateinit var tempChart: LineChart
     private val intTemperatureValues = mutableListOf<Float>()

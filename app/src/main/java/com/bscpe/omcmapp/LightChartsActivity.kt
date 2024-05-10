@@ -13,7 +13,7 @@ class LightChartsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_lightcharts)
 
         supportFragmentManager.beginTransaction()
-            .replace(R.id.lightFragmentContainer, LinechartsLightFragment())
+            .replace(R.id.lightFragmentContainer, LightChartFragment())
             .replace(R.id.lightEnvFragmentContainer, LightEnvFragment())
 
             .commit()

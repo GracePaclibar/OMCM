@@ -19,7 +19,7 @@ import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.Date
 
-class LinechartsHumidFragment : Fragment(R.layout.fragment_humid_chart) {
+class HumidChartFragment : Fragment(R.layout.fragment_humid_chart) {
 
     private lateinit var humidChart: LineChart
     private val intHumidValues = mutableListOf<Float>()

@@ -21,7 +21,7 @@ class LightEnvFragment : Fragment(R.layout.fragment_light_env) {
 
     private lateinit var spinner: Spinner
     private lateinit var filter: Array<String>
-    private val intLightValues = mutableListOf<Pair<Float, String?>>()
+    private val intLightValues = mutableListOf<Pair<Int, String?>>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -99,11 +99,11 @@ class LightEnvFragment : Fragment(R.layout.fragment_light_env) {
 
                     for (childSnapshot in snapshot.children) {
                         val intLightString = snapshot.child("lux").getValue(String::class.java)
-                        val intLightFloat = intLightString?.toFloatOrNull()
+                        val intLightInt = intLightString?.toIntOrNull()
                         val intLightTimestampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                        if (intLightFloat != null) {
-                            intLightValues.add(intLightFloat to intLightTimestampString)
+                        if (intLightInt != null) {
+                            intLightValues.add(intLightInt to intLightTimestampString)
                         }
                     }
                     setupTable()
@@ -125,7 +125,7 @@ class LightEnvFragment : Fragment(R.layout.fragment_light_env) {
             val intMaxTimeTextView = view?.findViewById<TextView>(R.id.int_max_time)
             val intMinTimeTextView = view?.findViewById<TextView>(R.id.int_min_time)
 
-            val intAverageTemp = String.format("%.2f", intLightValues.map { it.first }.average())
+            val intAverageTemp = intLightValues.map { it.first }.average().toInt().toString()
             val (intMaxTemp, intMaxTimestamp) = intLightValues.first()
             val (intMinTemp, intMinTimestamp) = intLightValues.last()
 

@@ -13,7 +13,7 @@ class TempChartsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_tempcharts)
 
         supportFragmentManager.beginTransaction()
-            .replace(R.id.tempFragmentContainer, LinechartsTempFragment())
+            .replace(R.id.tempFragmentContainer, TempChartFragment())
             .replace(R.id.tempEnvFragmentContainer, TempEnvFragment())
 
             .commit()
