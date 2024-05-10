@@ -83,6 +83,10 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
+    implementation ("androidx.activity:activity-ktx:1.4.0")
+    implementation ("androidx.fragment:fragment-ktx:1.4.0")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
+
     val cameraxVersion = "1.4.0-alpha04"
     implementation("androidx.camera:camera-camera2:${cameraxVersion}")
     implementation("androidx.camera:camera-lifecycle:${cameraxVersion}")

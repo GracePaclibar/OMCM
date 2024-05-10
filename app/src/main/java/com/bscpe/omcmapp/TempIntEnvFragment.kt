@@ -1,5 +1,7 @@
 package com.bscpe.omcmapp
 
+import SpinnerModel
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,22 +9,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class LightEnvFragment : Fragment(R.layout.fragment_temp_int_env) {
+class TempIntEnvFragment : Fragment(R.layout.fragment_temp_int_env) {
 
     private lateinit var spinner: Spinner
     private lateinit var filter: Array<String>
-    private val intLightValues = mutableListOf<Pair<Int, String?>>()
+    private val intTemperatureValues = mutableListOf<Pair<Float, String?>>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,15 +33,14 @@ class LightEnvFragment : Fragment(R.layout.fragment_temp_int_env) {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_temp_int_env, container, false)
 
+        val sharedViewModel: SpinnerModel by activityViewModels()
+
+        sharedViewModel.selectedPosition.observe(viewLifecycleOwner) { position ->
+            spinner.setSelection(position)
+        }
+
         filter = resources.getStringArray(R.array.Filter)
         spinner = view.findViewById(R.id.time_filter)
-
-        // changing units and icons
-        val unit = view.findViewById<TextView>(R.id.unit)
-        unit.text = "lux"
-
-        val icon = view.findViewById<ImageView>(R.id.temp_icon)
-        icon.setImageResource(R.drawable.ic_light)
 
         if (spinner != null) {
             val adapter = ArrayAdapter(requireContext(), R.layout.spinner_dropdown_item, filter)
@@ -49,19 +50,27 @@ class LightEnvFragment : Fragment(R.layout.fragment_temp_int_env) {
             spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>,
                                             view: View?, position: Int, id: Long) {
-                    intLightValues.clear()
+                    sharedViewModel.selectedPosition.value = position
+                    intTemperatureValues.clear()
                     val selectedItem = filter[position]
 //                    Toast.makeText(parent.context, "Selected item: $selectedItem", Toast.LENGTH_SHORT).show()
                     fillTable(position)
+
+                    // save selection
+                    val sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+                    val editor = sharedPreferences.edit()
+                    editor.putInt("selectedPosition", position)
+                    editor.apply()
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>) {
-                    TODO()
+                    // Handle case when nothing is selected
                 }
             }
         }
         return view
     }
+
 
     private fun fillTable(selectedFilterPosition: Int) {
         when (selectedFilterPosition) {
@@ -106,12 +115,12 @@ class LightEnvFragment : Fragment(R.layout.fragment_temp_int_env) {
                     Log.d("FirebaseData", "Child Node Key: ${snapshot.key}")
 
                     for (childSnapshot in snapshot.children) {
-                        val intLightString = snapshot.child("lux").getValue(String::class.java)
-                        val intLightInt = intLightString?.toIntOrNull()
-                        val intLightTimestampString = snapshot.child("timestamp").getValue(String::class.java)
+                        val intTemperatureString = snapshot.child("internal_temperature").getValue(String::class.java)
+                        val intTemperatureFloat = intTemperatureString?.toFloatOrNull()
+                        val intTempTimestampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                        if (intLightInt != null) {
-                            intLightValues.add(intLightInt to intLightTimestampString)
+                        if (intTemperatureFloat != null) {
+                            intTemperatureValues.add(intTemperatureFloat to intTempTimestampString)
                         }
                     }
                     setupTable()
@@ -124,25 +133,24 @@ class LightEnvFragment : Fragment(R.layout.fragment_temp_int_env) {
     }
 
     private fun setupTable() {
-        intLightValues.sortByDescending { it.first }
+        intTemperatureValues.sortByDescending { it.first }
 
-        if (intLightValues.isNotEmpty()) {
+        if (intTemperatureValues.isNotEmpty()) {
             val intTextViewAve = view?.findViewById<TextView>(R.id.int_ave)
             val intTextViewMax = view?.findViewById<TextView>(R.id.int_max)
             val intTextViewMin = view?.findViewById<TextView>(R.id.int_min)
-//            val intMaxTimeTextView = view?.findViewById<TextView>(R.id.int_max_time)
-//            val intMinTimeTextView = view?.findViewById<TextView>(R.id.int_min_time)
+            val intMaxTimeTextView = view?.findViewById<TextView>(R.id.int_max_time)
+            val intMinTimeTextView = view?.findViewById<TextView>(R.id.int_min_time)
 
-            val intAverageLight = intLightValues.map { it.first }.average().toInt().toString()
-            val (intMaxLight, intMaxTimestamp) = intLightValues.first()
-            val (intMinLight, intMinTimestamp) = intLightValues.last()
+            val intAverageTemp = String.format("%.2f", intTemperatureValues.map { it.first }.average())
+            val (intMaxTemp, intMaxTimestamp) = intTemperatureValues.first()
+            val (intMinTemp, intMinTimestamp) = intTemperatureValues.last()
 
-            intTextViewAve?.text = "$intAverageLight"
-            intTextViewMax?.text = "$intMaxLight lux"
-            intTextViewMin?.text = "$intMinLight lux"
-//            intMaxTimeTextView?.text = getTimeFromTimestamp(intMaxTimestamp)
-//            intMinTimeTextView?.text = getTimeFromTimestamp(intMinTimestamp)
-
+            intTextViewAve?.text = "$intAverageTemp"
+            intTextViewMax?.text = "$intMaxTemp°C"
+            intTextViewMin?.text = "$intMinTemp°C"
+            intMaxTimeTextView?.text = getTimeFromTimestamp(intMaxTimestamp)
+            intMinTimeTextView?.text = getTimeFromTimestamp(intMinTimestamp)
         }
     }
 

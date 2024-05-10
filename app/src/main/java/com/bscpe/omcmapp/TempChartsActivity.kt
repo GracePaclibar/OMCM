@@ -14,7 +14,8 @@ class TempChartsActivity : AppCompatActivity() {
 
         supportFragmentManager.beginTransaction()
             .replace(R.id.tempFragmentContainer, TempChartFragment())
-            .replace(R.id.tempEnvFragmentContainer, TempEnvFragment())
+            .replace(R.id.tempIntEnvFragmentContainer, TempIntEnvFragment())
+            .replace(R.id.tempExtEnvFragmentContainer, TempExtEnvFragment())
 
             .commit()
     }

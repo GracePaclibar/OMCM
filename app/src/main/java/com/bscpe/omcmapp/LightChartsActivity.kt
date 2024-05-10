@@ -14,7 +14,7 @@ class LightChartsActivity : AppCompatActivity() {
 
         supportFragmentManager.beginTransaction()
             .replace(R.id.lightFragmentContainer, LightChartFragment())
-            .replace(R.id.lightEnvFragmentContainer, LightEnvFragment())
+            .replace(R.id.lightIntEnvFragmentContainer, LightEnvFragment())
 
             .commit()
     }
