@@ -93,10 +93,6 @@ class MainActivity : AppCompatActivity() {
             openCamera()
         }
 
-
-
-
-
         monView = findViewById(R.id.monDay)
         tuesView = findViewById(R.id.tuesDay)
         wedView = findViewById(R.id.wednesDay)
@@ -113,8 +109,6 @@ class MainActivity : AppCompatActivity() {
 
         // set mini calendar color
         miniCalendar(dayOfWeek)
-
-
 
         temperatureProgress = findViewById(R.id.temperatureProgress)
         humidityProgress = findViewById(R.id.humidityProgress)
