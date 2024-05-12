@@ -8,10 +8,13 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.view.Gravity
 import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -28,6 +31,11 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import com.google.firebase.database.FirebaseDatabase
+import com.squareup.picasso.Picasso
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 
 class MainActivity : AppCompatActivity() {
 
@@ -47,9 +55,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var luxTextView: TextView
     private lateinit var databaseReference: DatabaseReference
     private lateinit var valueEventListener: ValueEventListener
+    private lateinit var greetingTextView: TextView
     private var latestTemperature: Double = 0.0
     private var latestHumidity: Double = 0.0
     private var latestLux: Double = 0.0
+    private val imageUrls = mutableListOf<String>()
+    private val sharedPreferences by lazy {
+        getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+    }
+
 
     private val takePictureLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -75,6 +89,12 @@ class MainActivity : AppCompatActivity() {
 
         FirebaseApp.initializeApp(this)
 
+        val cameraButton = findViewById<ImageButton>(R.id.scan_tab)
+
+        cameraButton.setOnClickListener {
+            openCamera()
+        }
+
         // Find the button by its ID
         val cameraScan = findViewById<ImageButton>(R.id.camera_scan_tab)
 
@@ -85,12 +105,6 @@ class MainActivity : AppCompatActivity() {
 
             // Start SecondActivity
             startActivity(intent)
-        }
-
-        val cameraButton = findViewById<ImageButton>(R.id.scan_tab)
-
-        cameraButton.setOnClickListener {
-            openCamera()
         }
 
         monView = findViewById(R.id.monDay)
@@ -113,10 +127,48 @@ class MainActivity : AppCompatActivity() {
         temperatureProgress = findViewById(R.id.temperatureProgress)
         humidityProgress = findViewById(R.id.humidityProgress)
         luxTextView = findViewById(R.id.luxTextView)
+        greetingTextView = findViewById(R.id.greetingTextView)
 
         // Get the UID of the currently logged-in user
         val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
+        val userUid = FirebaseAuth.getInstance().currentUser?.uid
+        val folderReference = FirebaseStorage.getInstance().getReference().child("images/$userUid")
+        val imageContainer = findViewById<LinearLayout>(R.id.imageContainer)
 
+        folderReference.listAll()
+            .addOnSuccessListener{ result ->
+                val items = result.items.reversed()
+                items.forEach { item ->
+                    item.downloadUrl
+                        .addOnSuccessListener { uri ->
+                            val imageUrl = uri.toString()
+                            imageUrls.add(imageUrl)
+
+                            val imageView = ImageView(this)
+                            val layoutParams = LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                            )
+                            layoutParams.width = 200
+                            layoutParams.height = layoutParams.width
+                            layoutParams.gravity = Gravity.CENTER_VERTICAL
+                            imageView.layoutParams = layoutParams
+                            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+                            layoutParams.setMargins(5,10,5,0)
+
+                            Picasso.get().load(uri).rotate(90f).into(imageView)
+                            imageContainer.addView(imageView,0)
+
+                            // open image using gallery app
+                            imageView.setOnClickListener {
+                                val galleryIntent = Intent(Intent.ACTION_VIEW, uri)
+                                galleryIntent.setDataAndType(uri, "image/*")
+                                startActivity(galleryIntent)
+
+                            }
+                        }
+                }
+            }
         // Check if the user is logged in
         if (currentUserUid != null) {
             // Construct the database reference based on the UID of the logged-in user
@@ -146,7 +198,17 @@ class MainActivity : AppCompatActivity() {
             databaseReference.addValueEventListener(valueEventListener)
         }
     }
+    private fun deleteImage(imageUri: Uri, imageView: ImageView) {
+        val imageContainer = findViewById<LinearLayout>(R.id.imageContainer)
+        val deleteButton = findViewById<Button>(R.id.Delete_btn)
+        val storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(imageUri.toString())
+        storageReference.delete()
+            .addOnSuccessListener {
+            }
+            .addOnFailureListener {
 
+            }
+    }
     override fun onDestroy() {
         super.onDestroy()
         databaseReference.removeEventListener(valueEventListener)
@@ -158,11 +220,20 @@ class MainActivity : AppCompatActivity() {
 
         // Show lux as High or Low based on its value
         val luxText = if (latestLux > 500) "High" else "Low"
-        luxTextView.text = "Luminosity: $luxText (${latestLux.toInt()} lux)"
+        luxTextView.text = "$luxText (${latestLux.toInt()} lux)"
+
+        val lightBulbImageView = findViewById<ImageView>(R.id.lightBulbImageView)
+        if (latestLux > 500) {
+            // Lux level is high, use light mode
+            lightBulbImageView.setImageResource(R.drawable.lighton)
+        } else {
+            // Lux level is low, use dark mode
+            lightBulbImageView.setImageResource(R.drawable.lightoff)
+        }
     }
 
     private fun updateGraph(temperature: Double, humidity: Double, lux: Double) {
-        // Update your graph with the new reading values
+
         // graph.update(temperature, humidity, lux)
     }
 
@@ -357,4 +428,7 @@ data class Reading(
     val lux: String = "",
     val timestamp: String = "",
     val unixtimestamp: Int = 0
+)
+data class Profile(
+    val Name: String = ""
 )
