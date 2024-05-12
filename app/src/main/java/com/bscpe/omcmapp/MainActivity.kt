@@ -75,6 +75,12 @@ class MainActivity : AppCompatActivity() {
 
         FirebaseApp.initializeApp(this)
 
+        val cameraButton = findViewById<ImageButton>(R.id.scan_tab)
+
+        cameraButton.setOnClickListener {
+            openCamera()
+        }
+
         // Find the button by its ID
         val cameraScan = findViewById<ImageButton>(R.id.camera_scan_tab)
 
@@ -85,12 +91,6 @@ class MainActivity : AppCompatActivity() {
 
             // Start SecondActivity
             startActivity(intent)
-        }
-
-        val cameraButton = findViewById<ImageButton>(R.id.scan_tab)
-
-        cameraButton.setOnClickListener {
-            openCamera()
         }
 
         monView = findViewById(R.id.monDay)

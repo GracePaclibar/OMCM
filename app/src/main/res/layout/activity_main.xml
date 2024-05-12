@@ -226,7 +226,7 @@
         android:background="#00FFFFFF"
         android:contentDescription="Image scan button"
         android:elevation="4dp"
-        android:onClick="goToCameraDetect"
+        android:onClick="goToImageSelect"
         android:padding="20dp"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
