@@ -1,5 +1,6 @@
 package com.bscpe.omcmapp
 
+import SpinnerModel
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,34 +13,41 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class LightEnvFragment : Fragment(R.layout.fragment_temp_int_env) {
+class HumidExtEnvFragment : Fragment(R.layout.fragment_temp_ext_env) {
 
     private lateinit var spinner: Spinner
     private lateinit var filter: Array<String>
-    private val intLightValues = mutableListOf<Pair<Int, String?>>()
+    private val extHumidValues = mutableListOf<Pair<Float, String?>>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_temp_int_env, container, false)
+        val view = inflater.inflate(R.layout.fragment_temp_ext_env, container, false)
 
         filter = resources.getStringArray(R.array.Filter)
         spinner = view.findViewById(R.id.time_filter)
 
+        val sharedViewModel: SpinnerModel by activityViewModels()
+
         // changing units and icons
         val unit = view.findViewById<TextView>(R.id.unit)
-        unit.text = "lux"
+        unit.text = "%"
 
         val icon = view.findViewById<ImageView>(R.id.temp_icon)
-        icon.setImageResource(R.drawable.ic_light)
+        icon.setImageResource(R.drawable.ic_humid)
+
+        sharedViewModel.selectedPosition.observe(viewLifecycleOwner) { position ->
+            spinner.setSelection(position)
+        }
 
         if (spinner != null) {
             val adapter = ArrayAdapter(requireContext(), R.layout.spinner_dropdown_item, filter)
@@ -49,7 +57,8 @@ class LightEnvFragment : Fragment(R.layout.fragment_temp_int_env) {
             spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>,
                                             view: View?, position: Int, id: Long) {
-                    intLightValues.clear()
+                    sharedViewModel.selectedPosition.value = position
+                    extHumidValues.clear()
                     val selectedItem = filter[position]
 //                    Toast.makeText(parent.context, "Selected item: $selectedItem", Toast.LENGTH_SHORT).show()
                     fillTable(position)
@@ -100,18 +109,16 @@ class LightEnvFragment : Fragment(R.layout.fragment_temp_int_env) {
 
         myRef.limitToLast(limit).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                Log.d("FirebaseData", "Parent Node Key: ${dataSnapshot.key}")
 
                 for (snapshot in dataSnapshot.children) {
-                    Log.d("FirebaseData", "Child Node Key: ${snapshot.key}")
 
                     for (childSnapshot in snapshot.children) {
-                        val intLightString = snapshot.child("lux").getValue(String::class.java)
-                        val intLightInt = intLightString?.toIntOrNull()
-                        val intLightTimestampString = snapshot.child("timestamp").getValue(String::class.java)
+                        val extHumidString = snapshot.child("external_humidity").getValue(String::class.java)
+                        val extHumidFloat = extHumidString?.toFloatOrNull()
+                        val extHumidTimestampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                        if (intLightInt != null) {
-                            intLightValues.add(intLightInt to intLightTimestampString)
+                        if (extHumidFloat != null) {
+                            extHumidValues.add(extHumidFloat to extHumidTimestampString)
                         }
                     }
                     setupTable()
@@ -124,25 +131,24 @@ class LightEnvFragment : Fragment(R.layout.fragment_temp_int_env) {
     }
 
     private fun setupTable() {
-        intLightValues.sortByDescending { it.first }
+        extHumidValues.sortByDescending { it.first }
 
-        if (intLightValues.isNotEmpty()) {
-            val intTextViewAve = view?.findViewById<TextView>(R.id.int_ave)
-            val intTextViewMax = view?.findViewById<TextView>(R.id.int_max)
-            val intTextViewMin = view?.findViewById<TextView>(R.id.int_min)
-//            val intMaxTimeTextView = view?.findViewById<TextView>(R.id.int_max_time)
-//            val intMinTimeTextView = view?.findViewById<TextView>(R.id.int_min_time)
+        if (extHumidValues.isNotEmpty()) {
+            val extTextViewAve = view?.findViewById<TextView>(R.id.ext_ave)
+            val extTextViewMax = view?.findViewById<TextView>(R.id.ext_max)
+            val extTextViewMin = view?.findViewById<TextView>(R.id.ext_min)
+//            val extMaxTimeTextView = view?.findViewById<TextView>(R.id.ext_max_time)
+//            val extMinTimeTextView = view?.findViewById<TextView>(R.id.ext_min_time)
 
-            val intAverageLight = intLightValues.map { it.first }.average().toInt().toString()
-            val (intMaxLight, intMaxTimestamp) = intLightValues.first()
-            val (intMinLight, intMinTimestamp) = intLightValues.last()
+            val extAverageHumid = String.format("%.2f", extHumidValues.map { it.first }.average())
+            val (extMaxHumid, extMaxTimestamp) = extHumidValues.first()
+            val (extMinHumid, extMinTimestamp) = extHumidValues.last()
 
-            intTextViewAve?.text = "$intAverageLight"
-            intTextViewMax?.text = "$intMaxLight lux"
-            intTextViewMin?.text = "$intMinLight lux"
-//            intMaxTimeTextView?.text = getTimeFromTimestamp(intMaxTimestamp)
-//            intMinTimeTextView?.text = getTimeFromTimestamp(intMinTimestamp)
-
+            extTextViewAve?.text = "$extAverageHumid"
+            extTextViewMax?.text = "$extMaxHumid%"
+            extTextViewMin?.text = "$extMinHumid%"
+//            extMaxTimeTextView?.text = getTimeFromTimestamp(extMaxTimestamp)
+//            extMinTimeTextView?.text = getTimeFromTimestamp(extMinTimestamp)
         }
     }
 

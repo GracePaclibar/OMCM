@@ -1,5 +1,7 @@
 package com.bscpe.omcmapp
 
+import SpinnerModel
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,30 +9,43 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class TempEnvFragment : Fragment(R.layout.fragment_internal_env) {
+class HumidIntEnvFragment : Fragment(R.layout.fragment_temp_int_env) {
 
     private lateinit var spinner: Spinner
     private lateinit var filter: Array<String>
-    private val intTemperatureValues = mutableListOf<Pair<Float, String?>>()
-    private val extTemperatureValues = mutableListOf<Pair<Float, String?>>()
-
+    private val intHumidValues = mutableListOf<Pair<Float, String?>>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_internal_env, container, false)
+        val view = inflater.inflate(R.layout.fragment_temp_int_env, container, false)
+
+        val sharedViewModel: SpinnerModel by activityViewModels()
+
+        // changing units and icons
+        val unit = view.findViewById<TextView>(R.id.unit)
+        unit.text = "%"
+
+        val icon = view.findViewById<ImageView>(R.id.temp_icon)
+        icon.setImageResource(R.drawable.ic_humid)
+
+        sharedViewModel.selectedPosition.observe(viewLifecycleOwner) { position ->
+            spinner.setSelection(position)
+        }
 
         filter = resources.getStringArray(R.array.Filter)
         spinner = view.findViewById(R.id.time_filter)
@@ -43,20 +58,26 @@ class TempEnvFragment : Fragment(R.layout.fragment_internal_env) {
             spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>,
                                             view: View?, position: Int, id: Long) {
-                    intTemperatureValues.clear()
-                    extTemperatureValues.clear()
+                    sharedViewModel.selectedPosition.value = position
+                    intHumidValues.clear()
                     val selectedItem = filter[position]
 //                    Toast.makeText(parent.context, "Selected item: $selectedItem", Toast.LENGTH_SHORT).show()
                     fillTable(position)
+
+                    // save selection
+                    val sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+                    val editor = sharedPreferences.edit()
+                    editor.putInt("selectedPosition", position)
+                    editor.apply()
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>) {
-                    TODO()
                 }
             }
         }
         return view
     }
+
 
     private fun fillTable(selectedFilterPosition: Int) {
         when (selectedFilterPosition) {
@@ -95,23 +116,14 @@ class TempEnvFragment : Fragment(R.layout.fragment_internal_env) {
 
         myRef.limitToLast(limit).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                Log.d("FirebaseData", "Parent Node Key: ${dataSnapshot.key}")
-
                 for (snapshot in dataSnapshot.children) {
-                    Log.d("FirebaseData", "Child Node Key: ${snapshot.key}")
-
                     for (childSnapshot in snapshot.children) {
-                        val intTemperatureString = snapshot.child("internal_temperature").getValue(String::class.java)
-                        val intTemperatureFloat = intTemperatureString?.toFloatOrNull()
-                        val intTempTimestampString = snapshot.child("timestamp").getValue(String::class.java)
+                        val intHumidString = snapshot.child("internal_humidity").getValue(String::class.java)
+                        val intHumidFloat = intHumidString?.toFloatOrNull()
+                        val intHumidTimestampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                        val extTemperatureString = snapshot.child("external_temperature").getValue(String::class.java)
-                        val extTemperatureFloat = extTemperatureString?.toFloatOrNull()
-                        val extTempTimestampString = snapshot.child("timestamp").getValue(String::class.java)
-
-                        if (intTemperatureFloat != null && extTemperatureFloat != null) {
-                            intTemperatureValues.add(intTemperatureFloat to intTempTimestampString)
-                            extTemperatureValues.add(extTemperatureFloat to extTempTimestampString)
+                        if (intHumidFloat != null) {
+                            intHumidValues.add(intHumidFloat to intHumidTimestampString)
                         }
                     }
                     setupTable()
@@ -124,41 +136,24 @@ class TempEnvFragment : Fragment(R.layout.fragment_internal_env) {
     }
 
     private fun setupTable() {
-        intTemperatureValues.sortByDescending { it.first }
-        extTemperatureValues.sortByDescending { it.first }
+        intHumidValues.sortByDescending { it.first }
 
-        if (intTemperatureValues.isNotEmpty() && extTemperatureValues.isNotEmpty()) {
+        if (intHumidValues.isNotEmpty()) {
             val intTextViewAve = view?.findViewById<TextView>(R.id.int_ave)
             val intTextViewMax = view?.findViewById<TextView>(R.id.int_max)
             val intTextViewMin = view?.findViewById<TextView>(R.id.int_min)
-            val intMaxTimeTextView = view?.findViewById<TextView>(R.id.int_max_time)
-            val intMinTimeTextView = view?.findViewById<TextView>(R.id.int_min_time)
+//            val intMaxTimeTextView = view?.findViewById<TextView>(R.id.int_max_time)
+//            val intMinTimeTextView = view?.findViewById<TextView>(R.id.int_min_time)
 
-            val intAverageTemp = String.format("%.2f", intTemperatureValues.map { it.first }.average())
-            val (intMaxTemp, intMaxTimestamp) = intTemperatureValues.first()
-            val (intMinTemp, intMinTimestamp) = intTemperatureValues.last()
+            val intAverageHumid = String.format("%.2f", intHumidValues.map { it.first }.average())
+            val (intMaxHumid, intMaxTimestamp) = intHumidValues.first()
+            val (intMinHumid, intMinTimestamp) = intHumidValues.last()
 
-            intTextViewAve?.text = "$intAverageTemp°C"
-            intTextViewMax?.text = "$intMaxTemp°C"
-            intTextViewMin?.text = "$intMinTemp°C"
-            intMaxTimeTextView?.text = getTimeFromTimestamp(intMaxTimestamp)
-            intMinTimeTextView?.text = getTimeFromTimestamp(intMinTimestamp)
-
-            val extTextViewAve = view?.findViewById<TextView>(R.id.ext_ave)
-            val extTextViewMax = view?.findViewById<TextView>(R.id.ext_max)
-            val extTextViewMin = view?.findViewById<TextView>(R.id.ext_min)
-            val extMaxTimeTextView = view?.findViewById<TextView>(R.id.ext_max_time)
-            val extMinTimeTextView = view?.findViewById<TextView>(R.id.ext_min_time)
-
-            val extAverageTemp = String.format("%.2f", extTemperatureValues.map { it.first }.average())
-            val (extMaxTemp, extMaxTimestamp) = extTemperatureValues.first()
-            val (extMinTemp, extMinTimestamp) = extTemperatureValues.last()
-
-            extTextViewAve?.text = "$extAverageTemp°C"
-            extTextViewMax?.text = "$extMaxTemp°C"
-            extTextViewMin?.text = "$extMinTemp°C"
-            extMaxTimeTextView?.text = getTimeFromTimestamp(extMaxTimestamp)
-            extMinTimeTextView?.text = getTimeFromTimestamp(extMinTimestamp)
+            intTextViewAve?.text = "$intAverageHumid"
+            intTextViewMax?.text = "$intMaxHumid%"
+            intTextViewMin?.text = "$intMinHumid%"
+//            intMaxTimeTextView?.text = getTimeFromTimestamp(intMaxTimestamp)
+//            intMinTimeTextView?.text = getTimeFromTimestamp(intMinTimestamp)
         }
     }
 
