@@ -20,7 +20,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class TempIntEnvFragment : Fragment(R.layout.fragment_temp_int_env) {
+class TempIntEnvFragment : Fragment(R.layout.fragment_int_env) {
 
     private lateinit var spinner: Spinner
     private lateinit var filter: Array<String>
@@ -31,7 +31,7 @@ class TempIntEnvFragment : Fragment(R.layout.fragment_temp_int_env) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_temp_int_env, container, false)
+        val view = inflater.inflate(R.layout.fragment_int_env, container, false)
 
         val sharedViewModel: SpinnerModel by activityViewModels()
 
@@ -139,8 +139,8 @@ class TempIntEnvFragment : Fragment(R.layout.fragment_temp_int_env) {
             val intTextViewAve = view?.findViewById<TextView>(R.id.int_ave)
             val intTextViewMax = view?.findViewById<TextView>(R.id.int_max)
             val intTextViewMin = view?.findViewById<TextView>(R.id.int_min)
-            val intMaxTimeTextView = view?.findViewById<TextView>(R.id.int_max_time)
-            val intMinTimeTextView = view?.findViewById<TextView>(R.id.int_min_time)
+//            val intMaxTimeTextView = view?.findViewById<TextView>(R.id.int_max_time)
+//            val intMinTimeTextView = view?.findViewById<TextView>(R.id.int_min_time)
 
             val intAverageTemp = String.format("%.2f", intTemperatureValues.map { it.first }.average())
             val (intMaxTemp, intMaxTimestamp) = intTemperatureValues.first()
@@ -149,8 +149,8 @@ class TempIntEnvFragment : Fragment(R.layout.fragment_temp_int_env) {
             intTextViewAve?.text = "$intAverageTemp"
             intTextViewMax?.text = "$intMaxTemp°C"
             intTextViewMin?.text = "$intMinTemp°C"
-            intMaxTimeTextView?.text = getTimeFromTimestamp(intMaxTimestamp)
-            intMinTimeTextView?.text = getTimeFromTimestamp(intMinTimestamp)
+//            intMaxTimeTextView?.text = getTimeFromTimestamp(intMaxTimestamp)
+//            intMinTimeTextView?.text = getTimeFromTimestamp(intMinTimestamp)
         }
     }
 

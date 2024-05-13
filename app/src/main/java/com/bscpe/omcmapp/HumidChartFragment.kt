@@ -23,7 +23,7 @@ import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class HumidChartFragment : Fragment(R.layout.fragment_humid_chart) {
+class HumidChartFragment : Fragment(R.layout.fragment_line_chart) {
 
     private lateinit var humidChart: LineChart
     private val intHumidValues = mutableListOf<Float>()
@@ -35,8 +35,8 @@ class HumidChartFragment : Fragment(R.layout.fragment_humid_chart) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_humid_chart, container, false)
-        humidChart = view.findViewById(R.id.humid_lineChart)
+        val view = inflater.inflate(R.layout.fragment_line_chart, container, false)
+        humidChart = view.findViewById(R.id.lineChart)
         return view
     }
 
