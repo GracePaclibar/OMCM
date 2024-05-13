@@ -23,7 +23,7 @@ import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class TempChartFragment : Fragment(R.layout.fragment_temp_chart) {
+class TempChartFragment : Fragment(R.layout.fragment_line_chart) {
 
     private lateinit var tempChart: LineChart
     private val intTemperatureValues = mutableListOf<Float>()
@@ -34,8 +34,8 @@ class TempChartFragment : Fragment(R.layout.fragment_temp_chart) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_temp_chart, container, false)
-        tempChart = view.findViewById(R.id.temp_lineChart)
+        val view = inflater.inflate(R.layout.fragment_line_chart, container, false)
+        tempChart = view.findViewById(R.id.lineChart)
         return view
     }
 
