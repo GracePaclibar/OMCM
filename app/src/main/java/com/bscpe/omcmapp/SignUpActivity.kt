@@ -43,12 +43,15 @@ class SignUpActivity : AppCompatActivity() {
             val editor = sharedPreferences.edit()
 
             if (signupUsername.isNotEmpty() && signupPassword.isNotEmpty() && signupUsernameFr.isNotEmpty()){
-                //signupUser(signupUsername, signupPassword)
                 auth.createUserWithEmailAndPassword(signupUsername, signupPassword)
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success")
+
+//                            signupUser(signupUsername, signupPassword)
+                            saveUserName(signupUsernameFr)
+
                             val user = auth.currentUser
                             Toast.makeText(this@SignUpActivity, "Signup Successful!", Toast.LENGTH_SHORT).show()
 
@@ -104,4 +107,17 @@ class SignUpActivity : AppCompatActivity() {
             }
         })
     }
+
+    private fun saveUserName(username:String) {
+        val currentUser = auth.currentUser
+        val userUid = currentUser?.uid
+
+        val profileRef = firebaseDatabase.getReference("UsersData/$userUid/Profile")
+
+        profileRef.child("Name").setValue(username)
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Failed to save username: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
 }

@@ -8,23 +8,28 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
+import android.view.Gravity
 import android.view.View
-import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import com.github.lzyzsd.circleprogress.DonutProgress
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.storage.FirebaseStorage
-import com.github.lzyzsd.circleprogress.DonutProgress
 import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
+import com.squareup.picasso.Picasso
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
+import java.time.LocalTime
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -45,11 +50,20 @@ class MainActivity : AppCompatActivity() {
     private lateinit var temperatureProgress: DonutProgress
     private lateinit var humidityProgress: DonutProgress
     private lateinit var luxTextView: TextView
-    private lateinit var databaseReference: DatabaseReference
     private lateinit var valueEventListener: ValueEventListener
+    private lateinit var userNameTextView: TextView
+    private lateinit var lightLevelTextView: TextView
     private var latestTemperature: Double = 0.0
     private var latestHumidity: Double = 0.0
     private var latestLux: Double = 0.0
+    private val imageUrls = mutableListOf<String>()
+    private lateinit var firebaseDatabase: FirebaseDatabase
+    private lateinit var databaseReference: DatabaseReference
+    private lateinit var auth: FirebaseAuth
+    private val sharedPreferences by lazy {
+        getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+    }
+
 
     private val takePictureLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -68,12 +82,19 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-    // Connects activity_main.xml
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         FirebaseApp.initializeApp(this)
+
+        auth = FirebaseAuth.getInstance()
+        firebaseDatabase = FirebaseDatabase.getInstance()
+
+        val currentUser = auth.currentUser
+        val userUid = currentUser?.uid
+
+        Log.d("MainActivity", "User UID: $userUid")
 
         val cameraButton = findViewById<ImageButton>(R.id.scan_tab)
 
@@ -92,6 +113,8 @@ class MainActivity : AppCompatActivity() {
             // Start SecondActivity
             startActivity(intent)
         }
+
+        showGreeting()
 
         monView = findViewById(R.id.monDay)
         tuesView = findViewById(R.id.tuesDay)
@@ -112,15 +135,54 @@ class MainActivity : AppCompatActivity() {
 
         temperatureProgress = findViewById(R.id.temperatureProgress)
         humidityProgress = findViewById(R.id.humidityProgress)
-        luxTextView = findViewById(R.id.luxTextView)
+        luxTextView = findViewById(R.id.luxValue)
+        lightLevelTextView = findViewById(R.id.lightLevel)
 
-        // Get the UID of the currently logged-in user
-        val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
+        val folderReference = FirebaseStorage.getInstance().getReference().child("images/$userUid")
+        val imageContainer = findViewById<LinearLayout>(R.id.imageContainer)
 
-        // Check if the user is logged in
-        if (currentUserUid != null) {
-            // Construct the database reference based on the UID of the logged-in user
-            databaseReference = FirebaseDatabase.getInstance().reference.child("UsersData").child(currentUserUid).child("readings")
+        folderReference.listAll()
+            .addOnSuccessListener{ result ->
+                val items = result.items.reversed().take(3)
+                items.forEach { item ->
+                    item.downloadUrl
+                        .addOnSuccessListener { uri ->
+                            val imageUrl = uri.toString()
+                            imageUrls.add(imageUrl)
+
+                            val imageView = ImageView(this)
+                            val layoutParams = LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                            )
+                            layoutParams.width = 300
+                            layoutParams.height = layoutParams.width
+                            layoutParams.gravity = Gravity.CENTER_VERTICAL
+                            imageView.layoutParams = layoutParams
+                            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+                            layoutParams.setMargins(5,10,5,0)
+
+                            Picasso.get().load(uri).rotate(90f).into(imageView)
+
+                            if (imageContainer.childCount >= 3) {
+                                imageContainer.removeViewAt(imageContainer.childCount - 1)
+                            }
+
+                            imageContainer.addView(imageView,0)
+
+                            // open image using gallery app
+                            imageView.setOnClickListener {
+                                val galleryIntent = Intent(Intent.ACTION_VIEW, uri)
+                                galleryIntent.setDataAndType(uri, "image/*")
+                                startActivity(galleryIntent)
+
+                            }
+                        }
+                }
+            }
+
+        if (userUid != null) {
+            databaseReference = firebaseDatabase.reference.child("UsersData").child("$userUid").child("readings")
 
             valueEventListener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -129,40 +191,63 @@ class MainActivity : AppCompatActivity() {
                         latestReading = readingSnapshot.getValue(Reading::class.java)
                     }
 
+                    val timestampTextView = findViewById<TextView>(R.id.timestampTextView)
+
                     latestReading?.let {
                         latestTemperature = it.internal_temperature.toDoubleOrNull() ?: 0.0
                         latestHumidity = it.internal_humidity.toDoubleOrNull() ?: 0.0
                         latestLux = it.lux.toDoubleOrNull() ?: 0.0
                         updateProgress()
-                        findViewById<TextView>(R.id.TimestampTextView).text = "As of: ${it.timestamp}"
+                        timestampTextView.text = "As of: ${it.timestamp}"
                     }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    // Handle error
                 }
             }
-
             databaseReference.addValueEventListener(valueEventListener)
+        } else {
+            Toast.makeText(this, "LKASJFKLDJS", Toast.LENGTH_SHORT).show()
         }
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        databaseReference.removeEventListener(valueEventListener)
-    }
+//    private fun deleteImage(imageUri: Uri, imageView: ImageView) {
+//        val imageContainer = findViewById<LinearLayout>(R.id.imageContainer)
+//        val deleteButton = findViewById<Button>(R.id.Delete_btn)
+//        val storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(imageUri.toString())
+//        storageReference.delete()
+//            .addOnSuccessListener {
+//            }
+//            .addOnFailureListener {
+//
+//            }
+//    }
+//    override fun onDestroy() {
+//        super.onDestroy()
+//        databaseReference.removeEventListener(valueEventListener)
+//    }
 
     private fun updateProgress() {
         temperatureProgress.progress = latestTemperature.toFloat()
         humidityProgress.progress = latestHumidity.toFloat()
 
         // Show lux as High or Low based on its value
-        val luxText = if (latestLux > 500) "High" else "Low"
-        luxTextView.text = "Luminosity: $luxText (${latestLux.toInt()} lux)"
+        val lightValueText = if (latestLux > 500) "High" else "Low"
+        lightLevelTextView.text = "$lightValueText"
+
+        luxTextView.text = "${latestLux.toInt()}"
+
+        val lightBulbImageView = findViewById<ImageView>(R.id.light_icon)
+        if (latestLux > 500) {
+            // Lux level is high, use light mode
+            lightBulbImageView.setImageResource(R.drawable.ic_light_on)
+        } else {
+            // Lux level is low, use dark mode
+            lightBulbImageView.setImageResource(R.drawable.ic_light_off)
+        }
     }
 
     private fun updateGraph(temperature: Double, humidity: Double, lux: Double) {
-        // Update your graph with the new reading values
+
         // graph.update(temperature, humidity, lux)
     }
 
@@ -347,6 +432,40 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent, options.toBundle())
     }
 
+    fun showGreeting() {
+        val currentTime = LocalTime.now()
+        val hour = currentTime.hour
+
+        val greeting = if (hour in 5..11) {
+            "Magandang umaga,"
+        } else if (hour in 12..17) {
+            "Magandang hapon,"
+        } else {
+            "Magandang gabi,"
+        }
+
+        val greetingTextView = findViewById<TextView>(R.id.greetings)
+        greetingTextView.text = greeting
+
+        userNameTextView = findViewById(R.id.userName)
+        val userUid = auth.currentUser?.uid
+
+        val profileRef = firebaseDatabase.getReference("UsersData/$userUid/Profile")
+
+        profileRef.child("Name").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val userName = dataSnapshot.getValue(String::class.java)
+
+                userName?.let {
+                    userNameTextView.text = "$it!"
+                }
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                Toast.makeText(this@MainActivity, "Failed to retrieve username: ${databaseError.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
 
 }
 data class Reading(
@@ -357,4 +476,7 @@ data class Reading(
     val lux: String = "",
     val timestamp: String = "",
     val unixtimestamp: Int = 0
+)
+data class Profile(
+    val Name: String = ""
 )

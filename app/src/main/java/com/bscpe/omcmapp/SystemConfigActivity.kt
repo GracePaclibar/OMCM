@@ -9,6 +9,10 @@ import android.text.InputType
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.view.View.GONE
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
@@ -50,6 +54,13 @@ class SystemConfigActivity: AppCompatActivity() {
         val visibilityButton = findViewById<ImageButton>(R.id.visibility_btn)
         visibilityButton.visibility = View.GONE
 
+        // Initial visibility of water control
+        val waterControl = findViewById<TextView>(R.id.water_control)
+        val waterSwitch = findViewById<Switch>(R.id.water_switch)
+
+        waterControl.visibility = View.INVISIBLE
+        waterSwitch.visibility = View.INVISIBLE
+
         val userUid = FirebaseAuth.getInstance().currentUser?.uid
 
         val databaseRef = FirebaseDatabase.getInstance().getReference("UsersData/$userUid/WiFI_Router")
@@ -71,17 +82,17 @@ class SystemConfigActivity: AppCompatActivity() {
                 val wifiPass = passEditText.text.toString()
 
                 if (wifiSSID.isNotEmpty() && wifiPass.isNotEmpty()) {
-                    saveButton.visibility = View.VISIBLE
+                    saveButton.visibility = VISIBLE
                     if (wifiPass.isNotEmpty()) {
-                        visibilityButton.visibility = View.VISIBLE
+                        visibilityButton.visibility = VISIBLE
 
                         visibilityButton.setOnClickListener {
                             seePassword(visibilityButton, passEditText)
                         }
                     }
                 } else {
-                    saveButton.visibility = View.GONE
-                    visibilityButton.visibility = View.GONE
+                    saveButton.visibility = GONE
+                    visibilityButton.visibility = GONE
                 }
             }
         }
@@ -168,6 +179,7 @@ class SystemConfigActivity: AppCompatActivity() {
 
         autoSwitch.isChecked = true
         manualSwitch.isChecked = false
+        waterSwitch.isChecked = false
 
         val autoSwitchState = sharedPrefs.getBoolean("autoSwitchState", true)
         autoSwitch.isChecked = autoSwitchState
@@ -175,10 +187,20 @@ class SystemConfigActivity: AppCompatActivity() {
         val manualSwitchState = sharedPrefs.getBoolean("manualSwitchState", false)
         manualSwitch.isChecked = manualSwitchState
 
+        val waterSwitchState = sharedPrefs.getBoolean("waterSwitchState", false)
+        waterSwitch.isChecked = waterSwitchState
+
+        if (manualSwitch.isChecked) {
+            waterControl.visibility = VISIBLE
+            waterSwitch.visibility = VISIBLE
+        }
+
         data class ModeState (
             val isAuto: Boolean,
-            val isManual: Boolean
+            val isManual: Boolean,
+            val isWaterOn: Boolean? = false
         )
+
 
         autoSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
@@ -188,23 +210,43 @@ class SystemConfigActivity: AppCompatActivity() {
                 val userUid = currentUser?.uid
 
                 if (userUid != null) {
-                    val powerState = ModeState(isAuto = true, isManual = false)
-
-                    val capitalizedPowerState = mapOf(
-                        "isAuto" to powerState.isAuto,
-                        "isManual" to powerState.isManual
-                    )
-
-                    // Upload to Realtime DB
                     val database = FirebaseDatabase.getInstance()
                     val powerRef = database.getReference("UsersData/$userUid/Control_Key/Manual")
-                    powerRef.setValue(capitalizedPowerState)
-                        .addOnSuccessListener {
-                            Toast.makeText(this, "Auto Mode", Toast.LENGTH_SHORT).show()
+
+                    powerRef.child("isWaterOn").addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            val isWaterOn = dataSnapshot.getValue(Boolean::class.java) ?: false
+
+                            val powerState = ModeState(isAuto = true, isManual = false, isWaterOn = isWaterOn)
+
+                            val fadeOutAnimation = AnimationUtils.loadAnimation(this@SystemConfigActivity, R.anim.fade_out)
+
+                            waterControl.startAnimation(fadeOutAnimation)
+                            waterSwitch.startAnimation(fadeOutAnimation)
+
+                            waterControl.visibility = INVISIBLE
+                            waterSwitch.visibility = INVISIBLE
+
+                            val capitalizedPowerState = mapOf(
+                                "isAuto" to powerState.isAuto,
+                                "isManual" to powerState.isManual,
+                                "isWaterOn" to powerState.isWaterOn
+                            )
+
+                            // Upload to Realtime DB
+                            powerRef.setValue(capitalizedPowerState)
+                                .addOnSuccessListener {
+                                    Toast.makeText(this@SystemConfigActivity, "Auto Mode", Toast.LENGTH_SHORT).show()
+                                }
+                                .addOnFailureListener { e ->
+                                    Toast.makeText(this@SystemConfigActivity, "Failed to apply change: ${e.message}", Toast.LENGTH_SHORT).show()
+                                }
                         }
-                        .addOnFailureListener{ e ->
-                            Toast.makeText(this, "Failed to apply change: ${e.message}", Toast.LENGTH_SHORT).show()
+
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            Log.e("Firebase", "Error getting data", databaseError.toException())
                         }
+                    })
                 } else {
                     Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show()
                 }
@@ -224,6 +266,7 @@ class SystemConfigActivity: AppCompatActivity() {
                 val editor = sharedPrefs.edit()
                 editor.putBoolean("autoSwitchState", false)
                 editor.putBoolean("manualSwitchState", true)
+
                 editor.apply()
             }
         }
@@ -236,23 +279,43 @@ class SystemConfigActivity: AppCompatActivity() {
                 val userUid = currentUser?.uid
 
                 if (userUid != null) {
-                    val powerState = ModeState(isAuto = false, isManual = true)
-
-                    val capitalizedPowerState = mapOf(
-                        "isAuto" to powerState.isAuto,
-                        "isManual" to powerState.isManual
-                    )
-
-                    // Upload to Realtime DB
                     val database = FirebaseDatabase.getInstance()
                     val powerRef = database.getReference("UsersData/$userUid/Control_Key/Manual")
-                    powerRef.setValue(capitalizedPowerState)
-                        .addOnSuccessListener {
-                            Toast.makeText(this, "Manual Mode", Toast.LENGTH_SHORT).show()
+
+                    powerRef.child("isWaterOn").addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            val isWaterOn = dataSnapshot.getValue(Boolean::class.java) ?: false
+
+                            val powerState = ModeState(isAuto = false, isManual = true, isWaterOn = isWaterOn)
+
+                            val fadeInAnimation = AnimationUtils.loadAnimation(this@SystemConfigActivity, R.anim.fade_in)
+
+                            waterControl.startAnimation(fadeInAnimation)
+                            waterSwitch.startAnimation(fadeInAnimation)
+
+                            waterControl.visibility = VISIBLE
+                            waterSwitch.visibility = VISIBLE
+
+                            val capitalizedPowerState = mapOf(
+                                "isAuto" to powerState.isAuto,
+                                "isManual" to powerState.isManual,
+                                "isWaterOn" to powerState.isWaterOn
+                            )
+
+                            // Upload to Realtime DB
+                            powerRef.setValue(capitalizedPowerState)
+                                .addOnSuccessListener {
+                                    Toast.makeText(this@SystemConfigActivity, "Manual Mode", Toast.LENGTH_SHORT).show()
+                                }
+                                .addOnFailureListener { e ->
+                                    Toast.makeText(this@SystemConfigActivity, "Failed to apply change: ${e.message}", Toast.LENGTH_SHORT).show()
+                                }
                         }
-                        .addOnFailureListener{ e ->
-                            Toast.makeText(this, "Failed to apply change: ${e.message}", Toast.LENGTH_SHORT).show()
+
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            Log.e("Firebase", "Error getting data", databaseError.toException())
                         }
+                    })
                 } else {
                     Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show()
                 }
@@ -262,6 +325,7 @@ class SystemConfigActivity: AppCompatActivity() {
                 val editor = sharedPrefs.edit()
                 editor.putBoolean("autoSwitchState", false)
                 editor.putBoolean("manualSwitchState", true)
+
                 editor.apply()
 
             } else {
@@ -272,6 +336,44 @@ class SystemConfigActivity: AppCompatActivity() {
                 val editor = sharedPrefs.edit()
                 editor.putBoolean("autoSwitchState", true)
                 editor.putBoolean("manualSwitchState", false)
+
+                editor.apply()
+            }
+        }
+
+        waterSwitch.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+
+                val currentUser = FirebaseAuth.getInstance().currentUser
+                val userUid = currentUser?.uid
+
+                if (userUid != null) {
+                    val isWaterOn = true
+
+                    val database = FirebaseDatabase.getInstance()
+                    val waterRef = database.getReference("UsersData/$userUid/Control_Key/Manual")
+
+                    waterRef.child("isWaterOn").setValue(isWaterOn)
+                } else {
+                    Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show()
+                }
+
+                val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+                val editor = sharedPrefs.edit()
+                editor.putBoolean("waterSwitchState", true)
+                editor.apply()
+
+            } else {
+                val isWaterOn = false
+
+                val database = FirebaseDatabase.getInstance()
+                val waterRef = database.getReference("UsersData/$userUid/Control_Key/Manual")
+
+                waterRef.child("isWaterOn").setValue(isWaterOn)
+
+                val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+                val editor = sharedPrefs.edit()
+                editor.putBoolean("waterSwitchState", false)
                 editor.apply()
             }
         }

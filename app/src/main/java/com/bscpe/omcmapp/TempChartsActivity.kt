@@ -24,8 +24,8 @@ class TempChartsActivity : AppCompatActivity() {
         val intent = Intent(this, MainActivity::class.java)
 
         val options = ActivityOptions.makeCustomAnimation(this,
-                R.anim.slide_enter_right, //Entrance animation
-                R.anim.slide_exit_left //Exit animation
+            R.anim.slide_enter_left, //Entrance animation
+            R.anim.slide_exit_right //Exit animation
         )
 
         startActivity(intent, options.toBundle())
