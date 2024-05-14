@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.ImageButton
@@ -28,6 +29,7 @@ import com.squareup.picasso.Picasso
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
+import java.time.LocalTime
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -48,7 +50,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var temperatureProgress: DonutProgress
     private lateinit var humidityProgress: DonutProgress
     private lateinit var luxTextView: TextView
-    private lateinit var databaseReference: DatabaseReference
     private lateinit var valueEventListener: ValueEventListener
     private lateinit var userNameTextView: TextView
     private lateinit var lightLevelTextView: TextView
@@ -56,6 +57,9 @@ class MainActivity : AppCompatActivity() {
     private var latestHumidity: Double = 0.0
     private var latestLux: Double = 0.0
     private val imageUrls = mutableListOf<String>()
+    private lateinit var firebaseDatabase: FirebaseDatabase
+    private lateinit var databaseReference: DatabaseReference
+    private lateinit var auth: FirebaseAuth
     private val sharedPreferences by lazy {
         getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
     }
@@ -84,6 +88,14 @@ class MainActivity : AppCompatActivity() {
 
         FirebaseApp.initializeApp(this)
 
+        auth = FirebaseAuth.getInstance()
+        firebaseDatabase = FirebaseDatabase.getInstance()
+
+        val currentUser = auth.currentUser
+        val userUid = currentUser?.uid
+
+        Log.d("MainActivity", "User UID: $userUid")
+
         val cameraButton = findViewById<ImageButton>(R.id.scan_tab)
 
         cameraButton.setOnClickListener {
@@ -101,6 +113,8 @@ class MainActivity : AppCompatActivity() {
             // Start SecondActivity
             startActivity(intent)
         }
+
+        showGreeting()
 
         monView = findViewById(R.id.monDay)
         tuesView = findViewById(R.id.tuesDay)
@@ -123,11 +137,7 @@ class MainActivity : AppCompatActivity() {
         humidityProgress = findViewById(R.id.humidityProgress)
         luxTextView = findViewById(R.id.luxValue)
         lightLevelTextView = findViewById(R.id.lightLevel)
-        userNameTextView = findViewById(R.id.userName)
 
-        // Get the UID of the currently logged-in user
-        val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
-        val userUid = FirebaseAuth.getInstance().currentUser?.uid
         val folderReference = FirebaseStorage.getInstance().getReference().child("images/$userUid")
         val imageContainer = findViewById<LinearLayout>(R.id.imageContainer)
 
@@ -171,8 +181,8 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-        if (currentUserUid != null) {
-            databaseReference = FirebaseDatabase.getInstance().reference.child("UsersData").child(currentUserUid).child("readings")
+        if (userUid != null) {
+            databaseReference = firebaseDatabase.reference.child("UsersData").child("$userUid").child("readings")
 
             valueEventListener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -181,20 +191,23 @@ class MainActivity : AppCompatActivity() {
                         latestReading = readingSnapshot.getValue(Reading::class.java)
                     }
 
+                    val timestampTextView = findViewById<TextView>(R.id.timestampTextView)
+
                     latestReading?.let {
                         latestTemperature = it.internal_temperature.toDoubleOrNull() ?: 0.0
                         latestHumidity = it.internal_humidity.toDoubleOrNull() ?: 0.0
                         latestLux = it.lux.toDoubleOrNull() ?: 0.0
                         updateProgress()
-                        findViewById<TextView>(R.id.timestampTextView).text = "As of: ${it.timestamp}"
+                        timestampTextView.text = "As of: ${it.timestamp}"
                     }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
                 }
             }
-
             databaseReference.addValueEventListener(valueEventListener)
+        } else {
+            Toast.makeText(this, "LKASJFKLDJS", Toast.LENGTH_SHORT).show()
         }
     }
 //    private fun deleteImage(imageUri: Uri, imageView: ImageView) {
@@ -417,6 +430,40 @@ class MainActivity : AppCompatActivity() {
         )
 
         startActivity(intent, options.toBundle())
+    }
+
+    fun showGreeting() {
+        val currentTime = LocalTime.now()
+        val hour = currentTime.hour
+
+        val greeting = if (hour in 5..11) {
+            "Magandang umaga,"
+        } else if (hour in 12..17) {
+            "Magandang hapon,"
+        } else {
+            "Magandang gabi,"
+        }
+
+        val greetingTextView = findViewById<TextView>(R.id.greetings)
+        greetingTextView.text = greeting
+
+        userNameTextView = findViewById(R.id.userName)
+        val userUid = auth.currentUser?.uid
+
+        val profileRef = firebaseDatabase.getReference("UsersData/$userUid/Profile")
+
+        profileRef.child("Name").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val userName = dataSnapshot.getValue(String::class.java)
+
+                userName?.let {
+                    userNameTextView.text = "$it!"
+                }
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                Toast.makeText(this@MainActivity, "Failed to retrieve username: ${databaseError.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
 
