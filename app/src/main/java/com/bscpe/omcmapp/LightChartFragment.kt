@@ -23,7 +23,7 @@ import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class LightChartFragment : Fragment(R.layout.fragment_light_chart) {
+class LightChartFragment : Fragment(R.layout.fragment_line_chart) {
 
     private lateinit var lightChart: LineChart
     private val lightValues = mutableListOf<Float>()
@@ -33,8 +33,8 @@ class LightChartFragment : Fragment(R.layout.fragment_light_chart) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_light_chart, container, false)
-        lightChart = view.findViewById(R.id.light_lineChart)
+        val view = inflater.inflate(R.layout.fragment_line_chart, container, false)
+        lightChart = view.findViewById(R.id.lineChart)
         return view
     }
 

@@ -19,7 +19,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class TempExtEnvFragment : Fragment(R.layout.fragment_temp_ext_env) {
+class TempExtEnvFragment : Fragment(R.layout.fragment_ext_env) {
 
     private lateinit var spinner: Spinner
     private lateinit var filter: Array<String>
@@ -30,7 +30,7 @@ class TempExtEnvFragment : Fragment(R.layout.fragment_temp_ext_env) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_temp_ext_env, container, false)
+        val view = inflater.inflate(R.layout.fragment_ext_env, container, false)
 
         filter = resources.getStringArray(R.array.Filter)
         spinner = view.findViewById(R.id.time_filter)
