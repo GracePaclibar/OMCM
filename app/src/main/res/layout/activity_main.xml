@@ -449,7 +449,7 @@
                     android:contentDescription="See more button for humidity"
                     android:elevation="10dp"
                     android:fontFamily="@font/inter_light"
-                    android:onClick="goToTempCharts"
+                    android:onClick="goToHumidCharts"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
