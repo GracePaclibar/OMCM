@@ -53,6 +53,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var valueEventListener: ValueEventListener
     private lateinit var userNameTextView: TextView
     private lateinit var lightLevelTextView: TextView
+    private lateinit var latestTimestamp: String
+    private lateinit var latestDate: String
+    private lateinit var latestTime: String
     private var latestTemperature: Double = 0.0
     private var latestHumidity: Double = 0.0
     private var latestLux: Double = 0.0
@@ -99,7 +102,7 @@ class MainActivity : AppCompatActivity() {
         val cameraButton = findViewById<ImageButton>(R.id.scan_tab)
 
         cameraButton.setOnClickListener {
-            openCamera()
+            openCamera(it)
         }
 
         // Find the button by its ID
@@ -197,8 +200,12 @@ class MainActivity : AppCompatActivity() {
                         latestTemperature = it.internal_temperature.toDoubleOrNull() ?: 0.0
                         latestHumidity = it.internal_humidity.toDoubleOrNull() ?: 0.0
                         latestLux = it.lux.toDoubleOrNull() ?: 0.0
+                        latestTimestamp = it.timestamp
+
+                        val (latestDate, latestTime) = parseTimestamp(latestTimestamp)
+
                         updateProgress()
-                        timestampTextView.text = "As of: ${it.timestamp}"
+                        timestampTextView.text = "As of: $latestDate at $latestTime"
                     }
                 }
 
@@ -207,24 +214,9 @@ class MainActivity : AppCompatActivity() {
             }
             databaseReference.addValueEventListener(valueEventListener)
         } else {
-            Toast.makeText(this, "LKASJFKLDJS", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show()
         }
     }
-//    private fun deleteImage(imageUri: Uri, imageView: ImageView) {
-//        val imageContainer = findViewById<LinearLayout>(R.id.imageContainer)
-//        val deleteButton = findViewById<Button>(R.id.Delete_btn)
-//        val storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(imageUri.toString())
-//        storageReference.delete()
-//            .addOnSuccessListener {
-//            }
-//            .addOnFailureListener {
-//
-//            }
-//    }
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        databaseReference.removeEventListener(valueEventListener)
-//    }
 
     private fun updateProgress() {
         temperatureProgress.progress = latestTemperature.toFloat()
@@ -296,34 +288,38 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent, options.toBundle())
     }
 
-    private fun openCamera() {
-        val captureImageIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        // Ensure there's a camera activity to handle the intent
-        captureImageIntent.resolveActivity(packageManager)?.also {
+    private fun openCamera(view: View) {
+        try {
+            val captureImageIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            captureImageIntent.resolveActivity(packageManager)?.also {
 
-            val photoFile: File? = try {
-                createImageFile()
-            } catch (ex: IOException) {
-                // Error occurred while creating the File
-                null
+                val photoFile: File? = try {
+                    createImageFile()
+                } catch (ex: IOException) {
+                    // Error occurred while creating the File
+                    Log.e("MainActivity", "Error creating image file: ${ex.message}")
+                    null
+                }
+                // Continue only if the File was successfully created
+                photoFile?.also {
+                    val photoURI: Uri = FileProvider.getUriForFile(
+                        this,
+                        "com.bscpe.omcmapp.provider",
+                        it
+                    )
+                    captureImageIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    takePictureLauncher.launch(captureImageIntent)
+                }
             }
-            // Continue only if the File was successfully created
-            photoFile?.also {
-                val photoURI: Uri = FileProvider.getUriForFile(
-                    this,
-                    "com.bscpe.omcmapp.provider",
-                    it
-                )
-                captureImageIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                takePictureLauncher.launch(captureImageIntent)
-            }
+        } catch (e: Exception) {
+            Log.e("MainActivity", "Error opening camera: ${e.message}")
+            e.printStackTrace()
         }
     }
 
     // create a file for captured image
     @Throws(IOException::class)
     private fun createImageFile(): File {
-        // Create an image file name
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return File.createTempFile(
@@ -464,6 +460,19 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this@MainActivity, "Failed to retrieve username: ${databaseError.message}", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    fun parseTimestamp(timestampString: String): Pair<String, String> {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        val date = inputFormat.parse(timestampString)
+
+        val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.ENGLISH)
+        val timeFormat = SimpleDateFormat("HH:mm:ss")
+
+        val formattedDate = dateFormat.format(date)
+        val formattedTime = timeFormat.format(date)
+
+        return Pair(formattedDate, formattedTime)
     }
 
 

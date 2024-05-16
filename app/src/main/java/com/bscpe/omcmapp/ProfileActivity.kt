@@ -1,9 +1,7 @@
 package com.bscpe.omcmapp
 
-import android.annotation.SuppressLint
 import android.app.ActivityOptions
 import android.app.AlertDialog
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -17,22 +15,19 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.FileProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.getValue
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
-import java.io.File
 
 
 class ProfileActivity : AppCompatActivity() {
 
     private val imageUrls = mutableListOf<String>()
+    private val imageOrderList = mutableListOf<String>()
 
     private val sharedPreferences by lazy {
         getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
@@ -70,12 +65,14 @@ class ProfileActivity : AppCompatActivity() {
 
         folderReference.listAll()
             .addOnSuccessListener{ result ->
-                val items = result.items.reversed()
+                val items = result.items.sortedByDescending { it.name }
                 items.forEach { item ->
                     item.downloadUrl
                         .addOnSuccessListener { uri ->
                             val imageUrl = uri.toString()
                             imageUrls.add(imageUrl)
+
+                            imageOrderList.add(imageUrl)
 
                             val imageView = ImageView(this)
                             val layoutParams = LinearLayout.LayoutParams(
@@ -113,6 +110,7 @@ class ProfileActivity : AppCompatActivity() {
                             Log.e(TAG, "Error downloading image: ${e.message}", e)
                         }
                 }
+                saveImageOrderToSharedPreferences()
             }
             .addOnFailureListener { e ->
                 Log.e(TAG, "Error listing files in folder: ${e.message}", e)
@@ -149,6 +147,38 @@ class ProfileActivity : AppCompatActivity() {
     }
     companion object {
         private const val TAG = "ProfileActivity"
+    }
+
+    private fun saveImageOrderToSharedPreferences() {
+        val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("imageOrder", imageOrderList.joinToString(separator = ","))
+        editor.apply()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Retrieve the image order list from SharedPreferences and restore the order
+        val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val imageContainer = findViewById<LinearLayout>(R.id.imageContainer)
+
+        val imageOrder = sharedPreferences.getString("imageOrder", "")
+        if (imageOrder != null && imageOrder.isNotEmpty()) {
+            imageOrderList.clear()
+            imageOrderList.addAll(imageOrder.split(","))
+            // Reorder the images based on the retrieved order list
+            imageOrderList.forEach { imageUrl ->
+                // Find the corresponding ImageView and move it to the top of the LinearLayout
+                val index = imageUrls.indexOf(imageUrl)
+                if (index != -1) {
+                    val imageView = imageContainer.getChildAt(index) as? ImageView
+                    imageView?.let {
+                        imageContainer.removeViewAt(index)
+                        imageContainer.addView(it, 0)
+                    }
+                }
+            }
+        }
     }
 
     private fun showDeleteConfirmationDialog(imageUri: Uri, imageView: ImageView) {
