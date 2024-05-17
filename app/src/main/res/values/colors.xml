@@ -19,4 +19,8 @@
     <color name="bounding_box_color">#234567</color>
     <color name="gray">#999</color>
     <color name="orange">#F93</color>
+    <color name="midgreenorange">#BFBF00</color>
+    <color name="red">#FF0000</color>
+    <color name="blue">#0000FF</color>
+    <color name="midredblue">#CB5382</color>
 </resources>
