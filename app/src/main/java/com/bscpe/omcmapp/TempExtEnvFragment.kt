@@ -129,8 +129,8 @@ class TempExtEnvFragment : Fragment(R.layout.fragment_ext_env) {
             val extTextViewAve = view?.findViewById<TextView>(R.id.ext_ave)
             val extTextViewMax = view?.findViewById<TextView>(R.id.ext_max)
             val extTextViewMin = view?.findViewById<TextView>(R.id.ext_min)
-//            val extMaxTimeTextView = view?.findViewById<TextView>(R.id.ext_max_time)
-//            val extMinTimeTextView = view?.findViewById<TextView>(R.id.ext_min_time)
+            val extMaxTimeTextView = view?.findViewById<TextView>(R.id.ext_max_time)
+            val extMinTimeTextView = view?.findViewById<TextView>(R.id.ext_min_time)
 
             val extAverageTemp = String.format("%.2f", extTemperatureValues.map { it.first }.average())
             val (extMaxTemp, extMaxTimestamp) = extTemperatureValues.first()
@@ -139,8 +139,8 @@ class TempExtEnvFragment : Fragment(R.layout.fragment_ext_env) {
             extTextViewAve?.text = "$extAverageTemp"
             extTextViewMax?.text = "$extMaxTemp°C"
             extTextViewMin?.text = "$extMinTemp°C"
-//            extMaxTimeTextView?.text = getTimeFromTimestamp(extMaxTimestamp)
-//            extMinTimeTextView?.text = getTimeFromTimestamp(extMinTimestamp)
+            extMaxTimeTextView?.text = getTimeFromTimestamp(extMaxTimestamp)
+            extMinTimeTextView?.text = getTimeFromTimestamp(extMinTimestamp)
         }
     }
 

@@ -142,8 +142,8 @@ class HumidIntEnvFragment : Fragment(R.layout.fragment_int_env) {
             val intTextViewAve = view?.findViewById<TextView>(R.id.int_ave)
             val intTextViewMax = view?.findViewById<TextView>(R.id.int_max)
             val intTextViewMin = view?.findViewById<TextView>(R.id.int_min)
-//            val intMaxTimeTextView = view?.findViewById<TextView>(R.id.int_max_time)
-//            val intMinTimeTextView = view?.findViewById<TextView>(R.id.int_min_time)
+            val intMaxTimeTextView = view?.findViewById<TextView>(R.id.int_max_time)
+            val intMinTimeTextView = view?.findViewById<TextView>(R.id.int_min_time)
 
             val intAverageHumid = String.format("%.2f", intHumidValues.map { it.first }.average())
             val (intMaxHumid, intMaxTimestamp) = intHumidValues.first()
@@ -152,8 +152,8 @@ class HumidIntEnvFragment : Fragment(R.layout.fragment_int_env) {
             intTextViewAve?.text = "$intAverageHumid"
             intTextViewMax?.text = "$intMaxHumid%"
             intTextViewMin?.text = "$intMinHumid%"
-//            intMaxTimeTextView?.text = getTimeFromTimestamp(intMaxTimestamp)
-//            intMinTimeTextView?.text = getTimeFromTimestamp(intMinTimestamp)
+            intMaxTimeTextView?.text = getTimeFromTimestamp(intMaxTimestamp)
+            intMinTimeTextView?.text = getTimeFromTimestamp(intMinTimestamp)
         }
     }
 

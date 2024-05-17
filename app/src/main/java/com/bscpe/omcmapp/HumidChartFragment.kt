@@ -52,7 +52,7 @@ class HumidChartFragment : Fragment(R.layout.fragment_line_chart) {
 
         val myRef = database.getReference("UsersData/$userUid/readings")
 
-        myRef.limitToLast(7).addListenerForSingleValueEvent(object : ValueEventListener {
+        myRef.limitToLast(37).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // Log the key of the parent node
                 Log.d("FirebaseData", "Parent Node Key: ${dataSnapshot.key}")
@@ -116,33 +116,52 @@ class HumidChartFragment : Fragment(R.layout.fragment_line_chart) {
         labels: List<String>
     ) {
         if (intEntries.isNotEmpty() && extEntries.isNotEmpty()) {
-            val intDataSet = LineDataSet(intEntries, "Internal Humidity")
-            intDataSet.color = ContextCompat.getColor(requireContext(), R.color.highlight)
-            intDataSet.setDrawCircles(false)
-            intDataSet.setDrawValues(false)
-            intDataSet.lineWidth = 2F
-            intDataSet.form = Legend.LegendForm.LINE
+            val intDataSet = LineDataSet(intEntries, "Internal Humidity").apply {
+                color = ContextCompat.getColor(requireContext(), R.color.highlight)
+                setDrawCircles(false)
+                setDrawValues(false)
+                lineWidth = 2F
+                form = Legend.LegendForm.LINE
+            }
 
-            val extDataSet = LineDataSet(extEntries, "External Humidity")
-            extDataSet.color = ContextCompat.getColor(requireContext(), R.color.main)
-            extDataSet.setDrawCircles(false)
-            extDataSet.setDrawValues(false)
-            extDataSet.lineWidth = 2F
-            extDataSet.form = Legend.LegendForm.LINE
+            val extDataSet = LineDataSet(extEntries, "External Humidity").apply{
+                color = ContextCompat.getColor(requireContext(), R.color.main)
+                setDrawCircles(false)
+                setDrawValues(false)
+                lineWidth = 2F
+                form = Legend.LegendForm.LINE
+            }
 
-            humidChart.description.isEnabled = false
-            humidChart.legend.isEnabled = true
-            humidChart.axisRight.isEnabled = false
+//            val colorInt = ContextCompat.getColor(requireContext(), R.color.detail)
+//            val transparentColorInt = ColorUtils.setAlphaComponent(colorInt, 191)
 
-            val legend = humidChart.legend
-            legend.verticalAlignment = Legend.LegendVerticalAlignment.TOP
+            val idealValue = 28f
+            val idealEntries = labels.indices.map { Entry(it.toFloat(), idealValue) }
+            val idealDataSet = LineDataSet(idealEntries, "Ideal Humidity").apply {
+                color = ContextCompat.getColor(requireContext(), R.color.detail)
+                setDrawCircles(false)
+                setDrawValues(false)
+                lineWidth = 2F
+                enableDashedLine(500f, 500f, 0f)
+                form = Legend.LegendForm.LINE
+            }
 
-            val lineData = LineData(intDataSet, extDataSet)
-            humidChart.data = lineData
+            humidChart.apply{
+                description.isEnabled = false
+                legend.isEnabled = true
+                axisRight.isEnabled = false
 
-            humidChart.xAxis.valueFormatter = IndexAxisValueFormatter(labels)
-            humidChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
-            humidChart.invalidate()
+                legend.verticalAlignment = Legend.LegendVerticalAlignment.TOP
+
+                xAxis.apply {
+                    valueFormatter = IndexAxisValueFormatter(labels)
+                    position = XAxis.XAxisPosition.BOTTOM
+                }
+
+                data = LineData(intDataSet, extDataSet, idealDataSet)
+                invalidate()
+            }
+
         } else {
             Log.d("ChartSetup", "No humidity data to display.")
         }

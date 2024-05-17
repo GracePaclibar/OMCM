@@ -99,11 +99,22 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="-3dp"
         android:fontFamily="@font/inter_regular"
-        android:text="Lowest"
+        android:text="Lowest at:"
         android:textSize="12dp"
         app:flow_horizontalAlign="start"
         app:layout_constraintStart_toStartOf="@+id/int_min"
         app:layout_constraintTop_toBottomOf="@+id/int_min" />
+
+    <TextView
+        android:id="@+id/int_min_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/inter_regular"
+        android:text="Lowest"
+        android:textSize="12dp"
+        android:layout_marginStart="5dp"
+        app:layout_constraintStart_toEndOf="@id/min_text"
+        app:layout_constraintTop_toTopOf="@id/min_text" />
 
     <TextView
         android:id="@+id/int_max"
@@ -124,10 +135,21 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="-3dp"
         android:fontFamily="@font/inter_regular"
-        android:text="Highest"
+        android:text="Highest at:"
         android:textSize="12dp"
         app:flow_horizontalAlign="start"
         app:layout_constraintStart_toStartOf="@+id/int_max"
         app:layout_constraintTop_toBottomOf="@+id/int_max" />
+
+    <TextView
+        android:id="@+id/int_max_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/inter_regular"
+        android:text="Highest"
+        android:textSize="12dp"
+        android:layout_marginStart="5dp"
+        app:layout_constraintStart_toEndOf="@id/max_text"
+        app:layout_constraintTop_toTopOf="@id/max_text" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

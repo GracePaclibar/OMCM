@@ -130,18 +130,18 @@ class LightEnvFragment : Fragment(R.layout.fragment_int_env) {
             val intTextViewAve = view?.findViewById<TextView>(R.id.int_ave)
             val intTextViewMax = view?.findViewById<TextView>(R.id.int_max)
             val intTextViewMin = view?.findViewById<TextView>(R.id.int_min)
-//            val intMaxTimeTextView = view?.findViewById<TextView>(R.id.int_max_time)
-//            val intMinTimeTextView = view?.findViewById<TextView>(R.id.int_min_time)
+            val intMaxTimeTextView = view?.findViewById<TextView>(R.id.int_max_time)
+            val intMinTimeTextView = view?.findViewById<TextView>(R.id.int_min_time)
 
             val intAverageLight = intLightValues.map { it.first }.average().toInt().toString()
             val (intMaxLight, intMaxTimestamp) = intLightValues.first()
             val (intMinLight, intMinTimestamp) = intLightValues.last()
 
-            intTextViewAve?.text = "$intAverageLight"
+            intTextViewAve?.text = intAverageLight
             intTextViewMax?.text = "$intMaxLight lux"
             intTextViewMin?.text = "$intMinLight lux"
-//            intMaxTimeTextView?.text = getTimeFromTimestamp(intMaxTimestamp)
-//            intMinTimeTextView?.text = getTimeFromTimestamp(intMinTimestamp)
+            intMaxTimeTextView?.text = getTimeFromTimestamp(intMaxTimestamp)
+            intMinTimeTextView?.text = getTimeFromTimestamp(intMinTimestamp)
 
         }
     }

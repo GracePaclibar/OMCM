@@ -137,8 +137,8 @@ class HumidExtEnvFragment : Fragment(R.layout.fragment_ext_env) {
             val extTextViewAve = view?.findViewById<TextView>(R.id.ext_ave)
             val extTextViewMax = view?.findViewById<TextView>(R.id.ext_max)
             val extTextViewMin = view?.findViewById<TextView>(R.id.ext_min)
-//            val extMaxTimeTextView = view?.findViewById<TextView>(R.id.ext_max_time)
-//            val extMinTimeTextView = view?.findViewById<TextView>(R.id.ext_min_time)
+            val extMaxTimeTextView = view?.findViewById<TextView>(R.id.ext_max_time)
+            val extMinTimeTextView = view?.findViewById<TextView>(R.id.ext_min_time)
 
             val extAverageHumid = String.format("%.2f", extHumidValues.map { it.first }.average())
             val (extMaxHumid, extMaxTimestamp) = extHumidValues.first()
@@ -147,8 +147,8 @@ class HumidExtEnvFragment : Fragment(R.layout.fragment_ext_env) {
             extTextViewAve?.text = "$extAverageHumid"
             extTextViewMax?.text = "$extMaxHumid%"
             extTextViewMin?.text = "$extMinHumid%"
-//            extMaxTimeTextView?.text = getTimeFromTimestamp(extMaxTimestamp)
-//            extMinTimeTextView?.text = getTimeFromTimestamp(extMinTimestamp)
+            extMaxTimeTextView?.text = getTimeFromTimestamp(extMaxTimestamp)
+            extMinTimeTextView?.text = getTimeFromTimestamp(extMinTimestamp)
         }
     }
 
