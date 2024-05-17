@@ -139,8 +139,8 @@ class TempIntEnvFragment : Fragment(R.layout.fragment_int_env) {
             val intTextViewAve = view?.findViewById<TextView>(R.id.int_ave)
             val intTextViewMax = view?.findViewById<TextView>(R.id.int_max)
             val intTextViewMin = view?.findViewById<TextView>(R.id.int_min)
-//            val intMaxTimeTextView = view?.findViewById<TextView>(R.id.int_max_time)
-//            val intMinTimeTextView = view?.findViewById<TextView>(R.id.int_min_time)
+            val intMaxTimeTextView = view?.findViewById<TextView>(R.id.int_max_time)
+            val intMinTimeTextView = view?.findViewById<TextView>(R.id.int_min_time)
 
             val intAverageTemp = String.format("%.2f", intTemperatureValues.map { it.first }.average())
             val (intMaxTemp, intMaxTimestamp) = intTemperatureValues.first()
@@ -149,8 +149,8 @@ class TempIntEnvFragment : Fragment(R.layout.fragment_int_env) {
             intTextViewAve?.text = "$intAverageTemp"
             intTextViewMax?.text = "$intMaxTemp°C"
             intTextViewMin?.text = "$intMinTemp°C"
-//            intMaxTimeTextView?.text = getTimeFromTimestamp(intMaxTimestamp)
-//            intMinTimeTextView?.text = getTimeFromTimestamp(intMinTimestamp)
+            intMaxTimeTextView?.text = getTimeFromTimestamp(intMaxTimestamp)
+            intMinTimeTextView?.text = getTimeFromTimestamp(intMinTimestamp)
         }
     }
 

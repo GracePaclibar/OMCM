@@ -51,7 +51,7 @@ class TempChartFragment : Fragment(R.layout.fragment_line_chart) {
 
         val myRef = database.getReference("UsersData/$userUid/readings")
 
-        myRef.limitToLast(7).addListenerForSingleValueEvent(object : ValueEventListener {
+        myRef.limitToLast(37).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val currentDate = view.findViewById<TextView>(R.id.currentDateChart)
 
@@ -107,33 +107,55 @@ class TempChartFragment : Fragment(R.layout.fragment_line_chart) {
         labels: List<String>
     ) {
         if (intEntries.isNotEmpty() && extEntries.isNotEmpty()) {
-            val intDataSet = LineDataSet(intEntries, "Internal Temperature")
-            intDataSet.color = ContextCompat.getColor(requireContext(), R.color.highlight)
-            intDataSet.setDrawCircles(false)
-            intDataSet.setDrawValues(false)
-            intDataSet.lineWidth = 2F
-            intDataSet.form = Legend.LegendForm.LINE
 
-            val extDataSet = LineDataSet(extEntries, "External Temperature")
-            extDataSet.color = ContextCompat.getColor(requireContext(), R.color.main)
-            extDataSet.setDrawCircles(false)
-            extDataSet.setDrawValues(false)
-            extDataSet.lineWidth = 2F
+            val intDataSet = LineDataSet(intEntries, "Internal Temperature").apply {
+                color = ContextCompat.getColor(requireContext(), R.color.highlight)
+                setDrawCircles(false)
+                setDrawValues(false)
+                lineWidth = 2F
+                form = Legend.LegendForm.LINE
+            }
 
-            tempChart.description.isEnabled = false
-            tempChart.legend.isEnabled = true
-            tempChart.axisRight.isEnabled = false
-            extDataSet.form = Legend.LegendForm.LINE
+            val extDataSet = LineDataSet(extEntries, "External Temperature").apply {
+                color = ContextCompat.getColor(requireContext(), R.color.main)
+                setDrawCircles(false)
+                setDrawValues(false)
+                lineWidth = 2F
+                form = Legend.LegendForm.LINE
+            }
 
-            val legend = tempChart.legend
-            legend.verticalAlignment = Legend.LegendVerticalAlignment.TOP
+//            val colorInt = ContextCompat.getColor(requireContext(), R.color.detail)
+//            val transparentColorInt = ColorUtils.setAlphaComponent(colorInt, 191)
 
-            val lineData = LineData(intDataSet, extDataSet)
-            tempChart.data = lineData
+            val idealValue = 28f
+            val idealEntries = labels.indices.map { Entry(it.toFloat(), idealValue) }
+            val idealDataSet = LineDataSet(idealEntries, "Ideal Temperature").apply {
+                color = ContextCompat.getColor(requireContext(), R.color.detail)
+                setDrawCircles(false)
+                setDrawValues(false)
+                lineWidth = 2F
+                enableDashedLine(500f, 500f, 0f)
+                form = Legend.LegendForm.LINE
+            }
 
-            tempChart.xAxis.valueFormatter = IndexAxisValueFormatter(labels)
-            tempChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
-            tempChart.invalidate()
+            tempChart.apply {
+                description.isEnabled = false
+                legend.isEnabled = true
+                axisRight.isEnabled = false
+
+                tempChart.setVisibleXRangeMaximum(10f)
+                tempChart.moveViewToX(0f)
+
+                legend.verticalAlignment = Legend.LegendVerticalAlignment.TOP
+
+                xAxis.apply {
+                    valueFormatter = IndexAxisValueFormatter(labels)
+                    position = XAxis.XAxisPosition.BOTTOM
+                }
+
+                data = LineData(intDataSet, extDataSet, idealDataSet)
+                invalidate()
+            }
         } else {
             Log.d("ChartSetup", "No temperature data to display.")
         }
