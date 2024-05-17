@@ -474,104 +474,116 @@
 
             <!-- lux report -->
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/luminosityLayout"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/lightCardView"
                 android:layout_width="match_parent"
                 android:layout_height="120dp"
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/chart_border"
+                app:cardCornerRadius="20dp"
                 android:elevation="8dp"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tempLayout">
 
-                <TextView
-                    android:id="@+id/lightLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_bold"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginStart="10dp"
-                    android:text="Luminosity"
-                    android:textColor="@color/highlight"
-                    android:textSize="18sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/luminosityLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:alpha="0.85"
+                    app:layout_constraintStart_toStartOf="parent">
 
-                <Button
-                    android:id="@+id/lightMore"
-                    android:layout_width="35dp"
-                    android:layout_height="35dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/sed__1_"
-                    android:contentDescription="See more button for light"
-                    android:elevation="10dp"
-                    android:fontFamily="@font/inter_light"
-                    android:onClick="goToLightCharts"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    <ImageView
+                        android:id="@+id/lightBackground"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/day_background"
+                        android:scaleType="centerCrop"
+                        android:adjustViewBounds="true"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
 
-                <ImageView
-                    android:id="@+id/light_icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_light_on"
-                    app:flow_verticalAlign="center"
-                    android:layout_marginEnd="5dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/luxValue"
-                    app:layout_constraintEnd_toStartOf="@id/luxValue"
-                    app:layout_constraintTop_toTopOf="@+id/luxValue" />
+                    <TextView
+                        android:id="@+id/lightLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_bold"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="10dp"
+                        android:text="Luminosity"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/luxValue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_regular"
-                    android:text="29"
-                    android:textColor="@color/highlight"
-                    android:textSize="45dp"
-                    android:layout_marginStart="50dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/lightLabel" />
+                    <Button
+                        android:id="@+id/lightMore"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/sed"
+                        android:contentDescription="See more button for light"
+                        android:elevation="10dp"
+                        android:fontFamily="@font/inter_light"
+                        android:onClick="goToLightCharts"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/lightLevel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="-10dp"
-                    android:fontFamily="@font/inter_regular"
-                    android:text="Low"
-                    android:textSize="12dp"
-                    app:flow_horizontalAlign="start"
-                    app:layout_constraintStart_toStartOf="@+id/luxValue"
-                    app:layout_constraintTop_toBottomOf="@+id/luxValue" />
+                    <ImageView
+                        android:id="@+id/light_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_light_on_2"
+                        app:flow_verticalAlign="center"
+                        android:layout_marginEnd="5dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/luxValue"
+                        app:layout_constraintEnd_toStartOf="@id/luxValue"
+                        app:layout_constraintTop_toTopOf="@+id/luxValue" />
+
+                    <TextView
+                        android:id="@+id/luxValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_regular"
+                        android:text="29"
+                        android:textColor="@color/white"
+                        android:textSize="45dp"
+                        android:layout_marginStart="60dp"
+                        android:layout_marginTop="-5dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/lightLabel" />
+
+                    <TextView
+                        android:id="@+id/lightLevel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="-10dp"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/inter_regular"
+                        android:text="Low"
+                        android:textSize="12dp"
+                        app:flow_horizontalAlign="start"
+                        app:layout_constraintStart_toStartOf="@+id/luxValue"
+                        app:layout_constraintTop_toBottomOf="@+id/luxValue" />
+
+                    <TextView
+                        android:id="@+id/unit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="12dp"
+                        android:fontFamily="@font/inter_bold"
+                        android:text="lux"
+                        android:textColor="@color/white"
+                        android:textSize="16dp"
+                        app:flow_verticalAlign="top"
+                        app:layout_constraintStart_toEndOf="@+id/luxValue"
+                        app:layout_constraintTop_toTopOf="@+id/luxValue" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
 
 
-                <TextView
-                    android:id="@+id/unit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginTop="12dp"
-                    android:fontFamily="@font/inter_bold"
-                    android:text="lux"
-                    android:textColor="@color/highlight"
-                    android:textSize="16dp"
-                    app:flow_verticalAlign="top"
-                    app:layout_constraintStart_toEndOf="@+id/luxValue"
-                    app:layout_constraintTop_toTopOf="@+id/luxValue" />
-
-<!--                <ImageView-->
-<!--                    android:layout_width="75dp"-->
-<!--                    android:layout_height="75dp"-->
-<!--                    android:layout_marginEnd="75dp"-->
-<!--                    android:background="@drawable/ic_sun"-->
-<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                    app:layout_constraintEnd_toEndOf="parent"-->
-<!--                    app:layout_constraintTop_toTopOf="parent" />-->
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- for water and power bar graph -->
 
@@ -586,7 +598,7 @@
                 android:elevation="8dp"
                 app:layout_constraintEnd_toStartOf="@id/guideline"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/luminosityLayout">
+                app:layout_constraintTop_toBottomOf="@id/lightCardView">
 
 <!--                <androidx.fragment.app.FragmentContainerView-->
 <!--                    android:id="@+id/waterChartFragment"-->
@@ -608,7 +620,7 @@
                 android:elevation="8dp"
                 app:layout_constraintStart_toEndOf="@id/guideline"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/luminosityLayout">
+                app:layout_constraintTop_toBottomOf="@id/lightCardView">
 
 <!--                <androidx.fragment.app.FragmentContainerView-->
 <!--                    android:id="@+id/powerChartFragment"-->

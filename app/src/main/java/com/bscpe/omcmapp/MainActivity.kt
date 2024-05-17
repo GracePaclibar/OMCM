@@ -54,8 +54,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var userNameTextView: TextView
     private lateinit var lightLevelTextView: TextView
     private lateinit var latestTimestamp: String
-    private lateinit var latestDate: String
-    private lateinit var latestTime: String
+    private lateinit var timeBackground: ImageView
     private var latestTemperature: Double = 0.0
     private var latestHumidity: Double = 0.0
     private var latestLux: Double = 0.0
@@ -118,6 +117,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         showGreeting()
+        changeBackground()
 
         monView = findViewById(R.id.monDay)
         tuesView = findViewById(R.id.tuesDay)
@@ -231,10 +231,10 @@ class MainActivity : AppCompatActivity() {
         val lightBulbImageView = findViewById<ImageView>(R.id.light_icon)
         if (latestLux > 500) {
             // Lux level is high, use light mode
-            lightBulbImageView.setImageResource(R.drawable.ic_light_on)
+            lightBulbImageView.setImageResource(R.drawable.ic_light_on_2)
         } else {
             // Lux level is low, use dark mode
-            lightBulbImageView.setImageResource(R.drawable.ic_light_off)
+            lightBulbImageView.setImageResource(R.drawable.ic_light_off_2)
         }
     }
 
@@ -434,6 +434,7 @@ class MainActivity : AppCompatActivity() {
 
         val greeting = if (hour in 5..11) {
             "Magandang umaga,"
+
         } else if (hour in 12..17) {
             "Magandang hapon,"
         } else {
@@ -460,6 +461,18 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this@MainActivity, "Failed to retrieve username: ${databaseError.message}", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    fun changeBackground(){
+        val timeBackground = findViewById<ImageView>(R.id.lightBackground)
+        val currentTime = LocalTime.now()
+        val hour = currentTime.hour
+
+        if (hour in 5..17) {
+            timeBackground.setImageResource(R.drawable.day_background)
+        } else {
+            timeBackground.setImageResource(R.drawable.night_background)
+        }
     }
 
     fun parseTimestamp(timestampString: String): Pair<String, String> {
