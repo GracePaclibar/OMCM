@@ -224,16 +224,16 @@ class MainActivity : AppCompatActivity() {
 
         // Set colors based on the temperature value
         when {
-            latestTemperature < 20 -> temperatureProgress.finishedStrokeColor = getColor(R.color.highlight) // Cold
-            latestTemperature in 20.0..40.0 -> temperatureProgress.finishedStrokeColor = getColor(R.color.midgreenorange) // Normal
-            latestTemperature > 40 -> temperatureProgress.finishedStrokeColor = getColor(R.color.orange) // Hot
+            latestTemperature < 20 -> temperatureProgress.finishedStrokeColor = getColor(R.color.main) // Cold
+            latestTemperature in 20.0..40.0 -> temperatureProgress.finishedStrokeColor = getColor(R.color.midMuted_red) // Normal
+            latestTemperature > 40 -> temperatureProgress.finishedStrokeColor = getColor(R.color.muted_red) // Hot
         }
 
         // Set colors based on the humidity value
         when {
-            latestHumidity < 30 -> humidityProgress.finishedStrokeColor = getColor(R.color.red) // Low Humidity
-            latestHumidity in 30.0..60.0 -> humidityProgress.finishedStrokeColor = getColor(R.color.midredblue) // Normal Humidity
-            latestHumidity > 60 -> humidityProgress.finishedStrokeColor = getColor(R.color.blue) // High Humidity
+            latestHumidity < 30 -> humidityProgress.finishedStrokeColor = getColor(R.color.muted_red) // Low Humidity
+            latestHumidity in 30.0..60.0 -> humidityProgress.finishedStrokeColor = getColor(R.color.mutedRed_blue) // Normal Humidity
+            latestHumidity > 60 -> humidityProgress.finishedStrokeColor = getColor(R.color.muted_blue) // High Humidity
         }
 
 

@@ -23,4 +23,8 @@
     <color name="red">#FF0000</color>
     <color name="blue">#0000FF</color>
     <color name="midredblue">#CB5382</color>
+    <color name="midMuted_red">#C96C6C</color>
+    <color name="muted_red">#D14C4C </color>
+    <color name="muted_blue">#7A9FB3</color>
+    <color name="mutedRed_blue">#996C87</color>
 </resources>
