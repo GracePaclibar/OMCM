@@ -19,6 +19,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.FileProvider
 import com.github.lzyzsd.circleprogress.DonutProgress
 import com.google.firebase.FirebaseApp
@@ -87,10 +88,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.modeFragmentContainer, ModeFragment())
-            .commit()
 
         FirebaseApp.initializeApp(this)
 
@@ -220,6 +217,35 @@ class MainActivity : AppCompatActivity() {
         } else {
             Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show()
         }
+
+        val modePreviewSwitch = findViewById<SwitchCompat>(R.id.modePreview)
+        modePreviewSwitch.visibility = View.INVISIBLE
+
+        fetchModeData()
+    }
+
+    private fun fetchModeData() {
+        val modeTextView = findViewById<TextView>(R.id.mode_TextView)
+
+        val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+
+        val modePreviewSwitch = findViewById<SwitchCompat>(R.id.modePreview)
+
+        val autoPreviewState = sharedPrefs.getBoolean("autoSwitchState", true)
+        val waterPreviewState = sharedPrefs.getBoolean("waterSwitchState", true)
+
+        if (autoPreviewState == true) {
+            modePreviewSwitch.visibility = View.INVISIBLE
+            modeTextView.text = "Automatic"
+        } else {
+            modePreviewSwitch.visibility = View.VISIBLE
+            modeTextView.text = "Manual"
+            modePreviewSwitch.isChecked = waterPreviewState
+        }
+
+        modePreviewSwitch.setOnTouchListener { v, event -> true }
+        modePreviewSwitch.setFocusable(false)
+        modePreviewSwitch.setClickable(false)
     }
 
     private fun updateProgress() {
