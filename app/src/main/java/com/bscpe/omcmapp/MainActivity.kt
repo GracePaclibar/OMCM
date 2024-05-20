@@ -88,6 +88,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.modeFragmentContainer, ModeFragment())
+            .commit()
+
         FirebaseApp.initializeApp(this)
 
         auth = FirebaseAuth.getInstance()
