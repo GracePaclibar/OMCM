@@ -369,7 +369,7 @@
                     android:id="@+id/tempLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="15dp"
                     android:layout_marginTop="10dp"
                     android:fontFamily="@font/inter_bold"
                     android:text="Temperature"
@@ -431,7 +431,7 @@
                     android:id="@+id/humidLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="15dp"
                     android:layout_marginTop="10dp"
                     android:fontFamily="@font/inter_bold"
                     android:text="Humidity"
@@ -508,7 +508,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/inter_bold"
                         android:layout_marginTop="10dp"
-                        android:layout_marginStart="10dp"
+                        android:layout_marginStart="15dp"
                         android:text="Luminosity"
                         android:textColor="@color/white"
                         android:textSize="18sp"
@@ -546,7 +546,7 @@
                         android:fontFamily="@font/inter_regular"
                         android:text="29"
                         android:textColor="@color/white"
-                        android:textSize="45dp"
+                        android:textSize="45sp"
                         android:layout_marginStart="60dp"
                         android:layout_marginTop="-5dp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -583,14 +583,12 @@
 
             </androidx.cardview.widget.CardView>
 
-
-
             <!-- for water and power bar graph -->
 
-            <FrameLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/miniWaterBar"
                 android:layout_width="0dp"
-                android:layout_height="220dp"
+                android:layout_height="110dp"
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="5dp"
                 android:layout_marginTop="10dp"
@@ -600,19 +598,73 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/lightCardView">
 
-<!--                <androidx.fragment.app.FragmentContainerView-->
-<!--                    android:id="@+id/waterChartFragment"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="match_parent">-->
-<!--                    -->
-<!--                </androidx.fragment.app.FragmentContainerView>-->
+                <ImageView
+                    android:id="@+id/ic_waterFlow"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/ic_water"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            </FrameLayout>
+                <TextView
+                    android:id="@+id/waterConsumed_TextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="56"
+                    android:textSize="25sp"
+                    android:textColor="@color/highlight"
+                    android:fontFamily="@font/inter_bold"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@id/ic_waterFlow"
+                    app:layout_constraintStart_toStartOf="@id/ic_waterFlow"/>
 
-            <FrameLayout
+                <TextView
+                    android:id="@+id/waterConsumed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="-5dp"
+                    android:fontFamily="@font/inter_regular"
+                    android:text="Water Consumed"
+                    android:textSize="12sp"
+                    app:flow_horizontalAlign="start"
+                    app:layout_constraintStart_toStartOf="@+id/waterConsumed_TextView"
+                    app:layout_constraintTop_toBottomOf="@+id/waterConsumed_TextView" />
+
+                <TextView
+                    android:id="@+id/water_unit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="3dp"
+                    android:layout_marginTop="5dp"
+                    android:fontFamily="@font/inter_bold"
+                    android:text="ml"
+                    android:textColor="@color/highlight"
+                    android:textSize="10sp"
+                    app:flow_verticalAlign="top"
+                    app:layout_constraintStart_toEndOf="@+id/waterConsumed_TextView"
+                    app:layout_constraintTop_toTopOf="@+id/waterConsumed_TextView" />
+
+                <Button
+                    android:id="@+id/waterMore"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/sed__1_"
+                    android:contentDescription="See more button for water consumption"
+                    android:elevation="10dp"
+                    android:fontFamily="@font/inter_light"
+                    android:onClick="goToWaterCharts"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/miniPowerBar"
                 android:layout_width="0dp"
-                android:layout_height="220dp"
+                android:layout_height="110dp"
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginTop="10dp"
@@ -622,14 +674,14 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/lightCardView">
 
-<!--                <androidx.fragment.app.FragmentContainerView-->
-<!--                    android:id="@+id/powerChartFragment"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="match_parent">-->
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/modeFragmentContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-<!--                </androidx.fragment.app.FragmentContainerView>-->
+                </androidx.fragment.app.FragmentContainerView>
 
-            </FrameLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- media preview -->
 
@@ -650,7 +702,7 @@
                     android:id="@+id/mediaText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="15dp"
                     android:layout_marginTop="10dp"
                     android:fontFamily="@font/inter_bold"
                     android:text="Media"
