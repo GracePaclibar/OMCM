@@ -18,6 +18,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -30,7 +31,6 @@ import java.util.Locale
 class WaterChartFragment : Fragment(R.layout.fragment_water_flow) {
 
     private lateinit var waterChart: BarChart
-    private val waterFlowValues = mutableListOf<Float>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,18 +65,20 @@ class WaterChartFragment : Fragment(R.layout.fragment_water_flow) {
 
         val myRef = database.getReference("UsersData/$userUid/readings")
 
-        myRef.limitToLast(37).addListenerForSingleValueEvent(object : ValueEventListener {
+        myRef.orderByChild("timestamp")
+            .limitToLast(1008)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val currentDate = view.findViewById<TextView>(R.id.currentDateChart)
 
                 val dateFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-                val dateOutputFormatter = SimpleDateFormat("MMM dd", Locale.getDefault())
+                val dateOutputFormatter = SimpleDateFormat("MM/dd", Locale.getDefault())
 
                 val aggregatedValues = mutableMapOf<String, Float>()
 
-                for (snapshot in dataSnapshot.children){
+                for (snapshot in dataSnapshot.children) {
                     for (childSnapshot in snapshot.children) {
-                        val waterString = snapshot.child("water_flow").getValue(String::class.java)
+                        val waterString = snapshot.child("internal_temperature").getValue(String::class.java)
                         val waterFloat = waterString?.toFloatOrNull()
                         val waterTimeStampString = snapshot.child("timestamp").getValue(String::class.java)
 
@@ -84,8 +86,11 @@ class WaterChartFragment : Fragment(R.layout.fragment_water_flow) {
                             val date = dateFormatter.parse(waterTimeStampString)
                             val dateFormattedDate = dateOutputFormatter.format(date)
 
+
                             val currentValue = aggregatedValues[dateFormattedDate] ?: 0f
                             aggregatedValues[dateFormattedDate] = currentValue + waterFloat
+
+                            break
                         }
                     }
                 }
@@ -99,6 +104,7 @@ class WaterChartFragment : Fragment(R.layout.fragment_water_flow) {
 
                 setupChart(waterEntries, labels, view)
             }
+
             override fun onCancelled(databaseError: DatabaseError) {
                 Log.e("BarchartsFragment", "Database error: ${databaseError.message}")
             }
@@ -110,23 +116,32 @@ class WaterChartFragment : Fragment(R.layout.fragment_water_flow) {
             BarEntry(index.toFloat(), entry.y)
         }
 
-        val barDataSet = BarDataSet(barEntries, "Water Flow")
+        val barDataSet = BarDataSet(barEntries, "Water Flow").apply {
+            color = ContextCompat.getColor(requireContext(), R.color.highlight)
+            setDrawValues(true)
+            valueFormatter = object : ValueFormatter() {
+                override fun getBarLabel(barEntry: BarEntry?): String {
+                    val index = barEntry?.x?.toInt()
+                    return labels.getOrNull(index ?: 0) ?: ""
+                }
+            }
+        }
         val data = BarData(barDataSet)
 
-        val chart = view.findViewById<BarChart>(R.id.barChart)
-        chart.data = data
-        chart.setFitBars(true)
-        chart.description.isEnabled = false
-        chart.legend.isEnabled = false
+        val barChart = view.findViewById<BarChart>(R.id.barChart)
+        barChart.data = data
+        barChart.setFitBars(false)
+        barChart.description.isEnabled = false
+        barChart.legend.isEnabled = false
+        barChart.axisRight.isEnabled = false
 
-        val xAxis = chart.xAxis
+        val xAxis = barChart.xAxis
         xAxis.valueFormatter = IndexAxisValueFormatter(labels)
         xAxis.position = XAxis.XAxisPosition.BOTTOM
-        xAxis.granularity = 1f
         xAxis.setCenterAxisLabels(true)
         xAxis.isGranularityEnabled = true
 
-        chart.invalidate()
+        barChart.invalidate()
     }
 
 }
