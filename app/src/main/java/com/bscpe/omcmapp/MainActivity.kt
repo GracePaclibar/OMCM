@@ -218,34 +218,57 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show()
         }
 
+        // for sysConfig preview
+
+        val modeTextView = findViewById<TextView>(R.id.mode_TextView)
         val modePreviewSwitch = findViewById<SwitchCompat>(R.id.modePreview)
         modePreviewSwitch.visibility = View.INVISIBLE
 
-        fetchModeData()
+
+        fetchData(userUid, modePreviewSwitch, modeTextView)
     }
 
-    private fun fetchModeData() {
-        val modeTextView = findViewById<TextView>(R.id.mode_TextView)
+    private fun fetchData(
+        userUid: String?,
+        modePreviewSwitch: SwitchCompat,
+        modeTextView: TextView
+    ) {
+        val database = FirebaseDatabase.getInstance()
+        val dataRef = database.getReference("UsersData/$userUid/Control_Key/Manual")
 
-        val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        dataRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val isAuto = dataSnapshot.child("isAuto").getValue(Boolean::class.java) ?: true
+                val isWaterOn = dataSnapshot.child("isWaterOn").getValue(Boolean::class.java) ?: false
 
-        val modePreviewSwitch = findViewById<SwitchCompat>(R.id.modePreview)
+                updateStates(isAuto, isWaterOn, modePreviewSwitch, modeTextView)
+            }
 
-        val autoPreviewState = sharedPrefs.getBoolean("autoSwitchState", true)
-        val waterPreviewState = sharedPrefs.getBoolean("waterSwitchState", true)
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("Firebase", "Error fetching control key data", error.toException())
+                Toast.makeText(this@MainActivity, "Error fetching control key data", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
 
-        if (autoPreviewState == true) {
+    private fun updateStates(
+        isAuto : Boolean,
+        isWaterOn : Boolean,
+        modePreviewSwitch: SwitchCompat,
+        modeTextView: TextView
+    ) {
+        if (isAuto) {
             modePreviewSwitch.visibility = View.INVISIBLE
             modeTextView.text = "Automatic"
         } else {
             modePreviewSwitch.visibility = View.VISIBLE
             modeTextView.text = "Manual"
-            modePreviewSwitch.isChecked = waterPreviewState
-        }
+            modePreviewSwitch.isChecked = isWaterOn
 
-        modePreviewSwitch.setOnTouchListener { v, event -> true }
-        modePreviewSwitch.setFocusable(false)
-        modePreviewSwitch.setClickable(false)
+            modePreviewSwitch.setOnTouchListener { v, event -> true }
+            modePreviewSwitch.setFocusable(false)
+            modePreviewSwitch.setClickable(false)
+        }
     }
 
     private fun updateProgress() {
@@ -435,7 +458,6 @@ class MainActivity : AppCompatActivity() {
     }
     fun goToSettings(view: View) {
         val intent = Intent(this, SettingsActivity::class.java)
-
         val options = ActivityOptions.makeCustomAnimation(this,
             R.anim.slide_enter_right, //Enter animation
             R.anim.slide_exit_left //Exit animation
