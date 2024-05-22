@@ -30,4 +30,15 @@ class TempChartsActivity : AppCompatActivity() {
 
         startActivity(intent, options.toBundle())
     }
+
+    fun goToTempTab(view: View) {
+        val intent = Intent(this, TempTabularDataActivity::class.java)
+
+        val options = ActivityOptions.makeCustomAnimation(this,
+            R.anim.slide_enter_right, //Entrance animation
+            R.anim.slide_exit_left //Exit animation
+        )
+
+        startActivity(intent, options.toBundle())
+    }
 }
