@@ -9,49 +9,51 @@
     android:orientation="vertical"
     android:theme="@style/ThemeOverlay.AppCompat.Light">
 
-    <View
-        android:id="@+id/top"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/topNav_settings"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:background="@color/main"
-        android:elevation="4dp"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/settings_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:contentDescription="@string/profile_pageDesc"
-        android:elevation="4dp"
-        android:fontFamily="@font/inter_bold"
-        android:text="@string/settings_label_desc"
-        android:textColor="@color/highlight"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@+id/top"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageButton
-        android:id="@+id/back_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:background="#00FFFFFF"
-        android:contentDescription="@string/back_buttonDesc"
-        android:elevation="4dp"
-        android:onClick="goToMain"
-        android:padding="5dp"
-        app:layout_constraintBottom_toBottomOf="@+id/top"
-        app:layout_constraintStart_toStartOf="parent"
+        android:elevation="8dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5"
-        app:srcCompat="@drawable/ic_back"
-        tools:ignore="TouchTargetSizeCheck,ImageContrastCheck,RedundantDescriptionCheck" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/settings_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:contentDescription="@string/profile_pageDesc"
+            android:fontFamily="@font/inter_bold"
+            android:text="@string/settings_label_desc"
+            android:textColor="@color/highlight"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/back_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="#00FFFFFF"
+            android:contentDescription="@string/back_buttonDesc"
+            android:onClick="goToMain"
+            android:padding="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.5"
+            app:srcCompat="@drawable/ic_back"
+            tools:ignore="TouchTargetSizeCheck,ImageContrastCheck,RedundantDescriptionCheck" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/language_label"
@@ -64,7 +66,7 @@
         android:textColor="@color/highlight"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/top" />
+        app:layout_constraintTop_toBottomOf="@+id/topNav_settings" />
 
     <TextView
         android:id="@+id/current_language_label"

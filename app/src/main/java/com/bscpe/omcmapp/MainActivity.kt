@@ -412,6 +412,17 @@ class MainActivity : AppCompatActivity() {
         editor.apply()
     }
 
+    fun goToWaterCharts(view: View) {
+        val intent = Intent(this, WaterFlowActivity::class.java)
+
+        val options = ActivityOptions.makeCustomAnimation(this,
+            R.anim.slide_enter_bottom,
+            R.anim.slide_exit_top
+        )
+
+        startActivity(intent, options.toBundle())
+    }
+
     fun goToProfile(view: View) {
         val intent = Intent(this,ProfileActivity::class.java)
 
@@ -432,16 +443,7 @@ class MainActivity : AppCompatActivity() {
 
         startActivity(intent, options.toBundle())
     }
-    fun goToConsumptions(view: View) {
-        val intent = Intent(this, wConsumptionsActivity::class.java)
 
-        val options = ActivityOptions.makeCustomAnimation(this,
-            R.anim.slide_enter_bottom,
-            R.anim.slide_exit_top
-        )
-
-        startActivity(intent, options.toBundle())
-    }
     fun goToSensors(view: View) {
         val intent = Intent(this, SensorsActivity::class.java)
 
