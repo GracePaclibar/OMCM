@@ -76,15 +76,16 @@
             app:layout_constraintBottom_toBottomOf="parent">
 
             <TableRow
+                android:background="@color/detail"
                 android:paddingVertical="5dp"
                 android:layout_width="match_parent">
                 <TextView
                     android:id="@+id/date_title"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
+                    android:layout_weight="1.95"
                     android:textAlignment="center"
                     android:fontFamily="@font/inter_bold"
-                    android:text="Date"
+                    android:text="Timestamp"
                     />
                 <TextView
                     android:id="@+id/internal_title"
