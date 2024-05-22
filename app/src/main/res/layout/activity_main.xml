@@ -654,7 +654,6 @@
                     android:background="@drawable/sed__1_"
                     android:contentDescription="See more button for water consumption"
                     android:elevation="10dp"
-                    android:enabled="false"
                     android:fontFamily="@font/inter_light"
                     android:onClick="goToWaterCharts"
                     app:layout_constraintEnd_toEndOf="parent"

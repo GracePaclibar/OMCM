@@ -181,19 +181,19 @@ class SystemConfigActivity: AppCompatActivity() {
 
         autoSwitch.setOnCheckedChangeListener { _, isChecked ->
             updateVisibility(isChecked, manualMode, waterControl, waterSwitch)
-            updatePreferences("autoSwitchState", isChecked)
-            updateFirebase("isAuto", isChecked)
+            updatePreferences("autoSwitchState", if (isChecked) 1 else 0)
+            updateFirebase("isAuto", if (isChecked) 1 else 0)
             if (isChecked) {
-                updatePreferences("waterSwitchState", false)
-                updateFirebase("isWaterOn", false)
+                updatePreferences("waterSwitchState", 0)
+                updateFirebase("isWaterOn", 0)
             } else {
                 fetchAndSetWaterStateFromFirebase(waterSwitch)
             }
         }
 
         waterSwitch.setOnCheckedChangeListener { _, isChecked ->
-            updatePreferences("waterSwitchState", isChecked)
-            updateFirebase("isWaterOn", isChecked)
+            updatePreferences("waterSwitchState", if (isChecked) 1 else 0)
+            updateFirebase("isWaterOn", if (isChecked) 1 else 0)
         }
     }
 
@@ -230,15 +230,15 @@ class SystemConfigActivity: AppCompatActivity() {
         waterControl: TextView
     ) {
         val database = FirebaseDatabase.getInstance()
-        val powerRef = database.getReference("UsersData/$userUid/Control_Key/Manual")
+        val powerRef = database.getReference("UsersData/$userUid/Control_Key/dripWater")
         powerRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val isAuto = dataSnapshot.child("isAuto").getValue(Boolean::class.java) ?: true
-                val isWaterOn = dataSnapshot.child("isWaterOn").getValue(Boolean::class.java) ?: false
+                val isAuto = dataSnapshot.child("isAuto").getValue(Int::class.java) ?: 1
+                val isWaterOn = dataSnapshot.child("isWaterOn").getValue(Int::class.java) ?: 0
 
-                autoSwitch.isChecked = isAuto
-                waterSwitch.isChecked = isWaterOn
-                updateVisibility(isAuto, manualMode, waterControl, waterSwitch)
+                autoSwitch.isChecked = isAuto == 1
+                waterSwitch.isChecked = isWaterOn == 1
+                updateVisibility(isAuto == 1, manualMode, waterControl, waterSwitch)
                 updatePreferences("autoSwitchState", isAuto)
                 updatePreferences("waterSwitchState", isWaterOn)
             }
@@ -260,23 +260,23 @@ class SystemConfigActivity: AppCompatActivity() {
         autoSwitch.isChecked = true
         waterSwitch.isChecked = false
         updateVisibility(true, manualMode, waterControl, waterSwitch)
-        updatePreferences("autoSwitchState", true)
-        updatePreferences("waterSwitchState", false)
+        updatePreferences("autoSwitchState", 1)
+        updatePreferences("waterSwitchState", 0)
     }
 
-    private fun updatePreferences(key: String, value: Boolean) {
+    private fun updatePreferences(key: String, value: Int) {
         val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         val editor = sharedPrefs.edit()
-        editor.putBoolean(key, value)
+        editor.putInt(key, value)
         editor.apply()
     }
 
-    private fun updateFirebase(key: String, value: Boolean) {
+    private fun updateFirebase(key: String, value: Int) {
         val currentUser = FirebaseAuth.getInstance().currentUser
         val userUid = currentUser?.uid ?: return
 
         val database = FirebaseDatabase.getInstance()
-        val powerRef = database.getReference("UsersData/$userUid/Control_Key/Manual")
+        val powerRef = database.getReference("UsersData/$userUid/Control_Key/dripWater")
         powerRef.child(key).setValue(value)
             .addOnFailureListener { e ->
                 Log.e("Firebase", "Failed to update $key: ${e.message}")
@@ -289,11 +289,11 @@ class SystemConfigActivity: AppCompatActivity() {
         val userUid = currentUser?.uid ?: return
 
         val database = FirebaseDatabase.getInstance()
-        val powerRef = database.getReference("UsersData/$userUid/Control_Key/Manual")
+        val powerRef = database.getReference("UsersData/$userUid/Control_Key/dripWater")
         powerRef.child("isWaterOn").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val isWaterOn = dataSnapshot.getValue(Boolean::class.java) ?: false
-                waterSwitch.isChecked = isWaterOn
+                val isWaterOn = dataSnapshot.getValue(Int::class.java) ?: 0
+                waterSwitch.isChecked = (isWaterOn == 1)
                 updatePreferences("waterSwitchState", isWaterOn)
             }
 
@@ -303,6 +303,7 @@ class SystemConfigActivity: AppCompatActivity() {
             }
         })
     }
+
 
 
     fun goToMain(view: View) {

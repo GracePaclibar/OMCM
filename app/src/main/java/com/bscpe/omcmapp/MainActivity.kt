@@ -234,12 +234,12 @@ class MainActivity : AppCompatActivity() {
         modeTextView: TextView
     ) {
         val database = FirebaseDatabase.getInstance()
-        val dataRef = database.getReference("UsersData/$userUid/Control_Key/Manual")
+        val dataRef = database.getReference("UsersData/$userUid/Control_Key/dripWater")
 
         dataRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val isAuto = dataSnapshot.child("isAuto").getValue(Boolean::class.java) ?: true
-                val isWaterOn = dataSnapshot.child("isWaterOn").getValue(Boolean::class.java) ?: false
+                val isAuto = dataSnapshot.child("isAuto").getValue(Int::class.java) ?: 1
+                val isWaterOn = dataSnapshot.child("isWaterOn").getValue(Int::class.java) ?: 0
 
                 updateStates(isAuto, isWaterOn, modePreviewSwitch, modeTextView)
             }
@@ -252,18 +252,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateStates(
-        isAuto : Boolean,
-        isWaterOn : Boolean,
+        isAuto: Int,
+        isWaterOn: Int,
         modePreviewSwitch: SwitchCompat,
         modeTextView: TextView
     ) {
-        if (isAuto) {
+        if (isAuto == 1) {
             modePreviewSwitch.visibility = View.INVISIBLE
             modeTextView.text = "Automatic"
         } else {
             modePreviewSwitch.visibility = View.VISIBLE
             modeTextView.text = "Manual"
-            modePreviewSwitch.isChecked = isWaterOn
+            modePreviewSwitch.isChecked = (isWaterOn == 1)
 
             modePreviewSwitch.setOnTouchListener { v, event -> true }
             modePreviewSwitch.setFocusable(false)
@@ -435,6 +435,17 @@ class MainActivity : AppCompatActivity() {
         editor.apply()
     }
 
+    fun goToWaterCharts(view: View) {
+        val intent = Intent(this, WaterFlowActivity::class.java)
+
+        val options = ActivityOptions.makeCustomAnimation(this,
+            R.anim.slide_enter_bottom,
+            R.anim.slide_exit_top
+        )
+
+        startActivity(intent, options.toBundle())
+    }
+
     fun goToProfile(view: View) {
         val intent = Intent(this,ProfileActivity::class.java)
 
@@ -454,16 +465,7 @@ class MainActivity : AppCompatActivity() {
 
         startActivity(intent, options.toBundle())
     }
-    fun goToConsumptions(view: View) {
-        val intent = Intent(this, wConsumptionsActivity::class.java)
 
-        val options = ActivityOptions.makeCustomAnimation(this,
-            R.anim.slide_enter_bottom,
-            R.anim.slide_exit_top
-        )
-
-        startActivity(intent, options.toBundle())
-    }
     fun goToSensors(view: View) {
         val intent = Intent(this, SensorsActivity::class.java)
 

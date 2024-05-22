@@ -2,6 +2,7 @@ package com.bscpe.omcmapp
 
 import android.os.Bundle
 import android.util.Log
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,35 +12,36 @@ import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class LightEnvFragment : Fragment(R.layout.fragment_int_env) {
+class WaterEnvFragment : Fragment(R.layout.fragment_int_env) {
 
     private lateinit var spinner: Spinner
     private lateinit var filter: Array<String>
-    private val intLightValues = mutableListOf<Pair<Int, String?>>()
+    private val waterValues = mutableListOf<Pair<Int, String?>>()
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_int_env, container, false)
 
-        filter = resources.getStringArray(R.array.Filter)
+        filter = resources.getStringArray(R.array.Water_Filter)
         spinner = view.findViewById(R.id.time_filter)
 
-        // changing units and icons
+        val title = view.findViewById<TextView>(R.id.internal_text)
+        title.text = "Usage Data"
+
         val unit = view.findViewById<TextView>(R.id.unit)
-        unit.text = "lux"
+        unit.text = "m\u00B3"
 
         val icon = view.findViewById<ImageView>(R.id.temp_icon)
-        icon.setImageResource(R.drawable.ic_light)
+        icon.setImageResource(R.drawable.ic_humid)
 
         if (spinner != null) {
             val adapter = ArrayAdapter(requireContext(), R.layout.spinner_dropdown_item, filter)
@@ -48,14 +50,13 @@ class LightEnvFragment : Fragment(R.layout.fragment_int_env) {
 
             spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
-                    parent: AdapterView<*>,
+                    parent: AdapterView<*>?,
                     view: View?,
                     position: Int,
                     id: Long
                 ) {
-                    intLightValues.clear()
+                    waterValues.clear()
                     val selectedItem = filter[position]
-//                    Toast.makeText(parent.context, "Selected item: $selectedItem", Toast.LENGTH_SHORT).show()
                     fillTable(position)
                 }
 
@@ -70,29 +71,25 @@ class LightEnvFragment : Fragment(R.layout.fragment_int_env) {
     private fun fillTable(selectedFilterPosition: Int) {
         when (selectedFilterPosition) {
             0 -> {
-                fetchDataFromFB(114)
-            }
-            1 -> {
                 fetchDataFromFB(1008)
             }
-            2 -> {
+            1 -> {
                 fetchDataFromFB(4320)
             }
-            3 -> {
+            2 -> {
                 fetchDataFromFB(12960)
             }
-            4 -> {
+            3 -> {
                 fetchDataFromFB(25920)
             }
-            5 -> {
+            4 -> {
                 fetchDataFromFB(52560)
             }
             else -> {
-                fetchDataFromFB(114)
+                fetchDataFromFB(1008)
                 Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
             }
         }
-
     }
 
     private fun fetchDataFromFB(limit: Int) {
@@ -110,12 +107,12 @@ class LightEnvFragment : Fragment(R.layout.fragment_int_env) {
                     Log.d("FirebaseData", "Child Node Key: ${snapshot.key}")
 
                     for (childSnapshot in snapshot.children) {
-                        val intLightString = snapshot.child("lux").getValue(String::class.java)
-                        val intLightInt = intLightString?.toIntOrNull()
-                        val intLightTimestampString = snapshot.child("timestamp").getValue(String::class.java)
+                        val waterString = snapshot.child("water_flow").getValue(String::class.java)
+                        val waterInt = waterString?.toIntOrNull()
+                        val waterTimestampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                        if (intLightInt != null) {
-                            intLightValues.add(intLightInt to intLightTimestampString)
+                        if (waterInt != null) {
+                            waterValues.add(waterInt to waterTimestampString)
                         }
                     }
                     setupTable()
@@ -128,22 +125,22 @@ class LightEnvFragment : Fragment(R.layout.fragment_int_env) {
     }
 
     private fun setupTable() {
-        intLightValues.sortByDescending { it.first }
+        waterValues.sortByDescending { it.first }
 
-        if (intLightValues.isNotEmpty()) {
+        if (waterValues.isNotEmpty()) {
             val intTextViewAve = view?.findViewById<TextView>(R.id.int_ave)
             val intTextViewMax = view?.findViewById<TextView>(R.id.int_max)
             val intTextViewMin = view?.findViewById<TextView>(R.id.int_min)
             val intMaxTimeTextView = view?.findViewById<TextView>(R.id.int_max_time)
             val intMinTimeTextView = view?.findViewById<TextView>(R.id.int_min_time)
 
-            val intAverageLight = intLightValues.map { it.first }.average().toInt().toString()
-            val (intMaxLight, intMaxTimestamp) = intLightValues.first()
-            val (intMinLight, intMinTimestamp) = intLightValues.last()
+            val intAverageWater = waterValues.map { it.first }.average().toInt().toString()
+            val (intMaxWater, intMaxTimestamp) = waterValues.first()
+            val (intMinWater, intMinTimestamp) = waterValues.last()
 
-            intTextViewAve?.text = intAverageLight
-            intTextViewMax?.text = "$intMaxLight lux"
-            intTextViewMin?.text = "$intMinLight lux"
+            intTextViewAve?.text = intAverageWater
+            intTextViewMax?.text = "$intMaxWater m\u00B3"
+            intTextViewMin?.text = "$intMinWater m\u00B3"
             intMaxTimeTextView?.text = getTimeFromTimestamp(intMaxTimestamp)
             intMinTimeTextView?.text = getTimeFromTimestamp(intMinTimestamp)
 
