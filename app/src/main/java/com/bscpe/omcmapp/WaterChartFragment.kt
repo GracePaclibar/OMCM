@@ -30,6 +30,7 @@ import java.util.Locale
 
 class WaterChartFragment : Fragment(R.layout.fragment_water_flow) {
 
+    private val calendar = Calendar.getInstance()
     private lateinit var waterChart: BarChart
 
     override fun onCreateView(
@@ -47,16 +48,16 @@ class WaterChartFragment : Fragment(R.layout.fragment_water_flow) {
 
         val dateTextView = view.findViewById<TextView>(R.id.currentDateChart)
 
-//        setDate(dateTextView)
+        setDate(dateTextView)
         fetchDataFromFB(view)
     }
 
-//    private fun setDate(
-//        dateTextView: TextView
-//    ) {
-//        val currentDate = SimpleDateFormat("MMMM dd", Locale.getDefault()).format(calendar.time)
-//        dateTextView.text = currentDate
-//    }
+    private fun setDate(
+        dateTextView: TextView
+    ) {
+        val currentDate = SimpleDateFormat("MMMM dd", Locale.getDefault()).format(calendar.time)
+        dateTextView.text = currentDate
+    }
 
     private fun fetchDataFromFB(view: View) {
         val database = FirebaseDatabase.getInstance()
@@ -67,49 +68,50 @@ class WaterChartFragment : Fragment(R.layout.fragment_water_flow) {
 
         myRef.orderByChild("timestamp")
             .limitToLast(1008)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val currentDate = view.findViewById<TextView>(R.id.currentDateChart)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
 
-                val dateFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-                val dateOutputFormatter = SimpleDateFormat("MM/dd", Locale.getDefault())
+                    val dateFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                    val dateOutputFormatter = SimpleDateFormat("MM/dd", Locale.getDefault())
 
-                val aggregatedValues = mutableMapOf<String, Float>()
+                    val aggregatedValues = mutableMapOf<String, Float>()
 
-                for (snapshot in dataSnapshot.children) {
-                    for (childSnapshot in snapshot.children) {
-                        val waterString = snapshot.child("internal_temperature").getValue(String::class.java)
-                        val waterFloat = waterString?.toFloatOrNull()
-                        val waterTimeStampString = snapshot.child("timestamp").getValue(String::class.java)
+                    for (snapshot in dataSnapshot.children) {
+                        for (childSnapshot in snapshot.children) {
+                            val waterString = snapshot.child("internal_temperature").getValue(String::class.java)
+                            val waterFloat = waterString?.toFloatOrNull()
+                            val waterTimeStampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                        if (waterFloat != null && waterTimeStampString != null) {
-                            val date = dateFormatter.parse(waterTimeStampString)
-                            val dateFormattedDate = dateOutputFormatter.format(date)
+                            if (waterFloat != null && waterTimeStampString != null) {
+                                val date = dateFormatter.parse(waterTimeStampString)
+                                val dateFormattedDate = dateOutputFormatter.format(date)
 
+                                val currentValue = aggregatedValues[dateFormattedDate] ?: 0f
+                                aggregatedValues[dateFormattedDate] = currentValue + waterFloat
 
-                            val currentValue = aggregatedValues[dateFormattedDate] ?: 0f
-                            aggregatedValues[dateFormattedDate] = currentValue + waterFloat
-
-                            break
+                                break
+                            }
                         }
                     }
+
+                    val waterEntries = mutableListOf<Entry>()
+                    val labels = mutableListOf<String>()
+
+                    val last7Days = aggregatedValues.keys.toList().takeLast(7).reversed()
+                    for (date in last7Days) {
+                        waterEntries.add(Entry(labels.size.toFloat(), aggregatedValues[date] ?: 0f))
+                        labels.add(date)
+                    }
+
+                    setupChart(waterEntries, labels, view)
                 }
 
-                val waterEntries = mutableListOf<Entry>()
-                val labels = mutableListOf<String>()
-                aggregatedValues.forEach { (date, value) ->
-                    waterEntries.add(Entry(labels.size.toFloat(), value))
-                    labels.add(date)
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.e("BarchartsFragment", "Database error: ${databaseError.message}")
                 }
-
-                setupChart(waterEntries, labels, view)
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.e("BarchartsFragment", "Database error: ${databaseError.message}")
-            }
-        })
+            })
     }
+
 
     private fun setupChart(entries: List<Entry>, labels: List<String>, view: View) {
         val barEntries = entries.mapIndexed { index, entry ->
@@ -117,20 +119,14 @@ class WaterChartFragment : Fragment(R.layout.fragment_water_flow) {
         }
 
         val barDataSet = BarDataSet(barEntries, "Water Flow").apply {
-            color = ContextCompat.getColor(requireContext(), R.color.highlight)
+            color = ContextCompat.getColor(requireContext(), R.color.main)
             setDrawValues(true)
-            valueFormatter = object : ValueFormatter() {
-                override fun getBarLabel(barEntry: BarEntry?): String {
-                    val index = barEntry?.x?.toInt()
-                    return labels.getOrNull(index ?: 0) ?: ""
-                }
-            }
         }
         val data = BarData(barDataSet)
 
         val barChart = view.findViewById<BarChart>(R.id.barChart)
         barChart.data = data
-        barChart.setFitBars(false)
+        barChart.setFitBars(true)
         barChart.description.isEnabled = false
         barChart.legend.isEnabled = false
         barChart.axisRight.isEnabled = false
@@ -138,7 +134,7 @@ class WaterChartFragment : Fragment(R.layout.fragment_water_flow) {
         val xAxis = barChart.xAxis
         xAxis.valueFormatter = IndexAxisValueFormatter(labels)
         xAxis.position = XAxis.XAxisPosition.BOTTOM
-        xAxis.setCenterAxisLabels(true)
+        xAxis.setCenterAxisLabels(false)
         xAxis.isGranularityEnabled = true
 
         barChart.invalidate()

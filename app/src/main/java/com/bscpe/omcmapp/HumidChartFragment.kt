@@ -52,7 +52,7 @@ class HumidChartFragment : Fragment(R.layout.fragment_line_chart) {
 
         val myRef = database.getReference("UsersData/$userUid/readings")
 
-        myRef.limitToLast(37).addListenerForSingleValueEvent(object : ValueEventListener {
+        myRef.limitToLast(37).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // Log the key of the parent node
                 Log.d("FirebaseData", "Parent Node Key: ${dataSnapshot.key}")
