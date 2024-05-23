@@ -28,6 +28,7 @@ class TempChartFragment : Fragment(R.layout.fragment_line_chart) {
     private lateinit var tempChart: LineChart
     private val intTemperatureValues = mutableListOf<Float>()
     private val extTemperatureValues = mutableListOf<Float>()
+    private val existingTimestamps = HashSet<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,7 +70,12 @@ class TempChartFragment : Fragment(R.layout.fragment_line_chart) {
                         val extTemperatureFloat = extTemperatureString?.toFloatOrNull()
                         val intTempTimestampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                        if (intTemperatureFloat != null && intTempTimestampString != null && extTemperatureFloat != null) {
+                        if (intTemperatureFloat != null &&
+                            extTemperatureFloat != null &&
+                            intTempTimestampString != null &&
+                            !existingTimestamps.contains(intTempTimestampString)
+                        ) {
+                            existingTimestamps.add(intTempTimestampString)
                             intTemperatureValues.add(intTemperatureFloat)
                             extTemperatureValues.add(extTemperatureFloat)
 
@@ -99,6 +105,10 @@ class TempChartFragment : Fragment(R.layout.fragment_line_chart) {
                 Log.e("LinechartsFragment", "Database error: ${databaseError.message}")
             }
         })
+    }
+
+    private fun isUniqueTimestamp(timestamp: String): Boolean {
+        return !intTemperatureValues.contains(timestamp.toFloat()) && !extTemperatureValues.contains(timestamp.toFloat())
     }
 
     private fun setupChart(

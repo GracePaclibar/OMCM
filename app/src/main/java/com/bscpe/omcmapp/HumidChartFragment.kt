@@ -28,7 +28,7 @@ class HumidChartFragment : Fragment(R.layout.fragment_line_chart) {
     private lateinit var humidChart: LineChart
     private val intHumidValues = mutableListOf<Float>()
     private val extHumidValues = mutableListOf<Float?>()
-
+    private val existingTimestamps = HashSet<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,9 +66,6 @@ class HumidChartFragment : Fragment(R.layout.fragment_line_chart) {
                 val dateOutputFormatter = SimpleDateFormat("MMM dd", Locale.getDefault())
 
                 for (snapshot in dataSnapshot.children) {
-                    // Log the key of each child node
-                    Log.d("FirebaseData", "Child Node Key: ${snapshot.key}")
-
                     for (childSnapshot in snapshot.children) {
                         val intHumidString = snapshot.child("internal_humidity").getValue(String::class.java)
                         val intHumidFloat = intHumidString?.toFloatOrNull()
@@ -76,7 +73,12 @@ class HumidChartFragment : Fragment(R.layout.fragment_line_chart) {
                         val extHumidFloat = extHumidString?.toFloatOrNull()
                         val intHumidTimestampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                        if (intHumidFloat != null && intHumidTimestampString != null) {
+                        if (intHumidFloat != null &&
+                            extHumidString != null &&
+                            intHumidTimestampString != null &&
+                            !existingTimestamps.contains(intHumidTimestampString)
+                        ) {
+                            existingTimestamps.add(intHumidTimestampString)
                             intHumidValues.add(intHumidFloat)
                             extHumidValues.add(extHumidFloat)
 

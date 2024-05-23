@@ -27,6 +27,7 @@ class LightChartFragment : Fragment(R.layout.fragment_line_chart) {
 
     private lateinit var lightChart: LineChart
     private val lightValues = mutableListOf<Float>()
+    private val existingTimestamps = HashSet<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,7 +70,11 @@ class LightChartFragment : Fragment(R.layout.fragment_line_chart) {
                         val lightFloat = lightString?.toFloatOrNull()
                         val lightTimestampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                        if (lightFloat != null && lightTimestampString != null) {
+                        if (lightFloat != null &&
+                            lightTimestampString != null &&
+                            !existingTimestamps.contains(lightTimestampString)
+                        ) {
+                            existingTimestamps.add(lightTimestampString)
                             lightValues.add(lightFloat)
                             entries.add(Entry(entries.size.toFloat(), lightFloat))
 

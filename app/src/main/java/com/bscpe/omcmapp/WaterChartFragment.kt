@@ -32,6 +32,7 @@ class WaterChartFragment : Fragment(R.layout.fragment_water_flow) {
 
     private val calendar = Calendar.getInstance()
     private lateinit var waterChart: BarChart
+    private val existingTimestamps = HashSet<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -80,10 +81,12 @@ class WaterChartFragment : Fragment(R.layout.fragment_water_flow) {
                         for (childSnapshot in snapshot.children) {
                             val waterString = snapshot.child("internal_temperature").getValue(String::class.java)
                             val waterFloat = waterString?.toFloatOrNull()
-                            val waterTimeStampString = snapshot.child("timestamp").getValue(String::class.java)
+                            val timestampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                            if (isUniqueTimestamp(waterTimeStampString, aggregatedValues)) {
-                                val date = dateFormatter.parse(waterTimeStampString)
+                            if (timestampString != null && !existingTimestamps.contains(timestampString))
+                            {
+                                existingTimestamps.add(timestampString)
+                                val date = dateFormatter.parse(timestampString)
                                 val dateFormattedDate = dateOutputFormatter.format(date)
 
                                 val currentValue = aggregatedValues[dateFormattedDate] ?: 0f

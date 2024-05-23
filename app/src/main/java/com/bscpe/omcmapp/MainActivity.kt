@@ -297,7 +297,7 @@ class MainActivity : AppCompatActivity() {
         luxTextView.text = "${latestLux.toInt()}"
 
         val lightBulbImageView = findViewById<ImageView>(R.id.light_icon)
-        if (latestLux > 500) {
+        if (latestLux > 100) {
             // Lux level is high, use light mode
             lightBulbImageView.setImageResource(R.drawable.ic_light_on_2)
         } else {
