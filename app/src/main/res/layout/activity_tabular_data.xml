@@ -56,54 +56,115 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <Button
+        android:id="@+id/prev_page_btn"
+        android:layout_width="75dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginBottom="75dp"
+        android:background="?attr/selectableItemBackground"
+        app:layout_constraintTop_toTopOf="@id/tempTabularDataHeaders"
+        app:layout_constraintStart_toStartOf="@id/scroll_layout"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <Button
+        android:id="@+id/next_page_btn"
+        android:layout_width="75dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="75dp"
+        android:background="?attr/selectableItemBackground"
+        app:layout_constraintTop_toTopOf="@id/tempTabularDataHeaders"
+        app:layout_constraintEnd_toEndOf="@id/scroll_layout"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <TextView
+        android:id="@+id/currentPageNo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Page: 1 / 10"
+        android:textSize="20sp"
+        android:fontFamily="@font/inter_regular"
+        android:textColor="@color/highlight"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/scroll_layout"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <TableLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tempTabularDataHeaders"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:stretchColumns="*"
+        app:layout_constraintTop_toBottomOf="@id/topNav">
+
+        <TableRow
+            android:background="@color/detail"
+            android:paddingVertical="10dp"
+            android:paddingEnd="5dp"
+            android:layout_width="match_parent">
+            <TextView
+                android:id="@+id/date_title"
+                android:layout_width="0dp"
+                android:layout_weight="1.25"
+                android:textAlignment="center"
+                android:fontFamily="@font/inter_bold"
+                android:text="Date"
+                />
+            <TextView
+                android:id="@+id/time_title"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:textAlignment="center"
+                android:fontFamily="@font/inter_bold"
+                android:text="Time"
+                />
+            <TextView
+                android:id="@+id/internal_title"
+                android:layout_width="0dp"
+                android:layout_weight="0.75"
+                android:textAlignment="center"
+                android:fontFamily="@font/inter_bold"
+                android:text="Internal"
+                />
+            <TextView
+                android:id="@+id/external_title"
+                android:layout_width="0dp"
+                android:layout_weight="0.75"
+                android:textAlignment="center"
+                android:fontFamily="@font/inter_bold"
+                android:text="External"
+                />
+        </TableRow>
+
+    </TableLayout>
+
     <ScrollView
+        android:id="@+id/scroll_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginBottom="75dp"
+        android:scrollbars="none"
+        android:isScrollContainer="false"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topNav">
+        app:layout_constraintTop_toBottomOf="@id/tempTabularDataHeaders">
 
         <TableLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/tempTabularData"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="10dp"
             android:layout_marginBottom="15dp"
             android:layout_marginStart="15dp"
             android:layout_marginEnd="15dp"
             android:stretchColumns="*"
-            app:layout_constraintTop_toBottomOf="@id/topNav"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
-
-            <TableRow
-                android:background="@color/detail"
-                android:paddingVertical="5dp"
-                android:layout_width="match_parent">
-                <TextView
-                    android:id="@+id/date_title"
-                    android:layout_width="0dp"
-                    android:layout_weight="1.95"
-                    android:textAlignment="center"
-                    android:fontFamily="@font/inter_bold"
-                    android:text="Timestamp"
-                    />
-                <TextView
-                    android:id="@+id/internal_title"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:textAlignment="center"
-                    android:fontFamily="@font/inter_bold"
-                    android:text="Internal"
-                    />
-                <TextView
-                    android:id="@+id/external_title"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:textAlignment="center"
-                    android:fontFamily="@font/inter_bold"
-                    android:text="External"
-                    />
-            </TableRow>
 
         </TableLayout>
 
