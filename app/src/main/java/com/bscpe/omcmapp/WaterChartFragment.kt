@@ -82,12 +82,12 @@ class WaterChartFragment : Fragment(R.layout.fragment_water_flow) {
                             val waterFloat = waterString?.toFloatOrNull()
                             val waterTimeStampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                            if (waterFloat != null && waterTimeStampString != null) {
+                            if (isUniqueTimestamp(waterTimeStampString, aggregatedValues)) {
                                 val date = dateFormatter.parse(waterTimeStampString)
                                 val dateFormattedDate = dateOutputFormatter.format(date)
 
                                 val currentValue = aggregatedValues[dateFormattedDate] ?: 0f
-                                aggregatedValues[dateFormattedDate] = currentValue + waterFloat
+                                aggregatedValues[dateFormattedDate] = currentValue + waterFloat!!
 
                                 break
                             }
@@ -112,6 +112,9 @@ class WaterChartFragment : Fragment(R.layout.fragment_water_flow) {
             })
     }
 
+    private fun isUniqueTimestamp(timestamp: String?, aggregatedValues: Map<String, Float>): Boolean {
+        return timestamp != null && !aggregatedValues.containsKey(timestamp)
+    }
 
     private fun setupChart(entries: List<Entry>, labels: List<String>, view: View) {
         val barEntries = entries.mapIndexed { index, entry ->

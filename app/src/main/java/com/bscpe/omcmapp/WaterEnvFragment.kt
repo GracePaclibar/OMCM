@@ -38,7 +38,7 @@ class WaterEnvFragment : Fragment(R.layout.fragment_int_env) {
         title.text = "Usage Data"
 
         val unit = view.findViewById<TextView>(R.id.unit)
-        unit.text = "m\u00B3"
+        unit.text = "L"
 
         val icon = view.findViewById<ImageView>(R.id.temp_icon)
         icon.setImageResource(R.drawable.ic_humid)
@@ -139,8 +139,8 @@ class WaterEnvFragment : Fragment(R.layout.fragment_int_env) {
             val (intMinWater, intMinTimestamp) = waterValues.last()
 
             intTextViewAve?.text = intAverageWater
-            intTextViewMax?.text = "$intMaxWater m\u00B3"
-            intTextViewMin?.text = "$intMinWater m\u00B3"
+            intTextViewMax?.text = "$intMaxWater L"
+            intTextViewMin?.text = "$intMinWater L"
             intMaxTimeTextView?.text = getTimeFromTimestamp(intMaxTimestamp)
             intMinTimeTextView?.text = getTimeFromTimestamp(intMinTimestamp)
 
