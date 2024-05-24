@@ -52,23 +52,23 @@ class CameraDetectActivity : AppCompatActivity(), Detector.DetectorListener {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
         }
 
-        bindListeners()
+//        bindListeners()
     }
 
-    private fun bindListeners() {
-        binding.apply {
-            isGpu.setOnCheckedChangeListener { buttonView, isChecked ->
-                cameraExecutor.submit {
-                    detector.setup(isGpu = isChecked)
-                }
-                if (isChecked) {
-                    buttonView.setBackgroundColor(ContextCompat.getColor(baseContext, R.color.orange))
-                } else {
-                    buttonView.setBackgroundColor(ContextCompat.getColor(baseContext, R.color.gray))
-                }
-            }
-        }
-    }
+//    private fun bindListeners() {
+//        binding.apply {
+//            isGpu.setOnCheckedChangeListener { buttonView, isChecked ->
+//                cameraExecutor.submit {
+//                    detector.setup(isGpu = isChecked)
+//                }
+//                if (isChecked) {
+//                    buttonView.setBackgroundColor(ContextCompat.getColor(baseContext, R.color.colorPrimaryDark))
+//                } else {
+//                    buttonView.setBackgroundColor(ContextCompat.getColor(baseContext, R.color.gray))
+//                }
+//            }
+//        }
+//    }
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)

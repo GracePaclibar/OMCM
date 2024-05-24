@@ -72,9 +72,10 @@
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/lightFragmentContainer"
-                android:layout_width="355dp"
+                android:layout_width="match_parent"
                 android:layout_height="210dp"
                 android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
                 android:layout_marginTop="15dp" />
 
         </FrameLayout>
@@ -96,9 +97,10 @@
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/lightIntEnvFragmentContainer"
-                android:layout_width="355dp"
+                android:layout_width="match_parent"
                 android:layout_height="165dp"
                 android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
                 android:layout_marginTop="15dp" />
 
         </FrameLayout>

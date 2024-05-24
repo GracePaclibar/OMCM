@@ -1,11 +1,13 @@
 package com.bscpe.omcmapp
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
@@ -65,5 +67,16 @@ class ImageSelectActivity : AppCompatActivity(), Detector.DetectorListener {
 
     companion object {
         private const val REQUEST_IMAGE_PICK = 100
+    }
+
+    fun goToMain(view: View) {
+        val intent = Intent(this, MainActivity::class.java)
+
+        val options = ActivityOptions.makeCustomAnimation(this,
+            R.anim.slide_enter_right, //Entrance animation
+            R.anim.slide_exit_left //Exit animation
+        )
+
+        startActivity(intent, options.toBundle())
     }
 }

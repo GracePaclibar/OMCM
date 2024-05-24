@@ -7,6 +7,26 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <ImageButton
+        android:id="@+id/back_btn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="17dp"
+        android:background="#00FFFFFF"
+        android:contentDescription="@string/back_buttonDesc"
+        android:elevation="4dp"
+        android:onClick="goToMain"
+        android:padding="5dp"
+        app:layout_constraintBottom_toTopOf="@+id/view_finder"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.044"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/ic_back_white"
+        tools:ignore="TouchTargetSizeCheck,ImageContrastCheck,RedundantDescriptionCheck" />
+
     <androidx.camera.view.PreviewView
         android:id="@+id/view_finder"
         android:layout_width="0dp"
@@ -43,31 +63,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:paddingVertical="4dp"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <ToggleButton
-            android:id="@+id/isGpu"
-            android:background="@color/orange"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:textOff="@string/gpu"
-            android:textOn="@string/gpu"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.5" />
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-<!--    <ImageView-->
+<!--        <ImageView-->
 <!--        android:id="@+id/ivTop"-->
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="match_parent"/>-->

@@ -18,74 +18,47 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- greetings -->
-
-        <TextView
-            android:id="@+id/greetings"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Good Day,"
-            android:fontFamily="@font/inter_regular"
-            android:textColor="@color/highlight"
-            android:textSize="16sp"
-            android:layout_marginTop="7dp"
-            android:layout_marginStart="10dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@id/profileButton"
-            />
-
-        <TextView
-            android:id="@+id/userName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="userName"
-            android:textSize="20sp"
-            android:fontFamily="@font/inter_bold"
-            android:textColor="@color/highlight"
-            android:layout_marginStart="10dp"
-            android:layout_marginBottom="7dp"
-            app:layout_constraintStart_toEndOf="@id/profileButton"
-            app:layout_constraintBottom_toBottomOf="parent"/>
-
-        <!-- buttons -->
-
         <ImageButton
-            android:id="@+id/profileButton"
+            android:id="@+id/back_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
             android:background="#00FFFFFF"
-            android:contentDescription="@string/profile_buttonDesc"
+            android:contentDescription="@string/back_buttonDesc"
             android:elevation="4dp"
-            android:onClick="goToProfile"
-            android:paddingVertical="5dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:onClick="goToMain"
+            android:padding="5dp"
+            app:layout_constraintBottom_toBottomOf="@+id/topNav"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_proflle"
-            tools:ignore="RtlSymmetry,SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+            app:layout_constraintVertical_bias="0.5"
+            app:srcCompat="@drawable/ic_back"
+            tools:ignore="TouchTargetSizeCheck,ImageContrastCheck,RedundantDescriptionCheck" />
 
-        <ImageButton
-            android:id="@+id/settingsButton"
+        <TextView
+            android:id="@+id/profile_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="5dp"
-            android:background="#00FFFFFF"
-            android:contentDescription="@string/settings_buttonDesc"
+            android:contentDescription="@string/profile_pageDesc"
             android:elevation="4dp"
-            android:onClick="goToSettings"
-            android:padding="5dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:fontFamily="@font/inter_bold"
+            android:text="Image Scan"
+            android:textColor="@color/highlight"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@+id/topNav"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_setting"
-            tools:ignore="TouchTargetSizeCheck" />
-
+            app:layout_constraintVertical_bias="0.0" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- OverlayView for drawing bounding boxes -->
+
 
     <ImageView
         android:id="@+id/selectedImageView"
@@ -94,195 +67,54 @@
         android:layout_marginTop="16dp"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_launcher_background"
-        app:layout_constraintTop_toBottomOf="@id/topNav"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5" />
-
-    <!-- OverlayView for drawing bounding boxes -->
-
+        app:layout_constraintHorizontal_bias="0.428"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topNav"
+        app:layout_constraintVertical_bias="0.333" />
 
     <com.bscpe.omcmapp.OverlayView
         android:id="@+id/overlayView"
         android:layout_width="400dp"
         android:layout_height="400dp"
-        android:layout_marginBottom="195dp"
         android:scaleType="fitCenter"
-        app:layout_constraintBottom_toTopOf="@+id/botNav"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.454"
-        app:layout_constraintStart_toStartOf="parent" />
-
+        app:layout_constraintHorizontal_bias="0.571"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/selectedImageView"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/selectImageButton"
         android:layout_width="175dp"
         android:layout_height="75dp"
+        android:layout_marginTop="88dp"
         android:background="@drawable/button"
         android:text="Gallery"
         android:textColor="@color/colorPrimaryDark"
-        tools:layout_editor_absoluteX="220dp"
-        tools:layout_editor_absoluteY="511dp" />
-
-    <Button
-        android:id="@+id/selectFirebaseButton"
-        android:layout_width="175dp"
-        android:layout_height="75dp"
-        android:background="@drawable/button"
-        android:text="Database"
-        android:textColor="@color/colorPrimaryDark"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="511dp" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/botNav"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:background="@color/main"
-        android:elevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/overlayView"
+        app:layout_constraintVertical_bias="0.0" />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guidelineBot"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.5" />
-
-        <ImageButton
-            android:id="@+id/sysConfig_tab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:background="#00FFFFFF"
-            android:contentDescription="@string/system_configs_tab_desc"
-            android:onClick="openSysConfig"
-            android:paddingStart="7dp"
-            android:paddingTop="5dp"
-            android:paddingEnd="5dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_config" />
-
-        <TextView
-            android:id="@+id/SystemText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="3dp"
-            android:elevation="4dp"
-            android:fontFamily="@font/inter_regular"
-            android:text="System"
-            android:textColor="@color/highlight"
-            android:textSize="12sp"
-            app:flow_horizontalAlign="center"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/sysConfig_tab"
-            app:layout_constraintStart_toStartOf="@+id/sysConfig_tab"
-            app:layout_constraintTop_toBottomOf="@id/sysConfig_tab" />
-
-        <ImageButton
-            android:id="@+id/scan_tab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="45dp"
-            android:layout_marginEnd="22dp"
-            android:background="#00FFFFFF"
-            android:contentDescription="@string/scan_tab_desc"
-            android:elevation="4dp"
-            android:onClick="openCamera"
-            android:paddingStart="5dp"
-            android:paddingTop="6dp"
-            android:paddingEnd="6dp"
-            android:paddingBottom="2dp"
-            app:layout_constraintEnd_toStartOf="@id/guidelineBot"
-            app:layout_constraintStart_toEndOf="@id/sysConfig_tab"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_scan" />
-
-        <TextView
-            android:id="@+id/CameraText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="3dp"
-            android:elevation="4dp"
-            android:fontFamily="@font/inter_regular"
-            android:text="Camera"
-            android:textColor="@color/highlight"
-            android:textSize="12sp"
-            app:flow_horizontalAlign="center"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/scan_tab"
-            app:layout_constraintStart_toStartOf="@id/scan_tab"
-            app:layout_constraintTop_toBottomOf="@id/scan_tab" />
-
-        <ImageButton
-            android:id="@+id/camera_scan_tab"
-            android:layout_width="54dp"
-            android:layout_height="45dp"
-            android:layout_marginStart="22dp"
-            android:layout_marginEnd="45dp"
-            android:background="#00FFFFFF"
-            android:contentDescription="Camera scan button"
-            android:elevation="4dp"
-            android:onClick="goToCameraDetect"
-            android:paddingStart="5dp"
-            android:paddingTop="5dp"
-            android:paddingEnd="5dp"
-            android:scaleType="fitCenter"
-            app:layout_constraintEnd_toStartOf="@id/image_scan_tab"
-            app:layout_constraintStart_toEndOf="@id/guidelineBot"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_camera_scan" />
-
-        <TextView
-            android:id="@+id/CameraScanText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="3dp"
-            android:elevation="4dp"
-            android:fontFamily="@font/inter_regular"
-            android:text="Camera Scan"
-            android:textColor="@color/highlight"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/camera_scan_tab"
-            app:layout_constraintStart_toStartOf="@id/camera_scan_tab"
-            app:layout_constraintTop_toBottomOf="@id/camera_scan_tab" />
-
-        <ImageButton
-            android:id="@+id/image_scan_tab"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="20dp"
-            android:background="#00FFFFFF"
-            android:contentDescription="Image scan button"
-            android:elevation="4dp"
-            android:onClick="goToImageSelect"
-            android:paddingStart="5dp"
-            android:paddingTop="3dp"
-            android:paddingEnd="7dp"
-            android:scaleType="fitCenter"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_image_scan" />
-
-        <TextView
-            android:id="@+id/ImageScanText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="6dp"
-            android:elevation="4dp"
-            android:fontFamily="@font/inter_regular"
-            android:text="Image Scan"
-            android:textColor="@color/highlight"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/image_scan_tab"
-            app:layout_constraintStart_toStartOf="@+id/image_scan_tab"
-            app:layout_constraintTop_toBottomOf="@+id/image_scan_tab" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <!--    <Button-->
+<!--        android:id="@+id/selectFirebaseButton"-->
+<!--        android:layout_width="175dp"-->
+<!--        android:layout_height="75dp"-->
+<!--        android:layout_marginTop="88dp"-->
+<!--        android:layout_marginBottom="85dp"-->
+<!--        android:background="@drawable/button"-->
+<!--        android:text="Database"-->
+<!--        android:textColor="@color/colorPrimaryDark"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/botNav"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.936"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/overlayView"-->
+<!--        app:layout_constraintVertical_bias="1.0" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

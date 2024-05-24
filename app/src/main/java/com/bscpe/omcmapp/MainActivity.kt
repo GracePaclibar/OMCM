@@ -67,7 +67,6 @@ class MainActivity : AppCompatActivity() {
         getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
     }
 
-
     private val takePictureLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -105,15 +104,10 @@ class MainActivity : AppCompatActivity() {
             openCamera(it)
         }
 
-        // Find the button by its ID
         val cameraScan = findViewById<ImageButton>(R.id.camera_scan_tab)
 
-        // Set OnClickListener to the button
         cameraScan.setOnClickListener {
-            // Create an Intent to start SecondActivity
             val intent = Intent(this, CameraDetectActivity::class.java)
-
-            // Start SecondActivity
             startActivity(intent)
         }
 
@@ -131,10 +125,8 @@ class MainActivity : AppCompatActivity() {
         val currentDateTextView: TextView = findViewById(R.id.currentDate)
         val currentDate = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()).format(calendar.time)
 
-        // setting text to textView
         currentDateTextView.text = currentDate
 
-        // set mini calendar color
         miniCalendar(dayOfWeek)
 
         temperatureProgress = findViewById(R.id.temperatureProgress)
