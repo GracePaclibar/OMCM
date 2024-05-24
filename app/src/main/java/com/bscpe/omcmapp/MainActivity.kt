@@ -541,7 +541,7 @@ class MainActivity : AppCompatActivity() {
         val date = inputFormat.parse(timestampString)
 
         val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.ENGLISH)
-        val timeFormat = SimpleDateFormat("HH:mm:ss")
+        val timeFormat = SimpleDateFormat("hh:mm:ss a")
 
         val formattedDate = dateFormat.format(date)
         val formattedTime = timeFormat.format(date)
