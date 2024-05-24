@@ -57,7 +57,7 @@
         android:fontFamily="@font/inter_regular"
         android:text="29"
         android:textColor="@color/highlight"
-        android:textSize="45dp"
+        android:textSize="45sp"
         app:layout_constraintStart_toEndOf="@+id/temp_icon"
         app:layout_constraintTop_toBottomOf="@+id/internal_text" />
 
@@ -70,7 +70,7 @@
         android:fontFamily="@font/inter_bold"
         android:text="°C"
         android:textColor="@color/highlight"
-        android:textSize="16dp"
+        android:textSize="16sp"
         app:flow_verticalAlign="top"
         app:layout_constraintStart_toEndOf="@+id/int_ave"
         app:layout_constraintTop_toTopOf="@+id/int_ave" />
@@ -82,7 +82,7 @@
         android:layout_marginTop="-10dp"
         android:fontFamily="@font/inter_regular"
         android:text="Average"
-        android:textSize="12dp"
+        android:textSize="12sp"
         app:flow_horizontalAlign="start"
         app:layout_constraintStart_toStartOf="@+id/int_ave"
         app:layout_constraintTop_toBottomOf="@+id/int_ave" />
@@ -96,7 +96,7 @@
         android:fontFamily="@font/inter_bold"
         android:text="29°C"
         android:textColor="@color/highlight"
-        android:textSize="16dp"
+        android:textSize="16sp"
         app:flow_horizontalAlign="start"
         app:layout_constraintStart_toStartOf="@id/temp_icon"
         app:layout_constraintTop_toBottomOf="@+id/ave_text" />
@@ -108,7 +108,7 @@
         android:layout_marginTop="-3dp"
         android:fontFamily="@font/inter_regular"
         android:text="Lowest at:"
-        android:textSize="12dp"
+        android:textSize="12sp"
         app:flow_horizontalAlign="start"
         app:layout_constraintStart_toStartOf="@+id/int_min"
         app:layout_constraintTop_toBottomOf="@+id/int_min" />
@@ -119,7 +119,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/inter_regular"
         android:text="Lowest"
-        android:textSize="12dp"
+        android:textSize="12sp"
         android:layout_marginStart="5dp"
         app:layout_constraintStart_toEndOf="@id/min_text"
         app:layout_constraintTop_toTopOf="@id/min_text" />
@@ -133,7 +133,7 @@
         android:fontFamily="@font/inter_bold"
         android:text="29°C"
         android:textColor="@color/highlight"
-        android:textSize="16dp"
+        android:textSize="16sp"
         app:layout_constraintStart_toEndOf="@id/int_min"
         app:layout_constraintTop_toBottomOf="@+id/ave_text" />
 
@@ -144,7 +144,7 @@
         android:layout_marginTop="-3dp"
         android:fontFamily="@font/inter_regular"
         android:text="Highest at:"
-        android:textSize="12dp"
+        android:textSize="12sp"
         app:flow_horizontalAlign="start"
         app:layout_constraintStart_toStartOf="@+id/int_max"
         app:layout_constraintTop_toBottomOf="@+id/int_max" />
@@ -155,7 +155,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/inter_regular"
         android:text="Highest"
-        android:textSize="12dp"
+        android:textSize="12sp"
         android:layout_marginStart="5dp"
         app:layout_constraintStart_toEndOf="@id/max_text"
         app:layout_constraintTop_toTopOf="@id/max_text" />

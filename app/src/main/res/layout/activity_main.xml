@@ -571,7 +571,7 @@
                         android:textColor="@color/white"
                         android:fontFamily="@font/inter_regular"
                         android:text="Low"
-                        android:textSize="12dp"
+                        android:textSize="12sp"
                         app:flow_horizontalAlign="start"
                         app:layout_constraintStart_toStartOf="@+id/luxValue"
                         app:layout_constraintTop_toBottomOf="@+id/luxValue" />
