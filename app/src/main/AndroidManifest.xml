@@ -91,6 +91,10 @@
             android:name=".WaterFlowActivity"
             android:label="Water Consumption">
         </activity>
+        <activity android:name=".TempTableActivity"
+            android:label="Temperature Table"
+            android:exported="true">
+        </activity>
         <uses-native-library
             android:name="libOpenCL.so"
             android:required="false"/>
