@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/dateTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.25"
+        android:text="Date"
+        android:fontFamily="@font/inter_regular"
+        android:textColor="@color/highlight"
+        android:textSize="14sp"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMaxTextSize="14sp"
+        android:autoSizeMinTextSize="8sp"
+        android:autoSizeStepGranularity="2sp"
+        android:padding="4dp"
+        android:gravity="center"/>
+
+    <TextView
+        android:id="@+id/timeTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Time"
+        android:fontFamily="@font/inter_regular"
+        android:textColor="@color/highlight"
+        android:textSize="14sp"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMaxTextSize="14sp"
+        android:autoSizeMinTextSize="8sp"
+        android:autoSizeStepGranularity="2sp"
+        android:padding="4dp"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/internalTempTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.75"
+        android:text="Int Temp"
+        android:fontFamily="@font/inter_regular"
+        android:textColor="@color/highlight"
+        android:textSize="14sp"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMaxTextSize="14sp"
+        android:autoSizeMinTextSize="8sp"
+        android:autoSizeStepGranularity="2sp"
+        android:padding="4dp"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/externalTempTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.75"
+        android:text="Ext Temp"
+        android:fontFamily="@font/inter_regular"
+        android:textColor="@color/highlight"
+        android:textSize="14sp"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMaxTextSize="14sp"
+        android:autoSizeMinTextSize="8sp"
+        android:autoSizeStepGranularity="2sp"
+        android:padding="4dp"
+        android:gravity="center"/>
+</LinearLayout>
+
