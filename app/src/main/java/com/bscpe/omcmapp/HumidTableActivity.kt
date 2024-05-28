@@ -24,17 +24,18 @@ import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class TempTableActivity : AppCompatActivity() {
+class HumidTableActivity : AppCompatActivity() {
     private lateinit var database: DatabaseReference
     private lateinit var auth: FirebaseAuth
     private lateinit var readingsList: MutableList<Readings>
-    private lateinit var adapter: ReadingsAdapter
+    private lateinit var adapter: HumidReadingsAdapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var prevButton: Button
     private lateinit var nextButton: Button
     private lateinit var loadingIndicator: ProgressBar
     private lateinit var pageNoTextView: TextView
     private lateinit var titles: LinearLayout
+    private lateinit var pageLabel: TextView
     private lateinit var backButton: ImageButton
     private var currentPage = 1
     private val itemsPerPage = 15
@@ -44,6 +45,7 @@ class TempTableActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_temp_table)
 
+        pageLabel = findViewById(R.id.data_label)
         titles = findViewById(R.id.titles)
         pageNoTextView = findViewById(R.id.pageNo)
 
@@ -55,7 +57,7 @@ class TempTableActivity : AppCompatActivity() {
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         readingsList = mutableListOf()
-        adapter = ReadingsAdapter(readingsList)
+        adapter = HumidReadingsAdapter(readingsList)
         recyclerView.adapter = adapter
 
         database = FirebaseDatabase.getInstance().reference
@@ -64,6 +66,8 @@ class TempTableActivity : AppCompatActivity() {
         handler = HandlerCompat.createAsync(mainLooper)
 
         fetchReadings()
+
+        pageLabel.text = "Humidity Data"
 
         nextButton = findViewById(R.id.nextButton)
         nextButton.setOnClickListener {
@@ -89,7 +93,7 @@ class TempTableActivity : AppCompatActivity() {
         backButton = findViewById(R.id.back_btn)
 
         backButton.setOnClickListener {
-            val intent = Intent(this, TempChartsActivity::class.java)
+            val intent = Intent(this, HumidChartsActivity::class.java)
             startActivity(intent)
 
             val options = ActivityOptions.makeCustomAnimation(this,
@@ -98,6 +102,7 @@ class TempTableActivity : AppCompatActivity() {
             )
             startActivity(intent, options.toBundle())
         }
+
     }
 
     private fun fetchReadings() {
@@ -112,19 +117,19 @@ class TempTableActivity : AppCompatActivity() {
                 readingsList.clear()
                 for (readingSnapshot in dataSnapshot.children) {
                     val timestamp = readingSnapshot.child("timestamp").getValue(String::class.java) ?: ""
-                    val internalTempString = readingSnapshot.child("internal_temperature").getValue(String::class.java) ?: " "
-                    val internalTempFloat = internalTempString.toFloatOrNull()
-                    val externalTempString = readingSnapshot.child("external_temperature").getValue(String::class.java) ?: " "
-                    val externalTempFloat = externalTempString.toFloatOrNull()
+                    val internalHumidString = readingSnapshot.child("internal_humidity").getValue(String::class.java) ?: " "
+                    val internalHumidFloat = internalHumidString.toFloatOrNull()
+                    val externalHumidString = readingSnapshot.child("internal_humidity").getValue(String::class.java) ?: " "
+                    val externalHumidFloat = externalHumidString.toFloatOrNull()
 
                     val (date, time) = parseTimestamp(timestamp)
 
-                    if (internalTempFloat != null && externalTempFloat != null) {
+                    if (internalHumidFloat != null && externalHumidFloat != null) {
                         val readings = Readings(
                             date = date,
                             time = time,
-                            internalTemperature = internalTempFloat,
-                            externalTemperature = externalTempFloat
+                            internalHumidity = internalHumidFloat,
+                            externalHumidity = externalHumidFloat
                         )
                         titles.visibility = View.VISIBLE
                         loadingIndicator.visibility = View.GONE
@@ -140,7 +145,7 @@ class TempTableActivity : AppCompatActivity() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.e("TempTableActivity", "Failed to read data: ${error.toException()}")
+                Log.e("HumidTableActivity", "Failed to read data: ${error.toException()}")
             }
         })
     }
@@ -175,16 +180,5 @@ class TempTableActivity : AppCompatActivity() {
     private fun updatePageNumber() {
         val totalPages = (readingsList.size + itemsPerPage - 1) / itemsPerPage
         pageNoTextView.text = "Page $currentPage / $totalPages"
-    }
-
-    fun goToTempCharts(view: View) {
-        val intent = Intent(this, TempChartsActivity::class.java)
-        startActivity(intent)
-
-        val options = ActivityOptions.makeCustomAnimation(this,
-            R.anim.slide_enter_left,
-            R.anim.slide_exit_right
-        )
-        startActivity(intent, options.toBundle())
     }
 }
