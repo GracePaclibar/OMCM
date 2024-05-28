@@ -22,6 +22,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 class HumidTableActivity : AppCompatActivity() {
@@ -117,19 +118,21 @@ class HumidTableActivity : AppCompatActivity() {
                 readingsList.clear()
                 for (readingSnapshot in dataSnapshot.children) {
                     val timestamp = readingSnapshot.child("timestamp").getValue(String::class.java) ?: ""
+
                     val internalHumidString = readingSnapshot.child("internal_humidity").getValue(String::class.java) ?: " "
                     val internalHumidFloat = internalHumidString.toFloatOrNull()
                     val externalHumidString = readingSnapshot.child("internal_humidity").getValue(String::class.java) ?: " "
                     val externalHumidFloat = externalHumidString.toFloatOrNull()
 
-                    val (date, time) = parseTimestamp(timestamp)
+                    val (date, time, dateTime) = parseTimestamp(timestamp)
 
                     if (internalHumidFloat != null && externalHumidFloat != null) {
                         val readings = Readings(
                             date = date,
                             time = time,
                             internalHumidity = internalHumidFloat,
-                            externalHumidity = externalHumidFloat
+                            externalHumidity = externalHumidFloat,
+                            dateTime = dateTime
                         )
                         titles.visibility = View.VISIBLE
                         loadingIndicator.visibility = View.GONE
@@ -138,8 +141,7 @@ class HumidTableActivity : AppCompatActivity() {
                         readingsList.add(readings)
                     }
                 }
-                readingsList.sortWith(compareByDescending<Readings>{ it.date }
-                    .thenByDescending { it.time })
+                readingsList.sortByDescending { it.dateTime }
 
                 updateRecyclerViewWithDelay(handler, 200)
             }
@@ -150,14 +152,14 @@ class HumidTableActivity : AppCompatActivity() {
         })
     }
 
-    private fun parseTimestamp(timestamp: String): Pair<String, String> {
+    private fun parseTimestamp(timestamp: String): Triple<String, String, Date> {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         val date = dateFormat.parse(timestamp)
 
         val dateFormatter = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
         val timeFormatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
 
-        return dateFormatter.format(date) to timeFormatter.format(date)
+        return Triple(dateFormatter.format(date), timeFormatter.format(date), date)
     }
 
     private fun updateRecyclerViewWithDelay(handler: Handler?, delayMillis: Long) {
