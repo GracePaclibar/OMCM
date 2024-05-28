@@ -14,6 +14,10 @@
         android:fontFamily="@font/inter_regular"
         android:textColor="@color/highlight"
         android:textSize="14sp"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMaxTextSize="14sp"
+        android:autoSizeMinTextSize="8sp"
+        android:autoSizeStepGranularity="2sp"
         android:padding="4dp"
         android:gravity="center"/>
 
@@ -26,6 +30,10 @@
         android:fontFamily="@font/inter_regular"
         android:textColor="@color/highlight"
         android:textSize="14sp"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMaxTextSize="14sp"
+        android:autoSizeMinTextSize="8sp"
+        android:autoSizeStepGranularity="2sp"
         android:padding="4dp"
         android:gravity="center" />
 
@@ -38,6 +46,10 @@
         android:fontFamily="@font/inter_regular"
         android:textColor="@color/highlight"
         android:textSize="14sp"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMaxTextSize="14sp"
+        android:autoSizeMinTextSize="8sp"
+        android:autoSizeStepGranularity="2sp"
         android:padding="4dp"
         android:gravity="center" />
 
@@ -50,6 +62,10 @@
         android:fontFamily="@font/inter_regular"
         android:textColor="@color/highlight"
         android:textSize="14sp"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMaxTextSize="14sp"
+        android:autoSizeMinTextSize="8sp"
+        android:autoSizeStepGranularity="2sp"
         android:padding="4dp"
         android:gravity="center"/>
 </LinearLayout>

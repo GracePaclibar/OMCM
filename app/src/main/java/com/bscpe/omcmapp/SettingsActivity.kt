@@ -71,8 +71,8 @@ class SettingsActivity : AppCompatActivity() {
         startActivity(intent)
 
         val options = ActivityOptions.makeCustomAnimation(this,
-            R.anim.slide_enter_left, //Enter animation
-            R.anim.slide_exit_right //Exit animation
+            R.anim.slide_enter_left,
+            R.anim.slide_exit_right
         )
         startActivity(intent, options.toBundle())
     }

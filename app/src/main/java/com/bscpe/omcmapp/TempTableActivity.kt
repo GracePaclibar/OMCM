@@ -1,11 +1,17 @@
 package com.bscpe.omcmapp
 
+import android.app.ActivityOptions
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.HandlerCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -26,12 +32,18 @@ class TempTableActivity : AppCompatActivity() {
     private lateinit var prevButton: Button
     private lateinit var nextButton: Button
     private lateinit var loadingIndicator: ProgressBar
+    private lateinit var pageNoTextView: TextView
+    private lateinit var titles: LinearLayout
     private var currentPage = 1
     private val itemsPerPage = 15
+    private var handler: Handler? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_temp_table)
+
+        titles = findViewById(R.id.titles)
+        pageNoTextView = findViewById(R.id.pageNo)
 
         loadingIndicator = findViewById(R.id.loadingIndicator)
 
@@ -47,12 +59,15 @@ class TempTableActivity : AppCompatActivity() {
         database = FirebaseDatabase.getInstance().reference
         auth = FirebaseAuth.getInstance()
 
+        handler = HandlerCompat.createAsync(mainLooper)
+
         fetchReadings()
 
         nextButton = findViewById(R.id.nextButton)
         nextButton.setOnClickListener {
             currentPage++
-            updateRecyclerView()
+            updateRecyclerViewWithDelay(handler, 200)
+            updatePageNumber()
         }
 
         prevButton = findViewById(R.id.prevButton)
@@ -60,8 +75,13 @@ class TempTableActivity : AppCompatActivity() {
         prevButton.setOnClickListener {
             if(currentPage > 1) {
                 currentPage--
-                updateRecyclerView()
+                updateRecyclerViewWithDelay(handler, 200)
+                updatePageNumber()
             }
+        }
+
+        if (currentPage == 1) {
+            prevButton.visibility = View.INVISIBLE
         }
     }
 
@@ -69,6 +89,7 @@ class TempTableActivity : AppCompatActivity() {
         val userUid = auth.currentUser?.uid
         val readingsRef = database.child("UsersData").child("$userUid").child("readings")
 
+        titles.visibility = View.GONE
         loadingIndicator.visibility = View.VISIBLE
 
         readingsRef.addValueEventListener(object : ValueEventListener{
@@ -83,8 +104,6 @@ class TempTableActivity : AppCompatActivity() {
 
                     val (date, time) = parseTimestamp(timestamp)
 
-                    loadingIndicator.visibility = View.GONE
-
                     if (internalTempFloat != null && externalTempFloat != null) {
                         val readings = Readings(
                             date = date,
@@ -92,13 +111,17 @@ class TempTableActivity : AppCompatActivity() {
                             internalTemperature = internalTempFloat,
                             externalTemperature = externalTempFloat
                         )
+                        titles.visibility = View.VISIBLE
+                        loadingIndicator.visibility = View.GONE
+                        updatePageNumber()
+
                         readingsList.add(readings)
                     }
                 }
                 readingsList.sortWith(compareByDescending<Readings>{ it.date }
                     .thenByDescending { it.time })
 
-                updateRecyclerView()
+                updateRecyclerViewWithDelay(handler, 200)
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -117,10 +140,36 @@ class TempTableActivity : AppCompatActivity() {
         return dateFormatter.format(date) to timeFormatter.format(date)
     }
 
-    private fun updateRecyclerView() {
-        val startIndex = (currentPage - 1) * itemsPerPage
-        val endIndex = kotlin.math.min(startIndex + itemsPerPage, readingsList.size)
-        val paginatedList = readingsList.subList(startIndex, endIndex)
-        adapter.updateList(paginatedList)
+    private fun updateRecyclerViewWithDelay(handler: Handler?, delayMillis: Long) {
+
+        handler?.postDelayed({
+            val startIndex = (currentPage - 1) * itemsPerPage
+            val endIndex = kotlin.math.min(startIndex + itemsPerPage, readingsList.size)
+            val paginatedList = readingsList.subList(startIndex, endIndex)
+            adapter.updateList(paginatedList)
+
+            if (currentPage == 1) {
+                prevButton.visibility = View.INVISIBLE
+            } else {
+                prevButton.visibility = View.VISIBLE
+            }
+
+        }, delayMillis)
+    }
+
+    private fun updatePageNumber() {
+        val totalPages = (readingsList.size + itemsPerPage - 1) / itemsPerPage
+        pageNoTextView.text = "Page $currentPage / $totalPages"
+    }
+
+    fun goToMain(view: View) {
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+
+        val options = ActivityOptions.makeCustomAnimation(this,
+            R.anim.slide_enter_left,
+            R.anim.slide_exit_right
+        )
+        startActivity(intent, options.toBundle())
     }
 }
