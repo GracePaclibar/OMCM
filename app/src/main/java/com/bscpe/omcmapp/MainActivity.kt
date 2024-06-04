@@ -7,6 +7,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.util.Log
 import android.view.Gravity
@@ -21,6 +23,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.FileProvider
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.lzyzsd.circleprogress.DonutProgress
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
@@ -61,6 +64,7 @@ class MainActivity : AppCompatActivity() {
     private val imageUrls = mutableListOf<String>()
     private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
+    private lateinit var swipeRefresh : SwipeRefreshLayout
     private lateinit var auth: FirebaseAuth
     private val sharedPreferences by lazy {
         getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
@@ -219,6 +223,19 @@ class MainActivity : AppCompatActivity() {
 
 
         fetchData(userUid, modePreviewSwitch, modeTextView, waterStateTextView)
+
+        swipeRefresh  = findViewById(R.id.swipeRefresh)
+
+        swipeRefresh.setOnRefreshListener {
+            updateMethod()
+        }
+    }
+
+    private fun updateMethod() {
+        swipeRefresh.isRefreshing = false
+        Handler(Looper.getMainLooper()).postDelayed({
+            recreate()
+        }, 500)
     }
 
     private fun fetchData(
