@@ -97,6 +97,9 @@
         <activity android:name=".HumidTableActivity"
             android:label="Humidity Data Table">
         </activity>
+        <activity android:name=".AboutUsActivity"
+            android:label="About Us">
+        </activity>
         <uses-native-library
             android:name="libOpenCL.so"
             android:required="false"/>

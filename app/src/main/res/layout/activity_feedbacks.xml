@@ -74,7 +74,7 @@
         app:srcCompat="@drawable/ic_send"
         tools:ignore="TouchTargetSizeCheck,ImageContrastCheck,RedundantDescriptionCheck" />
 
-    <EditText
+    <TextView
         android:id="@+id/feedbackEmail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

@@ -7,6 +7,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.util.Log
 import android.view.Gravity
@@ -21,6 +23,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.FileProvider
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.lzyzsd.circleprogress.DonutProgress
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
@@ -55,13 +58,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var userNameTextView: TextView
     private lateinit var lightLevelTextView: TextView
     private lateinit var latestTimestamp: String
-    private lateinit var timeBackground: ImageView
     private var latestTemperature: Double = 0.0
     private var latestHumidity: Double = 0.0
     private var latestLux: Double = 0.0
     private val imageUrls = mutableListOf<String>()
     private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
+    private lateinit var swipeRefresh : SwipeRefreshLayout
     private lateinit var auth: FirebaseAuth
     private val sharedPreferences by lazy {
         getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
@@ -216,24 +219,41 @@ class MainActivity : AppCompatActivity() {
         val modePreviewSwitch = findViewById<SwitchCompat>(R.id.modePreview)
         modePreviewSwitch.visibility = View.INVISIBLE
 
+        val waterStateTextView = findViewById<TextView>(R.id.modeText)
 
-        fetchData(userUid, modePreviewSwitch, modeTextView)
+
+        fetchData(userUid, modePreviewSwitch, modeTextView, waterStateTextView)
+
+        swipeRefresh  = findViewById(R.id.swipeRefresh)
+
+        swipeRefresh.setOnRefreshListener {
+            updateMethod()
+        }
+    }
+
+    private fun updateMethod() {
+        swipeRefresh.isRefreshing = false
+        Handler(Looper.getMainLooper()).postDelayed({
+            recreate()
+        }, 500)
     }
 
     private fun fetchData(
         userUid: String?,
         modePreviewSwitch: SwitchCompat,
-        modeTextView: TextView
+        modeTextView: TextView,
+        waterStateTextView: TextView
     ) {
         val database = FirebaseDatabase.getInstance()
         val dataRef = database.getReference("UsersData/$userUid/Control_Key/dripWater")
 
-        dataRef.addListenerForSingleValueEvent(object : ValueEventListener {
+        dataRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val isAuto = dataSnapshot.child("isAuto").getValue(Int::class.java) ?: 1
                 val isWaterOn = dataSnapshot.child("isWaterOn").getValue(Int::class.java) ?: 0
+                val isWaterOnAuto = dataSnapshot.child("isWaterOnAuto").getValue(Int::class.java) ?: 0
 
-                updateStates(isAuto, isWaterOn, modePreviewSwitch, modeTextView)
+                updateStates(isAuto, isWaterOn, isWaterOnAuto, modePreviewSwitch, modeTextView, waterStateTextView)
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -246,12 +266,20 @@ class MainActivity : AppCompatActivity() {
     private fun updateStates(
         isAuto: Int,
         isWaterOn: Int,
+        isWaterOnAuto: Int,
         modePreviewSwitch: SwitchCompat,
-        modeTextView: TextView
+        modeTextView: TextView,
+        waterStateTextView: TextView
     ) {
         if (isAuto == 1) {
             modePreviewSwitch.visibility = View.INVISIBLE
             modeTextView.text = "Automatic"
+
+            if (isWaterOnAuto == 1) {
+                waterStateTextView.text = "Water drip is on"
+            } else {
+                waterStateTextView.text = "Water drip is off"
+            }
         } else {
             modePreviewSwitch.visibility = View.VISIBLE
             modeTextView.text = "Manual"

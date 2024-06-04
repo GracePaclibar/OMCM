@@ -66,6 +66,10 @@
     <string name="graphical_data_text">Graphical Data</string>
     <string name="dashboard_pageDesc">Dashboard page</string>
     <string name="dashboard_label">Dashboard</string>
+    <string name="aboutUs_txt">Welcome to OMCM, an innovative app dedicated to advancing scientific methodologies in mushroom Agri farming using IoT and Ai. Our mission is to create and implement a Smart Oyster Mushroom Cultivation and Monitoring System that leverages cutting-edge technology and robust data analysis to achieve precise control over growing conditions, maximize yield, and minimize environmental impact. We aim to provide actionable insights and continuous improvements in mushroom farming practices, thereby contributing to a more efficient and sustainable agricultural industry.</string>
+    <string name="whoWeAre_txt">OMCM is developed by students at the Polytechnic University of the Philippines conducting a research study entitled Smart Oyster Mushroom Cultivation and Monitoring System based on Internet of Things (IoT) and Neural Networks in partial fulfillment of the requirements for the degree Bachelor of Science in Computer Engineering.</string>
+    <string name="ourVision_txt">We envision revolutionizing sustainable agriculture by developing advanced, data-driven systems that optimize mushroom cultivation, reduce resource consumption, and enhance food security globally.</string>
+    <string name="ourEthics_txt">We prioritize your privacy and the ethical conduct of research. All studies conducted through OMCM adhere to rigorous ethical standards. We ensure that your data is anonymized, securely stored, and used solely for the purposes of advancing scientific knowledge.</string>
 
     <string-array name="Filter">
         <item>Today</item>
