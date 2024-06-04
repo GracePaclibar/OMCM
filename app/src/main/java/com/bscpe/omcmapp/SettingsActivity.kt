@@ -13,6 +13,8 @@ import com.google.firebase.auth.FirebaseAuth
 
 class SettingsActivity : AppCompatActivity() {
 
+    private val auth = FirebaseAuth.getInstance()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
@@ -29,11 +31,7 @@ class SettingsActivity : AppCompatActivity() {
         logoutButton.setOnClickListener {
             logoutUser()
         }
-
-
     }
-
-    private val auth = FirebaseAuth.getInstance()
 
     fun logoutUser() {
         auth.signOut()
@@ -86,6 +84,16 @@ class SettingsActivity : AppCompatActivity() {
             R.anim.slide_exit_left)
         startActivity(intent, options.toBundle())
 
+    }
+
+    fun goToAboutUs(view: View) {
+        val intent = Intent(this, AboutUsActivity::class.java)
+        startActivity(intent)
+
+        val options = ActivityOptions.makeCustomAnimation( this,
+            R.anim.slide_enter_right,
+            R.anim.slide_exit_left)
+        startActivity(intent, options.toBundle())
     }
 
 }
