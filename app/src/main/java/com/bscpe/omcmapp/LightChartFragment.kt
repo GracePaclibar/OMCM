@@ -40,7 +40,22 @@ class LightChartFragment : Fragment(R.layout.fragment_line_chart) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fetchDataFromFB()
+
+        val database = FirebaseDatabase.getInstance()
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userUid = currentUser?.uid
+        val myRef = database.getReference("UsersData/$userUid/readings")
+
+        myRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                fetchDataFromFB()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("LightChartFragment", "Database error: ${error.message}")
+            }
+
+        })
     }
 
     private fun fetchDataFromFB() {

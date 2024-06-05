@@ -41,7 +41,21 @@ class TempChartFragment : Fragment(R.layout.fragment_line_chart) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fetchDataFromFB(view)
+        val database = FirebaseDatabase.getInstance()
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userUid = currentUser?.uid
+        val myRef = database.getReference("UsersData/$userUid/readings")
+
+        myRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                fetchDataFromFB(view)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("WaterChartFragment", "Database error: ${error.message}")
+            }
+
+        })
     }
 
     private fun fetchDataFromFB(view: View) {

@@ -45,7 +45,22 @@ class WaterChartFragment : Fragment(R.layout.fragment_water_flow) {
         val dateTextView = view.findViewById<TextView>(R.id.currentDateChart)
 
         setDate(dateTextView)
-        fetchDataFromFB(view)
+
+        val database = FirebaseDatabase.getInstance()
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userUid = currentUser?.uid
+        val myRef = database.getReference("UsersData/$userUid/readings")
+
+        myRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                fetchDataFromFB(view)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("WaterChartFragment", "Database error: ${error.message}")
+            }
+
+        })
     }
 
     private fun setDate(
