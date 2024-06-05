@@ -61,6 +61,8 @@ class TempChartFragment : Fragment(R.layout.fragment_line_chart) {
                 val timeOutputFormatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
                 val dateOutputFormatter = SimpleDateFormat("MMM dd", Locale.getDefault())
 
+                val processedTimestamps = mutableSetOf<String>()
+
                 for (snapshot in dataSnapshot.children) {
                     for (childSnapshot in snapshot.children) {
                         val intTemperatureString = snapshot.child("internal_temperature").getValue(String::class.java)
@@ -69,7 +71,10 @@ class TempChartFragment : Fragment(R.layout.fragment_line_chart) {
                         val extTemperatureFloat = extTemperatureString?.toFloatOrNull()
                         val intTempTimestampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                        if (intTemperatureFloat != null && intTempTimestampString != null && extTemperatureFloat != null) {
+                        if (intTemperatureFloat != null
+                            && intTempTimestampString != null
+                            && extTemperatureFloat != null
+                            && !processedTimestamps.contains(intTempTimestampString)) {
                             intTemperatureValues.add(intTemperatureFloat)
                             extTemperatureValues.add(extTemperatureFloat)
 
@@ -79,6 +84,8 @@ class TempChartFragment : Fragment(R.layout.fragment_line_chart) {
 
                             currentDate.text = dateFormattedDate
                             labels.add(timeFormattedTime)
+
+                            processedTimestamps.add(intTempTimestampString)
                         }
                     }
                 }

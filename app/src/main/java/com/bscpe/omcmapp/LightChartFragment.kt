@@ -62,6 +62,8 @@ class LightChartFragment : Fragment(R.layout.fragment_line_chart) {
                 val timeOutputFormatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
                 val dateOutputFormatter = SimpleDateFormat("MMM dd", Locale.getDefault())
 
+                val processedTimestamps = mutableSetOf<String>()
+
                 for (snapshot in dataSnapshot.children) {
 
                     for (childSnapshot in snapshot.children) {
@@ -69,7 +71,9 @@ class LightChartFragment : Fragment(R.layout.fragment_line_chart) {
                         val lightFloat = lightString?.toFloatOrNull()
                         val lightTimestampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                        if (lightFloat != null && lightTimestampString != null) {
+                        if (lightFloat != null
+                            && lightTimestampString != null
+                            && !processedTimestamps.contains(lightTimestampString)) {
                             lightValues.add(lightFloat)
                             entries.add(Entry(entries.size.toFloat(), lightFloat))
 
@@ -79,6 +83,8 @@ class LightChartFragment : Fragment(R.layout.fragment_line_chart) {
 
                             currentDate?.text = dateFormattedDate
                             labels.add(timeFormattedTime)
+
+                            processedTimestamps.add(lightTimestampString)
                         }
                     }
                     setupChart(entries, labels)

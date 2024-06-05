@@ -107,18 +107,23 @@ class HumidExtEnvFragment : Fragment(R.layout.fragment_ext_env) {
 
         val myRef = database.getReference("UsersData/$userUid/readings")
 
-        myRef.limitToLast(limit).addListenerForSingleValueEvent(object : ValueEventListener {
+        myRef.limitToLast(limit).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
 
-                for (snapshot in dataSnapshot.children) {
+                val processedTimestamps = mutableSetOf<String>()
 
+                for (snapshot in dataSnapshot.children) {
                     for (childSnapshot in snapshot.children) {
                         val extHumidString = snapshot.child("external_humidity").getValue(String::class.java)
                         val extHumidFloat = extHumidString?.toFloatOrNull()
                         val extHumidTimestampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                        if (extHumidFloat != null) {
+                        if (extHumidFloat != null
+                            && extHumidTimestampString != null
+                            && !processedTimestamps.contains(extHumidTimestampString)) {
                             extHumidValues.add(extHumidFloat to extHumidTimestampString)
+
+                            processedTimestamps.add(extHumidTimestampString)
                         }
                     }
                     setupTable()

@@ -54,21 +54,17 @@ class HumidChartFragment : Fragment(R.layout.fragment_line_chart) {
 
         myRef.limitToLast(37).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                // Log the key of the parent node
-                Log.d("FirebaseData", "Parent Node Key: ${dataSnapshot.key}")
 
                 val currentDate = view?.findViewById<TextView>(R.id.currentDateChart)
-
                 val labels = mutableListOf<String>()
 
                 val dateFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
                 val timeOutputFormatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
                 val dateOutputFormatter = SimpleDateFormat("MMM dd", Locale.getDefault())
 
-                for (snapshot in dataSnapshot.children) {
-                    // Log the key of each child node
-                    Log.d("FirebaseData", "Child Node Key: ${snapshot.key}")
+                val processedTimestamps = mutableListOf<String>()
 
+                for (snapshot in dataSnapshot.children) {
                     for (childSnapshot in snapshot.children) {
                         val intHumidString = snapshot.child("internal_humidity").getValue(String::class.java)
                         val intHumidFloat = intHumidString?.toFloatOrNull()
@@ -76,7 +72,10 @@ class HumidChartFragment : Fragment(R.layout.fragment_line_chart) {
                         val extHumidFloat = extHumidString?.toFloatOrNull()
                         val intHumidTimestampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                        if (intHumidFloat != null && intHumidTimestampString != null) {
+                        if (intHumidFloat != null
+                            && extHumidFloat != null
+                            && intHumidTimestampString != null
+                            && !processedTimestamps.contains(intHumidTimestampString)) {
                             intHumidValues.add(intHumidFloat)
                             extHumidValues.add(extHumidFloat)
 
@@ -86,6 +85,8 @@ class HumidChartFragment : Fragment(R.layout.fragment_line_chart) {
 
                             currentDate?.text = dateFormattedDate
                             labels.add(timeFormattedTime)
+
+                            processedTimestamps.add(intHumidTimestampString)
                         }
                     }
                 }

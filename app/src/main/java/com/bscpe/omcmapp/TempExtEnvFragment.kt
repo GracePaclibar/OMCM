@@ -99,18 +99,22 @@ class TempExtEnvFragment : Fragment(R.layout.fragment_ext_env) {
 
         val myRef = database.getReference("UsersData/$userUid/readings")
 
-        myRef.limitToLast(limit).addListenerForSingleValueEvent(object : ValueEventListener {
+        myRef.limitToLast(limit).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
 
-                for (snapshot in dataSnapshot.children) {
+                val processedTimestamps = mutableSetOf<String>()
 
+                for (snapshot in dataSnapshot.children) {
                     for (childSnapshot in snapshot.children) {
                         val extTemperatureString = snapshot.child("external_temperature").getValue(String::class.java)
                         val extTemperatureFloat = extTemperatureString?.toFloatOrNull()
                         val extTempTimestampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                        if (extTemperatureFloat != null) {
+                        if (extTemperatureFloat != null
+                            && extTempTimestampString != null
+                            && !processedTimestamps.contains(extTempTimestampString)) {
                             extTemperatureValues.add(extTemperatureFloat to extTempTimestampString)
+                            processedTimestamps.add(extTempTimestampString)
                         }
                     }
                     setupTable()

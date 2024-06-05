@@ -107,20 +107,22 @@ class TempIntEnvFragment : Fragment(R.layout.fragment_int_env) {
 
         val myRef = database.getReference("UsersData/$userUid/readings")
 
-        myRef.limitToLast(limit).addListenerForSingleValueEvent(object : ValueEventListener {
+        myRef.limitToLast(limit).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                Log.d("FirebaseData", "Parent Node Key: ${dataSnapshot.key}")
+
+                val processedTimestamps = mutableSetOf<String>()
 
                 for (snapshot in dataSnapshot.children) {
-                    Log.d("FirebaseData", "Child Node Key: ${snapshot.key}")
-
                     for (childSnapshot in snapshot.children) {
                         val intTemperatureString = snapshot.child("internal_temperature").getValue(String::class.java)
                         val intTemperatureFloat = intTemperatureString?.toFloatOrNull()
                         val intTempTimestampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                        if (intTemperatureFloat != null) {
+                        if (intTemperatureFloat != null
+                            && intTempTimestampString != null
+                            && !processedTimestamps.contains(intTempTimestampString)) {
                             intTemperatureValues.add(intTemperatureFloat to intTempTimestampString)
+                            processedTimestamps.add(intTempTimestampString)
                         }
                     }
                     setupTable()

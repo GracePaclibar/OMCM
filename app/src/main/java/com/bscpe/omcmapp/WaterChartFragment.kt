@@ -77,7 +77,9 @@ class WaterChartFragment : Fragment(R.layout.fragment_water_flow) {
                         val waterFloat = waterString?.toFloatOrNull()
                         val waterTimeStampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                        if (waterFloat != null && waterTimeStampString != null && !processedTimestamps.contains(waterTimeStampString)) {
+                        if (waterFloat != null
+                            && waterTimeStampString != null
+                            && !processedTimestamps.contains(waterTimeStampString)) {
                             val date = dateFormatter.parse(waterTimeStampString)
                             val dateFormattedDate = dateOutputFormatter.format(date)
 

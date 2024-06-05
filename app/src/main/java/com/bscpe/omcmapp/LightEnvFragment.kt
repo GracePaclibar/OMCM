@@ -102,20 +102,23 @@ class LightEnvFragment : Fragment(R.layout.fragment_int_env) {
 
         val myRef = database.getReference("UsersData/$userUid/readings")
 
-        myRef.limitToLast(limit).addListenerForSingleValueEvent(object : ValueEventListener {
+        myRef.limitToLast(limit).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                Log.d("FirebaseData", "Parent Node Key: ${dataSnapshot.key}")
+
+                val processedTimestamps = mutableSetOf<String>()
 
                 for (snapshot in dataSnapshot.children) {
-                    Log.d("FirebaseData", "Child Node Key: ${snapshot.key}")
-
                     for (childSnapshot in snapshot.children) {
                         val intLightString = snapshot.child("lux").getValue(String::class.java)
                         val intLightInt = intLightString?.toIntOrNull()
                         val intLightTimestampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                        if (intLightInt != null) {
+                        if (intLightInt != null
+                            && intLightTimestampString != null
+                            && !processedTimestamps.contains(intLightTimestampString)) {
+
                             intLightValues.add(intLightInt to intLightTimestampString)
+                            processedTimestamps.add(intLightTimestampString)
                         }
                     }
                     setupTable()

@@ -101,14 +101,20 @@ class WaterEnvFragment : Fragment(R.layout.fragment_int_env) {
 
         myRef.limitToLast(limit).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+                val processedTimestamps = mutableSetOf<String>()
+
                 for (snapshot in dataSnapshot.children) {
                     for (childSnapshot in snapshot.children) {
                         val waterString = snapshot.child("water_flow").getValue(String::class.java)
                         val waterFloat = waterString?.toFloatOrNull()
                         val waterTimestampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                        if (waterFloat != null) {
+                        if (waterFloat != null
+                            && waterTimestampString != null
+                            && !processedTimestamps.contains(waterTimestampString)) {
                             waterValues.add(waterFloat to waterTimestampString)
+                            processedTimestamps.add(waterTimestampString)
                         }
                     }
                     setupTable()
