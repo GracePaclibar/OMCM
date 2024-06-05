@@ -183,6 +183,8 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
+        waterConsumedTextview = findViewById(R.id.waterConsumed_TextView)
+
         if (userUid != null) {
             databaseReference = firebaseDatabase.reference.child("UsersData").child("$userUid").child("readings")
 
@@ -204,6 +206,8 @@ class MainActivity : AppCompatActivity() {
                         val (latestDate, latestTime) = parseTimestamp(latestTimestamp)
 
                         updateProgress()
+                        updateWaterConsumption()
+
                         timestampTextView.text = "As of: $latestDate at $latestTime"
                     }
                 }
@@ -224,11 +228,7 @@ class MainActivity : AppCompatActivity() {
 
         val waterStateTextView = findViewById<TextView>(R.id.modeText)
 
-
         fetchData(userUid, modePreviewSwitch, modeTextView, waterStateTextView)
-
-        waterConsumedTextview = findViewById(R.id.waterConsumed_TextView)
-        updateWaterConsumption()
 
         swipeRefresh  = findViewById(R.id.swipeRefresh)
 
@@ -300,19 +300,17 @@ class MainActivity : AppCompatActivity() {
     private fun updateWaterConsumption() {
         val waterConsumptionRef = firebaseDatabase.getReference("UsersData/$userUid/readings")
 
-        waterConsumptionRef
+        valueEventListener = waterConsumptionRef
             .limitToLast(1008)
             .addValueEventListener(object : ValueEventListener {
                 var lastProcessedDay: Int? = null
                 val processedTimestamps = mutableSetOf<String>()
+                var totalWaterFlowToday = 0f
 
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+                    Log.d("WaterConsumption", "Data changed")
                     val dateFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-
-                    val currentDate = Calendar.getInstance().apply { time = Date() }
-                    val currentDay = currentDate.get(Calendar.DAY_OF_MONTH)
-
-                    var totalWaterFlowToday = 0f
 
                     for (snapshot in dataSnapshot.children) {
                         for (childSnapshot in snapshot.children) {
@@ -326,23 +324,19 @@ class MainActivity : AppCompatActivity() {
                                 val cal = Calendar.getInstance().apply { time = date }
                                 val day = cal.get(Calendar.DAY_OF_MONTH)
 
-                                if (day == currentDay) {
-                                    totalWaterFlowToday += waterFlowFloat
-                                    // Log the data being added up with its timestamp
-                                    Log.d("WaterConsumption", "Added $waterFlowFloat on ${waterFlowTimestamp}")
-                                } else {
-                                    // New day, reset total water flow
-                                    totalWaterFlowToday = waterFlowFloat
-                                    lastProcessedDay = day
-                                    // Log the new day and its data with its timestamp
-                                    Log.d("WaterConsumption", "New day started: $waterFlowFloat on ${waterFlowTimestamp}, total water flow reset")
+                                if (lastProcessedDay != null && day != lastProcessedDay) {
+                                    totalWaterFlowToday = 0f
                                 }
+
+                                totalWaterFlowToday += waterFlowFloat
+                                lastProcessedDay = day
                             }
                         }
                     }
 
                     val formattedTotalWaterFlowToday = String.format("%.2f", totalWaterFlowToday)
                     waterConsumedTextview.text = formattedTotalWaterFlowToday
+
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
