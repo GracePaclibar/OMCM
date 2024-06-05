@@ -2,7 +2,6 @@ package com.bscpe.omcmapp
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +11,7 @@ import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -22,7 +22,7 @@ class WaterEnvFragment : Fragment(R.layout.fragment_int_env) {
 
     private lateinit var spinner: Spinner
     private lateinit var filter: Array<String>
-    private val waterValues = mutableListOf<Pair<Int, String?>>()
+    private val waterValues = mutableListOf<Pair<Float, String?>>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -99,20 +99,16 @@ class WaterEnvFragment : Fragment(R.layout.fragment_int_env) {
 
         val myRef = database.getReference("UsersData/$userUid/readings")
 
-        myRef.limitToLast(limit).addListenerForSingleValueEvent(object : ValueEventListener {
+        myRef.limitToLast(limit).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                Log.d("FirebaseData", "Parent Node Key: ${dataSnapshot.key}")
-
                 for (snapshot in dataSnapshot.children) {
-                    Log.d("FirebaseData", "Child Node Key: ${snapshot.key}")
-
                     for (childSnapshot in snapshot.children) {
                         val waterString = snapshot.child("water_flow").getValue(String::class.java)
-                        val waterInt = waterString?.toIntOrNull()
+                        val waterFloat = waterString?.toFloatOrNull()
                         val waterTimestampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                        if (waterInt != null) {
-                            waterValues.add(waterInt to waterTimestampString)
+                        if (waterFloat != null) {
+                            waterValues.add(waterFloat to waterTimestampString)
                         }
                     }
                     setupTable()
@@ -134,7 +130,7 @@ class WaterEnvFragment : Fragment(R.layout.fragment_int_env) {
             val intMaxTimeTextView = view?.findViewById<TextView>(R.id.int_max_time)
             val intMinTimeTextView = view?.findViewById<TextView>(R.id.int_min_time)
 
-            val intAverageWater = waterValues.map { it.first }.average().toInt().toString()
+            val intAverageWater = String.format("%.2f", waterValues.map { it.first}.average())
             val (intMaxWater, intMaxTimestamp) = waterValues.first()
             val (intMinWater, intMinTimestamp) = waterValues.last()
 

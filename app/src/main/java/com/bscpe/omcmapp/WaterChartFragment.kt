@@ -2,23 +2,19 @@ package com.bscpe.omcmapp
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.charts.BarChart
-import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -66,51 +62,51 @@ class WaterChartFragment : Fragment(R.layout.fragment_water_flow) {
 
         val myRef = database.getReference("UsersData/$userUid/readings")
 
-        myRef.orderByChild("timestamp")
-            .limitToLast(1008)
-            .addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
+        myRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
 
-                    val dateFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-                    val dateOutputFormatter = SimpleDateFormat("MM/dd", Locale.getDefault())
+                val dateFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                val dateOutputFormatter = SimpleDateFormat("MM/dd", Locale.getDefault())
 
-                    val aggregatedValues = mutableMapOf<String, Float>()
+                val aggregatedValues = mutableMapOf<String, Float>()
+                val processedTimestamps = mutableSetOf<String>()
 
-                    for (snapshot in dataSnapshot.children) {
-                        for (childSnapshot in snapshot.children) {
-                            val waterString = snapshot.child("internal_temperature").getValue(String::class.java)
-                            val waterFloat = waterString?.toFloatOrNull()
-                            val waterTimeStampString = snapshot.child("timestamp").getValue(String::class.java)
+                for (snapshot in dataSnapshot.children) {
+                    for (childSnapshot in snapshot.children) {
+                        val waterString = snapshot.child("water_flow").getValue(String::class.java)
+                        val waterFloat = waterString?.toFloatOrNull()
+                        val waterTimeStampString = snapshot.child("timestamp").getValue(String::class.java)
 
-                            if (waterFloat != null && waterTimeStampString != null) {
-                                val date = dateFormatter.parse(waterTimeStampString)
-                                val dateFormattedDate = dateOutputFormatter.format(date)
+                        if (waterFloat != null && waterTimeStampString != null && !processedTimestamps.contains(waterTimeStampString)) {
+                            val date = dateFormatter.parse(waterTimeStampString)
+                            val dateFormattedDate = dateOutputFormatter.format(date)
 
-                                val currentValue = aggregatedValues[dateFormattedDate] ?: 0f
-                                aggregatedValues[dateFormattedDate] = currentValue + waterFloat
+                            val currentValue = aggregatedValues[dateFormattedDate] ?: 0f
+                            aggregatedValues[dateFormattedDate] = currentValue + waterFloat
 
-                                break
-                            }
+                            processedTimestamps.add(waterTimeStampString)
                         }
                     }
-
-                    val waterEntries = mutableListOf<Entry>()
-                    val labels = mutableListOf<String>()
-
-                    val last7Days = aggregatedValues.keys.toList().takeLast(7).reversed()
-                    for (date in last7Days) {
-                        waterEntries.add(Entry(labels.size.toFloat(), aggregatedValues[date] ?: 0f))
-                        labels.add(date)
-                    }
-
-                    setupChart(waterEntries, labels, view)
                 }
 
-                override fun onCancelled(databaseError: DatabaseError) {
-                    Log.e("BarchartsFragment", "Database error: ${databaseError.message}")
+                val waterEntries = mutableListOf<Entry>()
+                val labels = mutableListOf<String>()
+
+                val last7Days = aggregatedValues.keys.toList().takeLast(7).reversed()
+                for (date in last7Days) {
+                    waterEntries.add(Entry(labels.size.toFloat(), aggregatedValues[date] ?: 0f))
+                    labels.add(date)
                 }
-            })
+
+                setupChart(waterEntries, labels, view)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e("BarchartsFragment", "Database error: ${databaseError.message}")
+            }
+        })
     }
+
 
 
     private fun setupChart(entries: List<Entry>, labels: List<String>, view: View) {

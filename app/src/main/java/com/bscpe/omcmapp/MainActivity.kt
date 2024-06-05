@@ -27,6 +27,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.lzyzsd.circleprogress.DonutProgress
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
@@ -58,6 +59,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var userNameTextView: TextView
     private lateinit var lightLevelTextView: TextView
     private lateinit var latestTimestamp: String
+    private lateinit var waterConsumedTextview: TextView
     private var latestTemperature: Double = 0.0
     private var latestHumidity: Double = 0.0
     private var latestLux: Double = 0.0
@@ -66,6 +68,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var databaseReference: DatabaseReference
     private lateinit var swipeRefresh : SwipeRefreshLayout
     private lateinit var auth: FirebaseAuth
+    private lateinit var currentUser: FirebaseUser
+    private lateinit var userUid : String
     private val sharedPreferences by lazy {
         getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
     }
@@ -95,9 +99,8 @@ class MainActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         firebaseDatabase = FirebaseDatabase.getInstance()
-
-        val currentUser = auth.currentUser
-        val userUid = currentUser?.uid
+        currentUser = auth.currentUser!!
+        userUid = currentUser.uid
 
         Log.d("MainActivity", "User UID: $userUid")
 
@@ -224,6 +227,9 @@ class MainActivity : AppCompatActivity() {
 
         fetchData(userUid, modePreviewSwitch, modeTextView, waterStateTextView)
 
+        waterConsumedTextview = findViewById(R.id.waterConsumed_TextView)
+        updateWaterConsumption()
+
         swipeRefresh  = findViewById(R.id.swipeRefresh)
 
         swipeRefresh.setOnRefreshListener {
@@ -289,6 +295,60 @@ class MainActivity : AppCompatActivity() {
             modePreviewSwitch.setFocusable(false)
             modePreviewSwitch.setClickable(false)
         }
+    }
+
+    private fun updateWaterConsumption() {
+        val waterConsumptionRef = firebaseDatabase.getReference("UsersData/$userUid/readings")
+
+        waterConsumptionRef
+            .limitToLast(1008)
+            .addValueEventListener(object : ValueEventListener {
+                var lastProcessedDay: Int? = null
+                val processedTimestamps = mutableSetOf<String>()
+
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    val dateFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+
+                    val currentDate = Calendar.getInstance().apply { time = Date() }
+                    val currentDay = currentDate.get(Calendar.DAY_OF_MONTH)
+
+                    var totalWaterFlowToday = 0f
+
+                    for (snapshot in dataSnapshot.children) {
+                        for (childSnapshot in snapshot.children) {
+                            val waterFlowString = snapshot.child("water_flow").getValue(String::class.java)
+                            val waterFlowFloat = waterFlowString?.toFloatOrNull()
+                            val waterFlowTimestamp = snapshot.child("timestamp").getValue(String::class.java)
+
+                            if (waterFlowFloat != null && waterFlowTimestamp != null && !processedTimestamps.contains(waterFlowTimestamp)) {
+                                processedTimestamps.add(waterFlowTimestamp)
+                                val date = dateFormatter.parse(waterFlowTimestamp)
+                                val cal = Calendar.getInstance().apply { time = date }
+                                val day = cal.get(Calendar.DAY_OF_MONTH)
+
+                                if (day == currentDay) {
+                                    totalWaterFlowToday += waterFlowFloat
+                                    // Log the data being added up with its timestamp
+                                    Log.d("WaterConsumption", "Added $waterFlowFloat on ${waterFlowTimestamp}")
+                                } else {
+                                    // New day, reset total water flow
+                                    totalWaterFlowToday = waterFlowFloat
+                                    lastProcessedDay = day
+                                    // Log the new day and its data with its timestamp
+                                    Log.d("WaterConsumption", "New day started: $waterFlowFloat on ${waterFlowTimestamp}, total water flow reset")
+                                }
+                            }
+                        }
+                    }
+
+                    val formattedTotalWaterFlowToday = String.format("%.2f", totalWaterFlowToday)
+                    waterConsumedTextview.text = formattedTotalWaterFlowToday
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.e("WaterConsumption", "Database error: ${databaseError.message}")
+                }
+            })
     }
 
     private fun updateProgress() {
@@ -421,8 +481,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun uploadImageToFirebaseStorage(imageUri: Uri) {
-        val userUid = FirebaseAuth.getInstance().currentUser?.uid
-
         val storageRef = FirebaseStorage.getInstance().reference
         val imageName = "image_${System.currentTimeMillis()}.jpg"
         val imagesRef = storageRef.child("images/$userUid/$imageName")
@@ -534,7 +592,6 @@ class MainActivity : AppCompatActivity() {
         greetingTextView.text = greeting
 
         userNameTextView = findViewById(R.id.userName)
-        val userUid = auth.currentUser?.uid
 
         val profileRef = firebaseDatabase.getReference("UsersData/$userUid/Profile")
 
