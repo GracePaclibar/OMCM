@@ -30,7 +30,6 @@ class WaterEnvFragment : Fragment(R.layout.fragment_water_env) {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_water_env, container, false)
 
         filter = resources.getStringArray(R.array.Water_Filter)
@@ -132,7 +131,17 @@ class WaterEnvFragment : Fragment(R.layout.fragment_water_env) {
     }
 
     private fun setupTable() {
-        waterValues.sortByDescending { it.first }
+        val waterValuesByDate = mutableMapOf<String, Float>()
+
+        for ((value, timestamp) in waterValues) {
+            if (timestamp != null) {
+                val date = timestamp.split(" ")[0]
+                waterValuesByDate[date] = waterValuesByDate.getOrDefault(date, 0f) + value
+            }
+        }
+
+        val maxEntry = waterValuesByDate.maxByOrNull { it.value }
+        val minEntry = waterValuesByDate.minByOrNull { it.value }
 
         if (waterValues.isNotEmpty()) {
             val intTextViewAve = view?.findViewById<TextView>(R.id.int_ave)
@@ -142,18 +151,20 @@ class WaterEnvFragment : Fragment(R.layout.fragment_water_env) {
             val intMaxTimeTextView = view?.findViewById<TextView>(R.id.int_max_time)
             val intMinTimeTextView = view?.findViewById<TextView>(R.id.int_min_time)
 
-            val intAverageWater = String.format("%.2f", waterValues.map { it.first}.average())
+            val intAverageWater = String.format("%.2f", waterValues.map { it.first }.average())
             val intTotalWater = String.format("%.2f", waterValues.map { it.first }.sum())
-            val (intMaxWater, intMaxTimestamp) = waterValues.first()
-            val (intMinWater, intMinTimestamp) = waterValues.last()
+
+            val maxTotalWater = String.format("%.2f", maxEntry?.value ?: 0f)
+            val maxDate = maxEntry?.key ?: ""
+            val minTotalWater = String.format("%.2f", minEntry?.value ?: 0f)
+            val minDate = minEntry?.key ?: ""
 
             intTextViewAve?.text = intAverageWater
             intTextViewTotal?.text = intTotalWater
-            intTextViewMax?.text = "$intMaxWater L"
-            intTextViewMin?.text = "$intMinWater L"
-            intMaxTimeTextView?.text = getDateFromTimestamp(intMaxTimestamp)
-            intMinTimeTextView?.text = getDateFromTimestamp(intMinTimestamp)
-
+            intTextViewMax?.text = "$maxTotalWater L"
+            intTextViewMin?.text = "$minTotalWater L"
+            intMaxTimeTextView?.text = getDateFromTimestamp(maxDate)
+            intMinTimeTextView?.text = getDateFromTimestamp(minDate)
         }
     }
 
