@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/linearLayout"
+    android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -210,7 +210,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sysControls_label" />
 
-    <Switch
+
+
+    <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/auto_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -223,6 +225,18 @@
         tools:ignore="MissingConstraints,UseSwitchCompatOrMaterialXml" />
 
     <TextView
+        android:id="@+id/auto_elapsedTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:fontFamily="@font/inter_light"
+        android:text="Water is on"
+        android:textColor="@color/highlight"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/auto_state" />
+
+    <TextView
         android:id="@+id/manual_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -232,6 +246,7 @@
         android:text="Manual"
         android:textColor="@color/highlight"
         android:textSize="15sp"
+        android:visibility="invisible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/auto_state" />
 
@@ -245,16 +260,31 @@
         android:text="Water Drip"
         android:textColor="@color/highlight"
         android:textSize="20sp"
+        android:visibility="invisible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/manual_state" />
 
-    <Switch
+    <TextView
+        android:id="@+id/manual_elapsedTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:fontFamily="@font/inter_light"
+        android:text="Water is on"
+        android:textColor="@color/highlight"
+        android:textSize="12sp"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/water_control" />
+
+    <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/water_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
         android:minWidth="48dp"
         android:minHeight="48dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/water_control"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/water_control"

@@ -10,59 +10,48 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.view.View.GONE
+import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class SystemConfigActivity: AppCompatActivity() {
-    override fun onCreate(savedInstantState: Bundle?) {
-        super.onCreate(savedInstantState)
+class SystemConfigActivity : AppCompatActivity() {
+
+    private lateinit var currentUserUid: String
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_system_config)
 
         val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         val sharedPrefsWifi = getSharedPreferences("WifiInfo", Context.MODE_PRIVATE)
 
         val uidTextView = findViewById<TextView>(R.id.userUID_txt)
-
-        // get uid from firebase
         val currentUser = FirebaseAuth.getInstance().currentUser
 
-        if (currentUser != null) {
-            val uid = currentUser.uid
-            uidTextView.text = uid
-        } else {
-            uidTextView.text = "User not logged in"
-        }
+        currentUserUid = currentUser?.uid ?: "User not logged in"
+        uidTextView.text = currentUserUid
 
-        // Initial visibility of save button
-        val saveButton = findViewById<Button>(R.id.saveNtwk_btn)
-        saveButton.visibility = View.GONE
+        val saveButton = findViewById<Button>(R.id.saveNtwk_btn).apply { visibility = GONE }
+        val visibilityButton = findViewById<ImageButton>(R.id.visibility_btn).apply { visibility = GONE }
 
-        // Initial visibility of pass visibility button
-        val visibilityButton = findViewById<ImageButton>(R.id.visibility_btn)
-        visibilityButton.visibility = View.GONE
-
-        val userUid = FirebaseAuth.getInstance().currentUser?.uid
-
-        val databaseRef = FirebaseDatabase.getInstance().getReference("UsersData/$userUid/WiFI_Router")
+        val databaseRef = FirebaseDatabase.getInstance().getReference("UsersData/$currentUserUid/WiFI_Router")
         val ssidEditText = findViewById<EditText>(R.id.wifiSSID)
         val passEditText = findViewById<EditText>(R.id.wifiPassword)
 
-        val savedSSID = sharedPrefsWifi.getString("SSID", "")
-        val savedPass = sharedPrefsWifi.getString("Pass", "")
-        ssidEditText.setText(savedSSID)
-        passEditText.setText(savedPass)
+        ssidEditText.setText(sharedPrefsWifi.getString("SSID", ""))
+        passEditText.setText(sharedPrefsWifi.getString("Pass", ""))
 
         val textWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -72,19 +61,12 @@ class SystemConfigActivity: AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 val wifiSSID = ssidEditText.text.toString()
                 val wifiPass = passEditText.text.toString()
+                val isVisible = wifiSSID.isNotEmpty() && wifiPass.isNotEmpty()
+                saveButton.visibility = if (isVisible) VISIBLE else GONE
+                visibilityButton.visibility = if (wifiPass.isNotEmpty()) VISIBLE else GONE
 
-                if (wifiSSID.isNotEmpty() && wifiPass.isNotEmpty()) {
-                    saveButton.visibility = VISIBLE
-                    if (wifiPass.isNotEmpty()) {
-                        visibilityButton.visibility = VISIBLE
-
-                        visibilityButton.setOnClickListener {
-                            seePassword(visibilityButton, passEditText)
-                        }
-                    }
-                } else {
-                    saveButton.visibility = GONE
-                    visibilityButton.visibility = GONE
+                visibilityButton.setOnClickListener {
+                    seePassword(visibilityButton, passEditText)
                 }
             }
         }
@@ -92,142 +74,151 @@ class SystemConfigActivity: AppCompatActivity() {
         ssidEditText.addTextChangedListener(textWatcher)
         passEditText.addTextChangedListener(textWatcher)
 
-        data class WifiInfo (
-            val AUTH: String = "",
-            val SSID: String = "",
-            val Wifi_Detected: Boolean = false
-        ) {
-            constructor() : this("", "")
-        }
-
-        fun mapToWifiInfo(map: Map<String, Any>): WifiInfo {
-            val auth = map["AUTH"] as? String ?: ""
-            val ssid = map["SSID"] as? String ?: ""
-            val wifiDetectedString = map["Wifi_Detected"] as? String ?: "false"
-            val wifiDetected = wifiDetectedString.toBoolean()
-            return WifiInfo(auth, ssid, wifiDetected)
-        }
-
-        databaseRef.addListenerForSingleValueEvent(object: ValueEventListener {
+        databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if(dataSnapshot.exists()) {
-                    val wifiInfoMap = dataSnapshot.value as? Map<String, Any>
-                    if (wifiInfoMap != null) {
-                        val wifiInfo = mapToWifiInfo(wifiInfoMap)
-                        if (wifiInfo.AUTH.isNotEmpty()) {
-                            passEditText.setText(wifiInfo.AUTH)
-                        }
-                        if (wifiInfo.SSID.isNotEmpty()) {
-                            ssidEditText.setText(wifiInfo.SSID)
-                        }
-                    }
+                dataSnapshot.value?.let {
+                    val wifiInfoMap = it as Map<String, Any>
+                    ssidEditText.setText(wifiInfoMap["SSID"] as? String ?: "")
+                    passEditText.setText(wifiInfoMap["AUTH"] as? String ?: "")
                 }
             }
+
             override fun onCancelled(databaseError: DatabaseError) {
                 Log.e("Firebase", "Error getting data", databaseError.toException())
             }
         })
 
         saveButton.setOnClickListener {
-            val currentUser = FirebaseAuth.getInstance().currentUser
-            val userUid = currentUser?.uid
-
             val ssid = ssidEditText.text.toString().trim()
             val password = passEditText.text.toString().trim()
-
-            if (ssid.isNotEmpty() && password.isNotEmpty() && userUid != null) {
-                val wifiInfo = WifiInfo(password, ssid, Wifi_Detected = false)
-
-                val capitalizedWifiInfo = mapOf(
-                    "AUTH" to wifiInfo.AUTH,
-                    "SSID" to wifiInfo.SSID,
-                    "Wifi_Detected" to wifiInfo.Wifi_Detected
-                )
-
-                // Upload WifiInfo to Realtime Database
-                val database = FirebaseDatabase.getInstance()
-                val wifiRouterRef = database.getReference("UsersData/$userUid/WiFI_Router")
-                wifiRouterRef.setValue(capitalizedWifiInfo)
-                    .addOnSuccessListener {
-                        Toast.makeText(this, "Wi-Fi info saved", Toast.LENGTH_SHORT).show()
-                    }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(this, "Failed to save: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
-
-                val sharedPrefsWifi = getSharedPreferences("WifiInfo", Context.MODE_PRIVATE)
-                val editor = sharedPrefsWifi.edit()
-                editor.putString("SSID", ssid)
-                editor.putString("Pass", password)
-                editor.apply()
-
+            if (ssid.isNotEmpty() && password.isNotEmpty() && currentUserUid != "User not logged in") {
+                saveWifiInfo(ssid, password)
             } else {
                 Toast.makeText(this, "Please enter both SSID and password", Toast.LENGTH_SHORT).show()
             }
         }
 
-        val autoSwitch = findViewById<Switch>(R.id.auto_switch)
+        val autoSwitch = findViewById<SwitchCompat>(R.id.auto_switch)
         val manualMode = findViewById<TextView>(R.id.manual_state)
         val waterControl = findViewById<TextView>(R.id.water_control)
-        val waterSwitch = findViewById<Switch>(R.id.water_switch)
+        val waterSwitch = findViewById<SwitchCompat>(R.id.water_switch)
+        val autoElapsedTime = findViewById<TextView>(R.id.auto_elapsedTime)
+        val manualElapsedTime = findViewById<TextView>(R.id.manual_elapsedTime)
 
-        if (userUid != null) {
-            loadStatesFromFirebase(userUid, autoSwitch, waterSwitch, manualMode, waterControl)
+        if (currentUserUid != "User not logged in") {
+            loadStatesFromFirebase(currentUserUid, autoSwitch, waterSwitch, manualMode, waterControl, autoElapsedTime, manualElapsedTime)
+            listenForWaterStateChanges(currentUserUid, autoElapsedTime, manualElapsedTime)
         } else {
-            setDefaultStates(autoSwitch, waterSwitch, manualMode, waterControl)
+            setDefaultStates(autoSwitch, waterSwitch, manualMode, waterControl, autoElapsedTime, manualElapsedTime)
         }
 
-        updateVisibility(autoSwitch.isChecked, manualMode, waterControl, waterSwitch)
+        updateVisibility(autoSwitch.isChecked, manualMode, waterControl, waterSwitch, autoElapsedTime, manualElapsedTime)
 
         autoSwitch.setOnCheckedChangeListener { _, isChecked ->
-            updateVisibility(isChecked, manualMode, waterControl, waterSwitch)
+            updateVisibility(isChecked, manualMode, waterControl, waterSwitch, autoElapsedTime, manualElapsedTime)
             updatePreferences("autoSwitchState", if (isChecked) 1 else 0)
             updateFirebase("isAuto", if (isChecked) 1 else 0)
-            if (isChecked) {
+            if (!isChecked) {
+                fetchAndSetWaterStateFromFirebase(waterSwitch)
+            } else {
                 updatePreferences("waterSwitchState", 0)
                 updateFirebase("isWaterOn", 0)
-            } else {
-                fetchAndSetWaterStateFromFirebase(waterSwitch)
             }
         }
 
         waterSwitch.setOnCheckedChangeListener { _, isChecked ->
             updatePreferences("waterSwitchState", if (isChecked) 1 else 0)
             updateFirebase("isWaterOn", if (isChecked) 1 else 0)
+            handleManualElapsedTimeVisibility(manualElapsedTime, isChecked)
         }
     }
+
+    private fun listenForWaterStateChanges(userUid: String, autoElapsedTime: TextView, manualElapsedTime: TextView) {
+        val database = FirebaseDatabase.getInstance()
+        val autoWaterRef = database.getReference("UsersData/$userUid/Control_Key/dripWater/isWaterOnAuto")
+        autoWaterRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val isWaterOnAuto = dataSnapshot.getValue(Int::class.java) ?: 0
+                if (isWaterOnAuto == 1) {
+                    autoElapsedTime.text = "Water is on"
+                } else {
+                    autoElapsedTime.text = "Water is off"
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e("Firebase", "Error fetching isWaterOnAuto state", databaseError.toException())
+            }
+        })
+
+        val manualWaterRef = database.getReference("UsersData/$userUid/Control_Key/dripWater/isWaterOn")
+        manualWaterRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val isWaterOn = dataSnapshot.getValue(Int::class.java) ?: 0
+                if (isWaterOn == 1) {
+                    manualElapsedTime.text = "Water is on"
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e("Firebase", "Error fetching isWaterOn state", databaseError.toException())
+            }
+        })
+    }
+
 
     private fun updateVisibility(
         isAuto: Boolean,
         manualMode: TextView,
         waterControl: TextView,
-        waterSwitch: Switch
+        waterSwitch: SwitchCompat,
+        autoElapsedTime: TextView,
+        manualElapsedTime: TextView
     ) {
+        val fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in)
+        val fadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_out)
+        val visibility = if (isAuto) View.INVISIBLE else View.VISIBLE
+
+        manualMode.startAnimation(if (isAuto) fadeOutAnimation else fadeInAnimation)
+        waterControl.startAnimation(if (isAuto) fadeOutAnimation else fadeInAnimation)
+        waterSwitch.startAnimation(if (isAuto) fadeOutAnimation else fadeInAnimation)
+        manualElapsedTime.startAnimation(if (isAuto) fadeOutAnimation else fadeInAnimation)
+
+        manualMode.visibility = visibility
+        waterControl.visibility = visibility
+        waterSwitch.visibility = visibility
+        manualElapsedTime.visibility = visibility
+
         if (isAuto) {
-            val fadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_out)
-            manualMode.startAnimation(fadeOutAnimation)
-            waterControl.startAnimation(fadeOutAnimation)
-            waterSwitch.startAnimation(fadeOutAnimation)
-            manualMode.visibility = View.INVISIBLE
-            waterControl.visibility = View.INVISIBLE
-            waterSwitch.visibility = View.INVISIBLE
+            autoElapsedTime.startAnimation(fadeInAnimation)
+            autoElapsedTime.visibility = VISIBLE
         } else {
-            val fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in)
-            manualMode.startAnimation(fadeInAnimation)
-            waterControl.startAnimation(fadeInAnimation)
-            waterSwitch.startAnimation(fadeInAnimation)
-            manualMode.visibility = View.VISIBLE
-            waterControl.visibility = View.VISIBLE
-            waterSwitch.visibility = View.VISIBLE
+            autoElapsedTime.startAnimation(fadeOutAnimation)
+            autoElapsedTime.visibility = INVISIBLE
+        }
+    }
+
+    private fun handleManualElapsedTimeVisibility(manualElapsedTime: TextView, isWaterOn: Boolean) {
+        val fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in)
+        val fadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_out)
+
+        if (isWaterOn) {
+            manualElapsedTime.startAnimation(fadeInAnimation)
+            manualElapsedTime.visibility = VISIBLE
+        } else {
+            manualElapsedTime.startAnimation(fadeOutAnimation)
+            manualElapsedTime.visibility = INVISIBLE
         }
     }
 
     private fun loadStatesFromFirebase(
         userUid: String,
-        autoSwitch: Switch,
-        waterSwitch: Switch,
+        autoSwitch: SwitchCompat,
+        waterSwitch: SwitchCompat,
         manualMode: TextView,
-        waterControl: TextView
+        waterControl: TextView,
+        autoElapsedTime: TextView,
+        manualElapsedTime: TextView
     ) {
         val database = FirebaseDatabase.getInstance()
         val powerRef = database.getReference("UsersData/$userUid/Control_Key/dripWater")
@@ -238,45 +229,61 @@ class SystemConfigActivity: AppCompatActivity() {
 
                 autoSwitch.isChecked = isAuto == 1
                 waterSwitch.isChecked = isWaterOn == 1
-                updateVisibility(isAuto == 1, manualMode, waterControl, waterSwitch)
+                updateVisibility(isAuto == 1, manualMode, waterControl, waterSwitch, autoElapsedTime, manualElapsedTime)
                 updatePreferences("autoSwitchState", isAuto)
                 updatePreferences("waterSwitchState", isWaterOn)
+                handleAutoElapsedTime(autoElapsedTime, isAuto == 1, isWaterOn)
+                handleManualElapsedTimeVisibility(manualElapsedTime, isWaterOn == 1)
             }
-
             override fun onCancelled(databaseError: DatabaseError) {
                 Log.e("Firebase", "Error fetching control key data", databaseError.toException())
                 Toast.makeText(this@SystemConfigActivity, "Error fetching control key data", Toast.LENGTH_SHORT).show()
-                setDefaultStates(autoSwitch, waterSwitch, manualMode, waterControl)
+                setDefaultStates(autoSwitch, waterSwitch, manualMode, waterControl, autoElapsedTime, manualElapsedTime)
             }
         })
     }
 
+    private fun handleAutoElapsedTime(autoElapsedTime: TextView, isAuto: Boolean, isWaterOn: Int) {
+        if (isAuto) {
+            autoElapsedTime.visibility = View.VISIBLE
+            if (isWaterOn == 1) {
+                autoElapsedTime.text = "Water is on"
+            } else {
+                autoElapsedTime.text = "Water is off"
+            }
+        } else {
+            autoElapsedTime.visibility = View.GONE
+        }
+    }
+
+
     private fun setDefaultStates(
-        autoSwitch: Switch,
-        waterSwitch: Switch,
+        autoSwitch: SwitchCompat,
+        waterSwitch: SwitchCompat,
         manualMode: TextView,
-        waterControl: TextView
+        waterControl: TextView,
+        autoElapsedTime: TextView,
+        manualElapsedTime: TextView
     ) {
         autoSwitch.isChecked = true
         waterSwitch.isChecked = false
-        updateVisibility(true, manualMode, waterControl, waterSwitch)
+        updateVisibility(true, manualMode, waterControl, waterSwitch, autoElapsedTime, manualElapsedTime)
         updatePreferences("autoSwitchState", 1)
         updatePreferences("waterSwitchState", 0)
     }
 
     private fun updatePreferences(key: String, value: Int) {
         val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        val editor = sharedPrefs.edit()
-        editor.putInt(key, value)
-        editor.apply()
+        with(sharedPrefs.edit()) {
+            putInt(key, value)
+            apply()
+        }
     }
 
     private fun updateFirebase(key: String, value: Int) {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userUid = currentUser?.uid ?: return
+        if (currentUserUid == "User not logged in") return
 
-        val database = FirebaseDatabase.getInstance()
-        val powerRef = database.getReference("UsersData/$userUid/Control_Key/dripWater")
+        val powerRef = FirebaseDatabase.getInstance().getReference("UsersData/$currentUserUid/Control_Key/dripWater")
         powerRef.child(key).setValue(value)
             .addOnFailureListener { e ->
                 Log.e("Firebase", "Failed to update $key: ${e.message}")
@@ -284,16 +291,14 @@ class SystemConfigActivity: AppCompatActivity() {
             }
     }
 
-    private fun fetchAndSetWaterStateFromFirebase(waterSwitch: Switch) {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userUid = currentUser?.uid ?: return
+    private fun fetchAndSetWaterStateFromFirebase(waterSwitch: SwitchCompat) {
+        if (currentUserUid == "User not logged in") return
 
-        val database = FirebaseDatabase.getInstance()
-        val powerRef = database.getReference("UsersData/$userUid/Control_Key/dripWater")
+        val powerRef = FirebaseDatabase.getInstance().getReference("UsersData/$currentUserUid/Control_Key/dripWater")
         powerRef.child("isWaterOn").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val isWaterOn = dataSnapshot.getValue(Int::class.java) ?: 0
-                waterSwitch.isChecked = (isWaterOn == 1)
+                waterSwitch.isChecked = isWaterOn == 1
                 updatePreferences("waterSwitchState", isWaterOn)
             }
 
@@ -304,32 +309,44 @@ class SystemConfigActivity: AppCompatActivity() {
         })
     }
 
+    private fun saveWifiInfo(ssid: String, password: String) {
+        val wifiInfo = mapOf("AUTH" to password, "SSID" to ssid, "Wifi_Detected" to false)
+        val wifiRouterRef = FirebaseDatabase.getInstance().getReference("UsersData/$currentUserUid/WiFI_Router")
+        wifiRouterRef.setValue(wifiInfo)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Wi-Fi info saved", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Failed to save: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
 
+        val sharedPrefsWifi = getSharedPreferences("WifiInfo", Context.MODE_PRIVATE)
+        with(sharedPrefsWifi.edit()) {
+            putString("SSID", ssid)
+            putString("Pass", password)
+            apply()
+        }
+    }
 
     fun goToMain(view: View) {
         val intent = Intent(this, MainActivity::class.java)
-
         val options = ActivityOptions.makeCustomAnimation(this,
-            R.anim.slide_enter_right, //Entrance animation
-            R.anim.slide_exit_left //Exit animation
+            R.anim.slide_enter_right,
+            R.anim.slide_exit_left
         )
-
         startActivity(intent, options.toBundle())
     }
 
     fun seePassword(visibilityButton: ImageButton, passEditText: EditText) {
         val isVisible = passEditText.inputType != InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-
-        if (isVisible) {
-            visibilityButton.setImageResource(R.drawable.ic_visibility)
-            passEditText.inputType =
-                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+        visibilityButton.setImageResource(if (isVisible) R.drawable.ic_visibility else R.drawable.ic_visibility_off)
+        passEditText.inputType = if (isVisible) {
+            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
         } else {
-            visibilityButton.setImageResource(R.drawable.ic_visibility_off)
-            passEditText.inputType =
-                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
         }
         passEditText.setSelection(passEditText.text.length)
     }
 }
+
 
