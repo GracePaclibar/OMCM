@@ -17,8 +17,10 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import java.text.SimpleDateFormat
+import java.util.Locale
 
-class WaterEnvFragment : Fragment(R.layout.fragment_int_env) {
+class WaterEnvFragment : Fragment(R.layout.fragment_water_env) {
 
     private lateinit var spinner: Spinner
     private lateinit var filter: Array<String>
@@ -29,7 +31,7 @@ class WaterEnvFragment : Fragment(R.layout.fragment_int_env) {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_int_env, container, false)
+        val view = inflater.inflate(R.layout.fragment_water_env, container, false)
 
         filter = resources.getStringArray(R.array.Water_Filter)
         spinner = view.findViewById(R.id.time_filter)
@@ -39,6 +41,9 @@ class WaterEnvFragment : Fragment(R.layout.fragment_int_env) {
 
         val unit = view.findViewById<TextView>(R.id.unit)
         unit.text = "L"
+
+        val unitTotal = view.findViewById<TextView>(R.id.unit_total)
+        unitTotal.text = "L"
 
         val icon = view.findViewById<ImageView>(R.id.temp_icon)
         icon.setImageResource(R.drawable.ic_humid)
@@ -131,32 +136,33 @@ class WaterEnvFragment : Fragment(R.layout.fragment_int_env) {
 
         if (waterValues.isNotEmpty()) {
             val intTextViewAve = view?.findViewById<TextView>(R.id.int_ave)
+            val intTextViewTotal = view?.findViewById<TextView>(R.id.int_total)
             val intTextViewMax = view?.findViewById<TextView>(R.id.int_max)
             val intTextViewMin = view?.findViewById<TextView>(R.id.int_min)
             val intMaxTimeTextView = view?.findViewById<TextView>(R.id.int_max_time)
             val intMinTimeTextView = view?.findViewById<TextView>(R.id.int_min_time)
 
             val intAverageWater = String.format("%.2f", waterValues.map { it.first}.average())
+            val intTotalWater = String.format("%.2f", waterValues.map { it.first }.sum())
             val (intMaxWater, intMaxTimestamp) = waterValues.first()
             val (intMinWater, intMinTimestamp) = waterValues.last()
 
             intTextViewAve?.text = intAverageWater
+            intTextViewTotal?.text = intTotalWater
             intTextViewMax?.text = "$intMaxWater L"
             intTextViewMin?.text = "$intMinWater L"
-            intMaxTimeTextView?.text = getTimeFromTimestamp(intMaxTimestamp)
-            intMinTimeTextView?.text = getTimeFromTimestamp(intMinTimestamp)
+            intMaxTimeTextView?.text = getDateFromTimestamp(intMaxTimestamp)
+            intMinTimeTextView?.text = getDateFromTimestamp(intMinTimestamp)
 
         }
     }
 
-    private fun getTimeFromTimestamp(timestamp: String?): String {
+    private fun getDateFromTimestamp(timestamp: String?): String {
         if (timestamp != null) {
-            val timeParts = timestamp.split(" ")[1].split(":")
-            val hours = timeParts[0].toInt()
-            val minutes = timeParts[1]
-            val period = if (hours < 12) "AM" else "PM"
-            val adjustedHours = if (hours == 0 || hours == 12) 12 else hours % 12
-            return String.format("%d:%s %s", adjustedHours, minutes, period)
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val date = dateFormat.parse(timestamp.split(" ")[0])
+            val formattedDate = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+            return formattedDate.format(date)
         }
         return ""
     }

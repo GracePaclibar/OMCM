@@ -127,7 +127,11 @@ class WaterChartFragment : Fragment(R.layout.fragment_water_flow) {
 
 
     private fun setupChart(entries: List<Entry>, labels: List<String>, view: View) {
-        val barEntries = entries.mapIndexed { index, entry ->
+
+        val reversedEntries = entries.reversed()
+        val reversedLabels = labels.reversed()
+
+        val barEntries = reversedEntries.mapIndexed { index, entry ->
             BarEntry(index.toFloat(), entry.y)
         }
 
@@ -145,12 +149,13 @@ class WaterChartFragment : Fragment(R.layout.fragment_water_flow) {
         barChart.axisRight.isEnabled = false
 
         val xAxis = barChart.xAxis
-        xAxis.valueFormatter = IndexAxisValueFormatter(labels)
+        xAxis.valueFormatter = IndexAxisValueFormatter(reversedLabels)
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.setCenterAxisLabels(false)
         xAxis.isGranularityEnabled = true
 
         barChart.invalidate()
     }
+
 
 }
