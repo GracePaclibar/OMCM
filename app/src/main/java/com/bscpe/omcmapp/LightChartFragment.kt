@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.charts.LineChart
@@ -15,6 +16,8 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -112,31 +115,50 @@ class LightChartFragment : Fragment(R.layout.fragment_line_chart) {
     }
 
     private fun setupChart(entries: List<Entry>, labels: List<String>) {
-        val entries = mutableListOf<Entry>()
-        for((index, intTemperature) in lightValues.withIndex()) {
-            entries.add(Entry(index.toFloat(), intTemperature))
+        val dataSet = LineDataSet(entries, "Light").apply {
+            color = ContextCompat.getColor(requireContext(), R.color.highlight)
+            setDrawCircles(false)
+            setDrawValues(false)
+            lineWidth = 2F
+            form = Legend.LegendForm.LINE
         }
 
-        val dataSet = LineDataSet(entries, "Light")
-        dataSet.color = ContextCompat.getColor(requireContext(), R.color.highlight)
-        dataSet.setDrawCircles(false)
-        dataSet.setDrawValues(false)
-        dataSet.lineWidth = 2F
-        dataSet.form = Legend.LegendForm.LINE
+        lightChart.apply {
+            description.isEnabled = false
+            legend.isEnabled = true
+            axisRight.isEnabled = false
 
-        val legend = lightChart.legend
-        legend.verticalAlignment = Legend.LegendVerticalAlignment.TOP
+            setVisibleXRangeMaximum(10f)
+            moveViewToX(0f)
 
-        lightChart.description.isEnabled = false
-        lightChart.legend.isEnabled = true
-        lightChart.axisRight.isEnabled = false
+            legend.verticalAlignment = Legend.LegendVerticalAlignment.TOP
 
-        val lineData = LineData(dataSet)
-        lightChart.data = lineData
+            xAxis.apply {
+                valueFormatter = IndexAxisValueFormatter(labels)
+                position = XAxis.XAxisPosition.BOTTOM
+            }
 
-        //        tempChart.xAxis.isEnabled = false
-        lightChart.xAxis.valueFormatter = IndexAxisValueFormatter(labels)
-        lightChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
-        lightChart.invalidate()
+            setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+                override fun onValueSelected(e: Entry?, h: Highlight?) {
+                    e?.let {
+                        val index = e.x.toInt()
+                        val data = e.y
+                        val timestamp = labels.getOrNull(index)
+                        if (timestamp != null) {
+                            // Show the data and timestamp associated with the selected data point
+                            val message = "$data lux at $timestamp"
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+
+                override fun onNothingSelected() {
+                }
+            })
+
+            data = LineData(dataSet)
+            invalidate()
+        }
     }
+
 }

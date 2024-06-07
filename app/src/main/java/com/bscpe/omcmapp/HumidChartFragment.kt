@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.charts.LineChart
@@ -15,6 +16,8 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -173,6 +176,24 @@ class HumidChartFragment : Fragment(R.layout.fragment_line_chart) {
                     valueFormatter = IndexAxisValueFormatter(labels)
                     position = XAxis.XAxisPosition.BOTTOM
                 }
+
+                setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+                    override fun onValueSelected(e: Entry?, h: Highlight?) {
+                        e?.let {
+                            val index = e.x.toInt()
+                            val data = e.y
+
+                            val timestamp = labels.getOrNull(index)
+                            if (timestamp != null) {
+                                val message = "$data% at $timestamp"
+                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+
+                    override fun onNothingSelected() {
+                    }
+                })
 
                 data = LineData(intDataSet, extDataSet, idealDataSet)
                 invalidate()
