@@ -12,10 +12,13 @@ import android.os.Looper
 import android.provider.MediaStore
 import android.util.Log
 import android.view.Gravity
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -74,6 +77,10 @@ class MainActivity : AppCompatActivity() {
         getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
     }
 
+    companion object {
+        private const val REQUEST_CAMERA_PERMISSION = 100
+    }
+
     private val takePictureLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -104,17 +111,16 @@ class MainActivity : AppCompatActivity() {
 
         Log.d("MainActivity", "User UID: $userUid")
 
-        val cameraButton = findViewById<ImageButton>(R.id.scan_tab)
+        val scanTab: ImageButton = findViewById(R.id.scan_tab)
 
-        cameraButton.setOnClickListener {
-            openCamera(it)
+        scanTab.setOnClickListener { view ->
+            showScannerPopupMenu(view)
         }
 
-        val cameraScan = findViewById<ImageButton>(R.id.camera_scan_tab)
+        val analyticsTab : ImageButton = findViewById(R.id.analytics_tab)
 
-        cameraScan.setOnClickListener {
-            val intent = Intent(this, CameraDetectActivity::class.java)
-            startActivity(intent)
+        analyticsTab.setOnClickListener { view ->
+            showAnalyticsPopupMenu(view)
         }
 
         showGreeting()
@@ -237,6 +243,80 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun showScannerPopupMenu(view: View) {
+
+        val popup = PopupMenu(this, view)
+
+        val inflater: MenuInflater = popup.menuInflater
+        inflater.inflate(R.menu.pop_up_scanners, popup.menu)
+
+        popup.setOnMenuItemClickListener { item: MenuItem ->
+            when (item.itemId) {
+                R.id.menu_item1 -> {
+
+                    openCamera(view)
+                    true
+
+                }
+                R.id.menu_item2 -> {
+
+                    val intent = Intent(this, CameraDetectActivity::class.java)
+                    startActivity(intent)
+                    true
+
+                }
+                R.id.menu_item3 -> {
+
+                    val intent = Intent(this, ImageSelectActivity::class.java)
+                    startActivity(intent)
+                    true
+
+                }
+                else -> false
+            }
+        }
+
+        popup.show()
+    }
+
+    private fun showAnalyticsPopupMenu(view: View) {
+
+        val popup = PopupMenu(this, view)
+
+        val inflater: MenuInflater = popup.menuInflater
+        inflater.inflate(R.menu.pop_up_analytics, popup.menu)
+
+        popup.setOnMenuItemClickListener { item: MenuItem ->
+            when (item.itemId) {
+                R.id.menu_item1 -> {
+
+                    goToTempCharts(view)
+                    true
+                }
+                R.id.menu_item2 -> {
+
+                    goToHumidCharts(view)
+                    true
+                }
+                R.id.menu_item3 -> {
+
+                    goToLightCharts(view)
+
+                    true
+                }
+                R.id.menu_item4 -> {
+
+                    goToWaterCharts(view)
+
+                    true
+                }
+                else -> false
+            }
+        }
+
+        popup.show()
+    }
+
     private fun updateMethod() {
         swipeRefresh.isRefreshing = false
         Handler(Looper.getMainLooper()).postDelayed({
@@ -343,20 +423,20 @@ class MainActivity : AppCompatActivity() {
                     Log.e("WaterConsumption", "Database error: ${databaseError.message}")
                 }
             })
+
+
     }
 
     private fun updateProgress() {
         temperatureProgress.progress = latestTemperature.toFloat()
         humidityProgress.progress = latestHumidity.toFloat()
 
-        // Set colors based on the temperature value
         when {
             latestTemperature < 20 -> temperatureProgress.finishedStrokeColor = getColor(R.color.main) // Cold
             latestTemperature in 20.0..40.0 -> temperatureProgress.finishedStrokeColor = getColor(R.color.midMuted_red) // Normal
             latestTemperature > 40 -> temperatureProgress.finishedStrokeColor = getColor(R.color.muted_red) // Hot
         }
 
-        // Set colors based on the humidity value
         when {
             latestHumidity < 30 -> humidityProgress.finishedStrokeColor = getColor(R.color.muted_red) // Low Humidity
             latestHumidity in 30.0..60.0 -> humidityProgress.finishedStrokeColor = getColor(R.color.mutedRed_blue) // Normal Humidity
@@ -364,7 +444,6 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        // Show lux as High or Low based on its value
         val lightValueText = if (latestLux > 500) "High" else "Low"
         lightLevelTextView.text = "$lightValueText"
 
@@ -372,17 +451,10 @@ class MainActivity : AppCompatActivity() {
 
         val lightBulbImageView = findViewById<ImageView>(R.id.light_icon)
         if (latestLux > 500) {
-            // Lux level is high, use light mode
             lightBulbImageView.setImageResource(R.drawable.ic_light_on_2)
         } else {
-            // Lux level is low, use dark mode
             lightBulbImageView.setImageResource(R.drawable.ic_light_off_2)
         }
-    }
-
-    private fun updateGraph(temperature: Double, humidity: Double, lux: Double) {
-
-        // graph.update(temperature, humidity, lux)
     }
 
     private fun miniCalendar(dayOfWeek: Int) {
@@ -442,7 +514,6 @@ class MainActivity : AppCompatActivity() {
                     Log.e("MainActivity", "Error creating image file: ${ex.message}")
                     null
                 }
-                // Continue only if the File was successfully created
                 photoFile?.also {
                     val photoURI: Uri = FileProvider.getUriForFile(
                         this,
@@ -638,7 +709,4 @@ data class Reading(
     val lux: String = "",
     val timestamp: String = "",
     val unixtimestamp: Int = 0
-)
-data class Profile(
-    val Name: String = ""
 )

@@ -91,7 +91,7 @@
         android:id="@+id/int_min"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="15dp"
         android:layout_marginStart="3dp"
         android:fontFamily="@font/inter_bold"
         android:text="0°C"
@@ -99,20 +99,21 @@
         android:textSize="16sp"
         app:flow_horizontalAlign="start"
         app:layout_constraintStart_toStartOf="@id/temp_icon"
-        app:layout_constraintTop_toBottomOf="@+id/ave_text"
-        app:layout_constraintBottom_toTopOf="@id/min_text"/>
+        app:layout_constraintTop_toBottomOf="@+id/ave_text" />
 
     <TextView
         android:id="@+id/min_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="-3dp"
+        android:layout_marginBottom="5dp"
         android:fontFamily="@font/inter_regular"
         android:text="Lowest at:"
         android:textSize="12sp"
-        app:flow_horizontalAlign="start"
         app:layout_constraintStart_toStartOf="@+id/int_min"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/int_min"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/int_min_time"
@@ -122,6 +123,7 @@
         android:text="Lowest"
         android:textSize="12sp"
         android:layout_marginStart="5dp"
+        android:layout_marginBottom="5dp"
         app:layout_constraintStart_toEndOf="@id/min_text"
         app:layout_constraintTop_toTopOf="@id/min_text" />
 
@@ -130,32 +132,33 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="100dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="15dp"
         android:fontFamily="@font/inter_bold"
         android:text="0°C"
         android:textColor="@color/highlight"
         android:textSize="16sp"
         app:layout_constraintStart_toEndOf="@id/int_min"
-        app:layout_constraintTop_toBottomOf="@+id/ave_text"
-        app:layout_constraintBottom_toTopOf="@id/max_text"/>
+        app:layout_constraintTop_toBottomOf="@+id/ave_text"/>
 
     <TextView
         android:id="@+id/max_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="-3dp"
+        android:layout_marginBottom="5dp"
         android:fontFamily="@font/inter_regular"
         android:text="Highest at:"
         android:textSize="12sp"
         app:flow_horizontalAlign="start"
         app:layout_constraintStart_toStartOf="@+id/int_max"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintTop_toTopOf="@id/min_text"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/int_max_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
+        android:layout_marginBottom="5dp"
         android:fontFamily="@font/inter_regular"
         android:text="Highest"
         android:textSize="12sp"
