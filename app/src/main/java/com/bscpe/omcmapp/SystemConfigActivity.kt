@@ -1,16 +1,17 @@
 package com.bscpe.omcmapp
 
 import android.app.ActivityOptions
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
-import android.content.Intent
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
-import android.text.Editable
+import android.os.Handler
+import android.os.Looper
 import android.text.InputType
-import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.EditText
@@ -19,18 +20,30 @@ import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-
+import android.content.Intent
+import android.content.SharedPreferences
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View.GONE
+import android.view.View.VISIBLE
 class SystemConfigActivity: AppCompatActivity() {
+
+    private lateinit var notificationHelper: NotificationHelper
+    private lateinit var sharedPreferences: SharedPreferences
     override fun onCreate(savedInstantState: Bundle?) {
         super.onCreate(savedInstantState)
         setContentView(R.layout.activity_system_config)
 
-        val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        notificationHelper = NotificationHelper(this)
+        sharedPreferences = getSharedPreferences("NotificationPrefs", Context.MODE_PRIVATE)
+
         val sharedPrefsWifi = getSharedPreferences("WifiInfo", Context.MODE_PRIVATE)
 
         val uidTextView = findViewById<TextView>(R.id.userUID_txt)
@@ -186,14 +199,32 @@ class SystemConfigActivity: AppCompatActivity() {
             if (isChecked) {
                 updatePreferences("waterSwitchState", 0)
                 updateFirebase("isWaterOn", 0)
+                if (!notificationHelper.isNotificationRunning()) {
+                    notificationHelper.notifContent = "Automatic Mode"
+                    notificationHelper.startNotificationTimer(isAutoMode = true)
+                } else {
+                    if (isChecked){
+                        notificationHelper.notifContent = "Automatic Mode"
+                        notificationHelper.startNotificationTimer(isAutoMode = true)
+                    }
+                }
             } else {
                 fetchAndSetWaterStateFromFirebase(waterSwitch)
+                notificationHelper.stopNotificationTimer()
             }
         }
 
         waterSwitch.setOnCheckedChangeListener { _, isChecked ->
             updatePreferences("waterSwitchState", if (isChecked) 1 else 0)
             updateFirebase("isWaterOn", if (isChecked) 1 else 0)
+            if (isChecked) {
+                if (!notificationHelper.isNotificationRunning()) {
+                    notificationHelper.notifContent = "Manual Mode"
+                    notificationHelper.startNotificationTimer(isAutoMode = false)
+                }
+            } else {
+                notificationHelper.stopNotificationTimer()
+            }
         }
     }
 
@@ -331,5 +362,6 @@ class SystemConfigActivity: AppCompatActivity() {
         }
         passEditText.setSelection(passEditText.text.length)
     }
+
 }
 
