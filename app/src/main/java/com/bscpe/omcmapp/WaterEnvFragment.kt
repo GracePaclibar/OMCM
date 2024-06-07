@@ -35,9 +35,6 @@ class WaterEnvFragment : Fragment(R.layout.fragment_water_env) {
         filter = resources.getStringArray(R.array.Water_Filter)
         spinner = view.findViewById(R.id.time_filter)
 
-        val title = view.findViewById<TextView>(R.id.internal_text)
-        title.text = "Usage Data"
-
         val unit = view.findViewById<TextView>(R.id.unit)
         unit.text = "L"
 
