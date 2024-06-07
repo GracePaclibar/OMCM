@@ -57,7 +57,7 @@
             app:srcCompat="@drawable/ic_back"
             tools:ignore="TouchTargetSizeCheck,ImageContrastCheck,RedundantDescriptionCheck" />
 
-        <FrameLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/light_chart"
             android:layout_width="match_parent"
             android:layout_height="240dp"
@@ -73,14 +73,16 @@
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/lightFragmentContainer"
                 android:layout_width="match_parent"
-                android:layout_height="210dp"
-                android:layout_marginStart="15dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginTop="15dp" />
+                android:layout_height="0dp"
+                android:layout_margin="15dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
-        </FrameLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <FrameLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/light_int_env"
             android:layout_width="match_parent"
             android:layout_height="195dp"
@@ -98,12 +100,14 @@
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/lightIntEnvFragmentContainer"
                 android:layout_width="match_parent"
-                android:layout_height="165dp"
-                android:layout_marginStart="15dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginTop="15dp" />
+                android:layout_height="0dp"
+                android:layout_margin="15dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
-        </FrameLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

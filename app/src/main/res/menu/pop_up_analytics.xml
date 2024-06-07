@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_item1"
+        android:title="Temperature Graphs"/>
+    <item
+        android:id="@+id/menu_item2"
+        android:title="Humidity Graphs"/>
+    <item
+        android:id="@+id/menu_item3"
+        android:title="Light Graphs"/>
+    <item
+        android:id="@+id/menu_item4"
+        android:title="Water Graphs"/>
+</menu>

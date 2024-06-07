@@ -107,7 +107,6 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swipeRefresh"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -825,6 +824,50 @@
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 
+    <ImageView
+        android:id="@+id/halfCircle"
+        android:layout_width="60dp"
+        android:layout_height="30dp"
+        android:background="@drawable/half_circle"
+        android:elevation="8dp"
+        android:layout_marginBottom="-10dp"
+        app:layout_constraintBottom_toTopOf="@id/botNav"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <ImageButton
+        android:id="@+id/scan_tab"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:background="#00FFFFFF"
+        android:contentDescription="@string/scan_tab_desc"
+        android:elevation="9dp"
+        android:onClick="showPopupMenu"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="-5dp"
+        android:padding="5dp"
+        android:paddingBottom="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/halfCircle"
+        app:srcCompat="@drawable/ic_scan" />
+
+    <TextView
+        android:id="@+id/CameraText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="3dp"
+        android:elevation="9dp"
+        android:fontFamily="@font/inter_regular"
+        android:text="Camera"
+        android:textColor="@color/highlight"
+        android:textSize="12sp"
+        app:flow_horizontalAlign="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/scan_tab"
+        app:layout_constraintStart_toStartOf="@id/scan_tab"
+        app:layout_constraintTop_toBottomOf="@id/scan_tab"
+        app:layout_constraintVertical_bias="0.0" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/botNav"
@@ -847,13 +890,15 @@
             android:id="@+id/sysConfig_tab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
+            android:layout_marginEnd="60dp"
             android:background="#00FFFFFF"
             android:contentDescription="@string/system_configs_tab_desc"
             android:onClick="openSysConfig"
             android:paddingStart="7dp"
-            android:paddingEnd="5dp"
             android:paddingTop="5dp"
+            android:paddingEnd="3dp"
+            app:layout_constraintEnd_toStartOf="@id/guidelineBot"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_config" />
@@ -862,119 +907,120 @@
             android:id="@+id/SystemText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="-3dp"
+            android:layout_marginBottom="3dp"
             android:elevation="4dp"
             android:fontFamily="@font/inter_regular"
             android:text="System"
             android:textColor="@color/highlight"
             android:textSize="12sp"
-            android:layout_marginBottom="3dp"
             app:flow_horizontalAlign="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/sysConfig_tab"
             app:layout_constraintStart_toStartOf="@+id/sysConfig_tab"
-            app:layout_constraintTop_toBottomOf="@id/sysConfig_tab" />
+            app:layout_constraintTop_toBottomOf="@id/sysConfig_tab"
+            app:layout_constraintVertical_bias="0.0" />
 
         <ImageButton
-            android:id="@+id/scan_tab"
+            android:id="@+id/analytics_tab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="45dp"
-            android:layout_marginEnd="22dp"
+            android:layout_marginStart="60dp"
             android:background="#00FFFFFF"
-            android:contentDescription="@string/scan_tab_desc"
-            android:elevation="4dp"
-            android:onClick="openCamera"
-            android:paddingStart="5dp"
-            android:paddingTop="6dp"
-            android:paddingEnd="6dp"
-            android:paddingBottom="2dp"
-            app:layout_constraintEnd_toStartOf="@id/guidelineBot"
-            app:layout_constraintStart_toEndOf="@id/sysConfig_tab"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_scan" />
-
-        <TextView
-            android:id="@+id/CameraText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="3dp"
-            android:elevation="4dp"
-            android:fontFamily="@font/inter_regular"
-            android:text="Camera"
-            android:textColor="@color/highlight"
-            android:textSize="12sp"
-            app:flow_horizontalAlign="center"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/scan_tab"
-            app:layout_constraintStart_toStartOf="@id/scan_tab"
-            app:layout_constraintTop_toBottomOf="@id/scan_tab" />
-
-        <ImageButton
-            android:id="@+id/camera_scan_tab"
-            android:layout_width="54dp"
-            android:layout_height="45dp"
-            android:layout_marginStart="22dp"
-            android:layout_marginEnd="45dp"
-            android:background="#00FFFFFF"
-            android:contentDescription="Camera scan button"
-            android:elevation="4dp"
-            android:onClick="goToCameraDetect"
+            android:contentDescription="@string/system_configs_tab_desc"
+            android:onClick="openSysConfig"
+            android:paddingStart="7dp"
             android:paddingTop="5dp"
-            android:paddingStart="5dp"
-            android:paddingEnd="5dp"
-            android:scaleType="fitCenter"
-            app:layout_constraintStart_toEndOf="@id/guidelineBot"
-            app:layout_constraintEnd_toStartOf="@id/image_scan_tab"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_camera_scan" />
-
-        <TextView
-            android:id="@+id/CameraScanText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:elevation="4dp"
-            android:fontFamily="@font/inter_regular"
-            android:text="Camera Scan"
-            android:textColor="@color/highlight"
-            android:textSize="12sp"
-            android:layout_marginBottom="3dp"
-            app:layout_constraintEnd_toEndOf="@id/camera_scan_tab"
-            app:layout_constraintStart_toStartOf="@id/camera_scan_tab"
-            app:layout_constraintTop_toBottomOf="@id/camera_scan_tab"
-            app:layout_constraintBottom_toBottomOf="parent"/>
-
-        <ImageButton
-            android:id="@+id/image_scan_tab"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="#00FFFFFF"
-            android:contentDescription="Image scan button"
-            android:layout_marginEnd="20dp"
-            android:elevation="4dp"
-            android:onClick="goToImageSelect"
-            android:paddingTop="3dp"
-            android:paddingStart="5dp"
             android:paddingEnd="7dp"
-            android:scaleType="fitCenter"
-            app:srcCompat="@drawable/ic_image_scan"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@id/guidelineBot"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:srcCompat="@drawable/ic_chart" />
 
         <TextView
-            android:id="@+id/ImageScanText"
+            android:id="@+id/analyticsText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
             android:elevation="4dp"
             android:fontFamily="@font/inter_regular"
-            android:text="Image Scan"
+            android:text="Analytics"
             android:textColor="@color/highlight"
             android:textSize="12sp"
             app:flow_horizontalAlign="center"
-            android:layout_marginBottom="6dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/image_scan_tab"
-            app:layout_constraintEnd_toEndOf="@id/image_scan_tab"
-            app:layout_constraintTop_toBottomOf="@+id/image_scan_tab" />
+            app:layout_constraintEnd_toEndOf="@+id/analytics_tab"
+            app:layout_constraintStart_toStartOf="@+id/analytics_tab"
+            app:layout_constraintTop_toBottomOf="@id/analytics_tab"
+            app:layout_constraintVertical_bias="0.0" />
+
+<!--        <ImageButton-->
+<!--            android:id="@+id/camera_scan_tab"-->
+<!--            android:layout_width="54dp"-->
+<!--            android:layout_height="45dp"-->
+<!--            android:layout_marginStart="22dp"-->
+<!--            android:layout_marginEnd="45dp"-->
+<!--            android:background="#00FFFFFF"-->
+<!--            android:contentDescription="Camera scan button"-->
+<!--            android:elevation="4dp"-->
+<!--            android:onClick="goToCameraDetect"-->
+<!--            android:paddingTop="5dp"-->
+<!--            android:paddingStart="5dp"-->
+<!--            android:paddingEnd="5dp"-->
+<!--            android:scaleType="fitCenter"-->
+<!--            app:layout_constraintStart_toEndOf="@id/guidelineBot"-->
+<!--            app:layout_constraintEnd_toStartOf="@id/image_scan_tab"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:srcCompat="@drawable/ic_camera_scan" />-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/CameraScanText"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:elevation="4dp"-->
+<!--            android:fontFamily="@font/inter_regular"-->
+<!--            android:text="Camera Scan"-->
+<!--            android:textColor="@color/highlight"-->
+<!--            android:textSize="12sp"-->
+<!--            android:layout_marginBottom="3dp"-->
+<!--            app:layout_constraintEnd_toEndOf="@id/camera_scan_tab"-->
+<!--            app:layout_constraintStart_toStartOf="@id/camera_scan_tab"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/camera_scan_tab"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"/>-->
+
+<!--        <ImageButton-->
+<!--            android:id="@+id/image_scan_tab"-->
+<!--            android:layout_width="48dp"-->
+<!--            android:layout_height="48dp"-->
+<!--            android:background="#00FFFFFF"-->
+<!--            android:contentDescription="Image scan button"-->
+<!--            android:layout_marginEnd="20dp"-->
+<!--            android:elevation="4dp"-->
+<!--            android:onClick="goToImageSelect"-->
+<!--            android:paddingTop="3dp"-->
+<!--            android:paddingStart="5dp"-->
+<!--            android:paddingEnd="7dp"-->
+<!--            android:scaleType="fitCenter"-->
+<!--            app:srcCompat="@drawable/ic_image_scan"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"/>-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/ImageScanText"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:elevation="4dp"-->
+<!--            android:fontFamily="@font/inter_regular"-->
+<!--            android:text="Image Scan"-->
+<!--            android:textColor="@color/highlight"-->
+<!--            android:textSize="12sp"-->
+<!--            app:flow_horizontalAlign="center"-->
+<!--            android:layout_marginBottom="6dp"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/image_scan_tab"-->
+<!--            app:layout_constraintEnd_toEndOf="@id/image_scan_tab"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/image_scan_tab" />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

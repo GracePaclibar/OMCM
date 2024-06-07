@@ -99,8 +99,7 @@
         android:textSize="16sp"
         app:flow_horizontalAlign="start"
         app:layout_constraintStart_toStartOf="@id/temp_icon"
-        app:layout_constraintTop_toBottomOf="@+id/ave_text"
-        app:layout_constraintBottom_toTopOf="@id/min_text"/>
+        app:layout_constraintTop_toBottomOf="@+id/ave_text" />
 
     <TextView
         android:id="@+id/min_text"
@@ -110,9 +109,10 @@
         android:fontFamily="@font/inter_regular"
         android:text="Lowest at:"
         android:textSize="12sp"
-        app:flow_horizontalAlign="start"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/int_min"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/int_min"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/int_min_time"
@@ -136,8 +136,7 @@
         android:textColor="@color/highlight"
         android:textSize="16sp"
         app:layout_constraintStart_toEndOf="@id/int_min"
-        app:layout_constraintTop_toBottomOf="@+id/ave_text"
-        app:layout_constraintBottom_toTopOf="@id/max_text"/>
+        app:layout_constraintTop_toBottomOf="@+id/ave_text"/>
 
     <TextView
         android:id="@+id/max_text"
@@ -149,7 +148,8 @@
         android:textSize="12sp"
         app:flow_horizontalAlign="start"
         app:layout_constraintStart_toStartOf="@+id/int_max"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/int_min"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/int_max_time"
